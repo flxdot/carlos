@@ -2,16 +2,15 @@ __all__ = ["create_app"]
 
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from pydantic.alias_generators import to_camel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
-from starlette.responses import RedirectResponse
-from starlette.status import HTTP_404_NOT_FOUND
 
 from .config import CarlosAPISettings
 from .logging_patch import setup_logging
+from .routes import main_router, public_router
 
 DOCS_URL = "/docs"
 
@@ -33,6 +32,9 @@ def create_app(api_settings: CarlosAPISettings | None = None) -> FastAPI:
 
     setup_middlewares(app=app, api_settings=api_settings)
 
+    app.include_router(main_router)
+    app.include_router(public_router)
+
     return app
 
 
@@ -40,6 +42,7 @@ def _generate_openapi_operation_id(route: APIRoute) -> str:
     """Generates a simpler version of the OpenAPI operation ids.
     They are used as method names for generated clients."""
     return to_camel(route.name)
+
 
 def setup_middlewares(
     app: FastAPI,

@@ -1,14 +1,11 @@
 [tool.poetry]
-name = "carlos.api"
+name = "carlos"
 version = "0.1.0"
 description = "The API for the Carlos project"
 readme = "README.md"
 license = "MIT"
 authors = [
     "Felix Fanghänel",
-]
-packages = [
-    { include = "carlos" },
 ]
 exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
 
