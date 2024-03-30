@@ -11,7 +11,7 @@ all:
 	make coverage
 
 format:
-	poetry run ruff check devtools --fix-only
+	poetry run ruff check carlos --fix-only
 	poetry run black .
 	poetry run isort . --profile=black
 
@@ -21,17 +21,17 @@ pytest:
 	# --concurrency=thread,greenlet ensures that we get coverage for
 	# async as well as sync code. Without that code after connection.rollback()
 	# is not covered
-	poetry run coverage run --concurrency=thread,greenlet --source=devtools -m pytest .
+	poetry run coverage run --concurrency=thread,greenlet --source=carlos -m pytest .
 
 coverage:
 	poetry run coverage html -d tests/coverage_report
 	poetry run coverage report --fail-under=100
 
 mypy:
-	poetry run mypy devtools
+	poetry run mypy carlos
 
 ruff:
-	poetry run ruff check devtools
+	poetry run ruff check carlos
 
 # Some alias to keep the old names
 test:
