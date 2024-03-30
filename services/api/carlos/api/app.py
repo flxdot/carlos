@@ -1,7 +1,5 @@
-from fastapi import FastAPI
+__all__ = ["app"]
 
-from .logging_patch import setup_logging
+from .app_factory import create_app
 
-setup_logging()
-
-app = FastAPI()
+app = create_app()
