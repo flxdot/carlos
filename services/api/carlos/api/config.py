@@ -32,7 +32,7 @@ class CarlosAPISettings(BaseSettings):
             f"Got: {v} of type {v.__class__.__name__}."
         )
 
-    LOCAL_SWAGGER_ENABLED: bool = Field(
+    API_DOCS_ENABLED: bool = Field(
         False,
         description=(
             "If True, the SwaggerUI and openapi.json is accessible "

@@ -1,6 +1,7 @@
 __all__ = ["create_app"]
 
 from typing import Any
+from importlib.metadata import version
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -13,6 +14,7 @@ from .logging_patch import setup_logging
 from .routes import main_router, public_router
 
 DOCS_URL = "/docs"
+OPENAPI_URL = "/openapi.json"
 
 
 def create_app(api_settings: CarlosAPISettings | None = None) -> FastAPI:
@@ -25,8 +27,9 @@ def create_app(api_settings: CarlosAPISettings | None = None) -> FastAPI:
 
     app = FastAPI(
         title="Carlos API",
-        version="0.1.0",
-        docs_url=DOCS_URL,
+        version=version(__package__),
+        docs_url=DOCS_URL if api_settings.API_DOCS_ENABLED else None,
+        openapi_url=OPENAPI_URL if api_settings.API_DOCS_ENABLED else None,
         generate_unique_id_function=_generate_openapi_operation_id,
     )
 
