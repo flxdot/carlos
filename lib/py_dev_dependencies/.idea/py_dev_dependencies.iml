@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="/Qmulus/lib/py_dev_dependencies" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="/carlos/lib/py_dev_dependencies" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
