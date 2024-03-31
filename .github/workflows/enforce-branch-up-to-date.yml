@@ -1,0 +1,38 @@
+# It seems as if the only real way to force a PR to be up to date with the base
+# branch is to provide a status check. Thus this little status check was created
+# to do nothing, but to checkout
+# https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/about-protected-branches#require-status-checks-before-merging
+#
+# From GitHub branch protection:
+# - [] Require branches to be up to date before merging
+#      This ensures pull requests targeting a matching branch have been tested with the
+#      latest code. This setting will not take effect unless at least one status
+#      check is enabled (see below).
+#
+# That's why we need this dummy check, because not all parts of the code have unit tests
+name: "enforce-branch-up-to-date"
+
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+
+jobs:
+  branch-up-to-date:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo purpose
+        run: echo "I'm just here to allow GitHub to enforce an up-to-date policy on pull-request"
