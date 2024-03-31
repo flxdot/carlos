@@ -10,6 +10,7 @@ exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
+pydantic = "^2.6.4"
 
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
