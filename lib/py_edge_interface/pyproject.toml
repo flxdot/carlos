@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "carlos.edge"
+name = "carlos.edge.interface"
 version = "0.1.0"
 description = "Shared library to handle the edge communication."
 authors = ["Felix Fanghanel"]

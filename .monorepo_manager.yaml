@@ -1,6 +1,4 @@
 lib/py_dev_dependencies:
-  continuous_integration:
-    enabled: false
   language: python
 lib/py_edge_interface:
   language: python
