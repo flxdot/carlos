@@ -1,0 +1,143 @@
+# Do not edit! This file was generated via the /lib/py_monorepo_manager
+# Any manual changes to this file will eventually be overwritten by CI
+#
+# This CI workflow will run on every push to a branch that has an open pull request
+# not in draft mode.
+
+name: "lib-py_dev_dependencies-ci"
+
+# cancel previous runs if the branch is updated.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, review_requested]
+    paths:
+      - .github/workflows/lib-py_dev_dependencies-ci.yml
+      - lib/py_dev_dependencies/**
+
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+      useCache:
+        description: 'Activate caching'
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+          - yes
+          - no
+
+jobs:
+
+  test:
+    timeout-minutes: 5
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.MONOREPO_MANAGER_GITHUB_TOKEN }}
+
+      # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
+      # reference the matrix python version here.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
+      # from installing Poetry every time, which can be slow. Note the use of the Poetry version
+      # number in the cache key, and the "-0" suffix: this allows you to invalidate the cache
+      # manually if/when you want to upgrade Poetry, or if something goes wrong. This could be
+      # mildly cleaner by using an environment variable, but I don't really care.
+      - name: cache poetry install
+        uses: actions/cache@v4
+        with:
+          path: ~/.local
+          key: poetry-latest-python-3.11-1.7.1
+
+      # Install Poetry. You could do this manually, or there are several actions that do this.
+      # `snok/install-poetry` seems to be minimal yet complete, and really just calls out to
+      # Poetry's default install script, which feels correct. I pin the Poetry version here
+      # because Poetry does occasionally change APIs between versions and I don't want my
+      # actions to break if it does.
+      #
+      # The key configuration value here is `virtualenvs-in-project: true`: this creates the
+      # venv as a `.venv` in your testing directory, which allows the next step to easily
+      # cache it.
+      - uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      # Cache your dependencies (i.e. all the stuff in your `pyproject.toml`). Note the cache
+      # key: if you're using multiple Python versions, or multiple OSes, you'd need to include
+      # them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
+      - name: cache lib/py_dev_dependencies dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: ./lib/py_dev_dependencies/.venv
+          key: py_dev_dependencies-${{ hashFiles('./lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
+
+      # Install dependencies. `--no-root` means "install all dependencies but not the project
+      # itself", which is what you want to avoid caching _your_ code. The `if` statement
+      # ensures this only runs on a cache miss.
+      - name: Install lib/py_dev_dependencies dependencies
+        run: poetry install --no-interaction --no-root --all-extras
+        working-directory: ./lib/py_dev_dependencies
+
+
+      - name: format
+        run: make format
+        working-directory: ./lib/py_dev_dependencies
+
+      - uses: actions-js/push@master
+        name: Push changes
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+          coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
+          coauthor_name: ${{ github.event.pull_request.user.login }}
+          message: "format lib/py_dev_dependencies"      # formatting first is beneficial because it may solve some linting errors
+
+      - name: format
+        run: make format
+        working-directory: ./lib/py_dev_dependencies
+
+      - name: linting
+        run: make ruff
+        working-directory: ./lib/py_dev_dependencies
+
+      - name: type checking
+        run: make mypy
+        working-directory: ./lib/py_dev_dependencies
+
+      # installing the repository is required to register any pytest plugins
+      # that are defined by the repository
+      - name: install project
+        run: poetry install --no-interaction --all-extras
+        working-directory: ./lib/py_dev_dependencies
+
+      - name: run tests
+        run: make pytest
+        working-directory: ./lib/py_dev_dependencies
+
+      - name: ensure test coverage
+        run: make coverage
+        working-directory: ./lib/py_dev_dependencies

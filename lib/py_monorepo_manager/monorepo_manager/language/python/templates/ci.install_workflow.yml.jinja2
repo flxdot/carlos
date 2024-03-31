@@ -1,0 +1,4 @@
+{% extends "ci.install.yml.jinja2" %}
+{%- block checkout_with %}
+token: {% raw %}${{ secrets.MONOREPO_MANAGER_GITHUB_TOKEN }}{% endraw %}
+{%- endblock %}
