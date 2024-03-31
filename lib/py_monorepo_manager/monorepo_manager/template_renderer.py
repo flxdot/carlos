@@ -14,7 +14,7 @@ from monorepo_manager.language.python.templates import (
     PYTHON_JINJA_ENVIRONMENT,
     PYTHON_TEMPLATE_TO_PATH,
 )
-from monorepo_manager.paths import QMULUS_REPO_PATH
+from monorepo_manager.paths import MONOREPO_ROOT
 from monorepo_manager.project import Language, Project
 
 
@@ -42,7 +42,7 @@ def write_project_files(project: LanguageProjects | Project):
 
     for template, file_path_str in context.template_to_path.items():
         if file_path_str[0] == "/":
-            file_path = QMULUS_REPO_PATH / file_path_str[1:]
+            file_path = MONOREPO_ROOT / file_path_str[1:]
         else:
             file_path = project.abs_path / file_path_str
 
@@ -113,7 +113,7 @@ def write_run_cli_ci(project: LanguageProjects | Project):
             "This function should only be called for the monorepo manager project."
         )  # pragma: no cover
 
-    file_path = QMULUS_REPO_PATH / ".github/workflows/run-monorepo-manager.yml"
+    file_path = MONOREPO_ROOT / ".github/workflows/run-monorepo-manager.yml"
 
     write_template(
         environment=LANGUAGE_TO_CONTEXT[Language.python].jinja_environment,

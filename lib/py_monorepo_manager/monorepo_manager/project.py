@@ -8,7 +8,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from monorepo_manager.paths import LIBRARIES_PATH, QMULUS_REPO_PATH
+from monorepo_manager.paths import LIBRARIES_PATH, MONOREPO_ROOT
 
 
 class Language(str, Enum):
@@ -55,7 +55,7 @@ class Project(BaseModel):
     def abs_path(self) -> Path:
         """The absolute path to the project."""
 
-        return QMULUS_REPO_PATH / self.path_from_root
+        return MONOREPO_ROOT / self.path_from_root
 
     @property
     def is_library(self) -> bool:
@@ -80,7 +80,7 @@ class Project(BaseModel):
         """Create a project from a path."""
 
         return cls(
-            path_from_root=project_path.relative_to(QMULUS_REPO_PATH),
+            path_from_root=project_path.relative_to(MONOREPO_ROOT),
             language=guess_language(project_path),
         )
 

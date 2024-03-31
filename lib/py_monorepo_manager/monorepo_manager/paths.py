@@ -2,11 +2,11 @@
 
 from pathlib import Path
 
-__all__ = ["QMULUS_REPO_PATH", "SERVICES_PATH", "LIBRARIES_PATH", "METADATA_PATH"]
+__all__ = ["MONOREPO_ROOT", "SERVICES_PATH", "LIBRARIES_PATH", "METADATA_PATH"]
 
 
 def find_monorepo_root(start_path: Path | None = None) -> Path:
-    """Find the root of the Qmulus monorepo."""
+    """Find the root of the monorepo."""
     if start_path is None:
         start_path = Path().cwd()
 
@@ -15,13 +15,13 @@ def find_monorepo_root(start_path: Path | None = None) -> Path:
 
     # If we're at the root of the filesystem, we can't go any higher
     if start_path == start_path.parent:  # pragma: no cover
-        raise RuntimeError("Could not find the root of the Qmulus monorepo.")
+        raise RuntimeError("Could not find the root of the monorepo.")
 
     return find_monorepo_root(start_path.parent)
 
 
-QMULUS_REPO_PATH = find_monorepo_root()
-SERVICES_PATH = QMULUS_REPO_PATH / "services"
-LIBRARIES_PATH = QMULUS_REPO_PATH / "lib"
+MONOREPO_ROOT = find_monorepo_root()
+SERVICES_PATH = MONOREPO_ROOT / "services"
+LIBRARIES_PATH = MONOREPO_ROOT / "lib"
 
-METADATA_PATH = QMULUS_REPO_PATH / ".monorepo_manager.yaml"
+METADATA_PATH = MONOREPO_ROOT / ".monorepo_manager.yaml"

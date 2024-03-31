@@ -8,7 +8,7 @@ from typing import Literal
 from poetry.core.constraints.version import parse_constraint
 from pydantic import BaseModel, Field, PrivateAttr, field_validator
 
-from monorepo_manager.paths import QMULUS_REPO_PATH
+from monorepo_manager.paths import MONOREPO_ROOT
 from monorepo_manager.project import Language, Project
 
 
@@ -145,7 +145,7 @@ class PythonProject(Project):
                     rel_path = (
                         (self.abs_path / version_spec["path"])
                         .resolve()
-                        .relative_to(QMULUS_REPO_PATH)
+                        .relative_to(MONOREPO_ROOT)
                     )
                     dependencies.append(rel_path.as_posix())
 

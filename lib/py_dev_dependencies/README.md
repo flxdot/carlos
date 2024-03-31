@@ -1,6 +1,6 @@
 # Python development dependencies
 
-The purpose of this empty project is to have consistent python development dependencies across all Qmulus projects.
+The purpose of this empty project is to have consistent python development dependencies across all projects.
 
 ## Installation
 
@@ -10,7 +10,7 @@ To use these development dependencies in your project, add the following lines t
 ...
 
 [tool.poetry.group.dev.dependencies]
-"qmulus_devtools" = {path = "../../lib/py_dev_dependencies"}
+"devtools" = {path = "../../lib/py_dev_dependencies"}
 ...
 
 

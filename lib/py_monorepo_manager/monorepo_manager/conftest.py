@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from monorepo_manager.paths import QMULUS_REPO_PATH
+from monorepo_manager.paths import MONOREPO_ROOT
 
 
 @pytest.fixture(scope="session")
@@ -16,4 +16,4 @@ def project_path() -> Path:
 def own_project_key(project_path: Path) -> str:
     """Returns the key of this project to run the tests against."""
 
-    return str(project_path.relative_to(QMULUS_REPO_PATH))
+    return str(project_path.relative_to(MONOREPO_ROOT))

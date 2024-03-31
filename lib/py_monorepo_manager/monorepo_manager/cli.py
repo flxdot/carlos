@@ -13,7 +13,7 @@ from monorepo_manager.language import (
     RustProject,
 )
 from monorepo_manager.loading import explore_repo
-from monorepo_manager.paths import METADATA_PATH, QMULUS_REPO_PATH
+from monorepo_manager.paths import METADATA_PATH, MONOREPO_ROOT
 from monorepo_manager.project import Language, Project
 from monorepo_manager.template_renderer import (
     Context,
@@ -158,7 +158,7 @@ def write_general_files(project_index: ProjectsIndex):
 
         write_template(
             environment=context.jinja_environment,
-            file_path=QMULUS_REPO_PATH / file_path,
+            file_path=MONOREPO_ROOT / file_path,
             template=template,
             template_kwargs={"project_index": project_index},
         )
