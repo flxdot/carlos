@@ -13,9 +13,13 @@ python = ">=3.11,<3.12"
 "carlos.edge.interface" = {path = "../py_edge_interface"}
 loguru = "^0.7.2"
 semver = "^3.0.2"
+apscheduler = "^4.0.0a4"
+pydantic = "^2.6.4"
+pyyaml = "^6.0.1"
 
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
+types-pyyaml = "^6.0.12.20240311"
 
 
 [build-system]
