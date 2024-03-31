@@ -72,7 +72,7 @@ jobs:
       - uses: actions-js/push@master
         name: Push changes
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.WORKFLOW_TOKEN }}
           branch: ${{ github.head_ref }}
           message: "Update monorepo boilerplate"
     {%- endraw %}
