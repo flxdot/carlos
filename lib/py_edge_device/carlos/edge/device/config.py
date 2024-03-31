@@ -14,6 +14,7 @@ from typing import TypeVar
 
 import yaml
 from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings
 
 from carlos.edge.device.constants import CONFIG_FILE
 
@@ -24,7 +25,7 @@ class DeviceConfig(BaseModel):
     device_id: str = Field(..., description="The unique identifier of the device.")
 
 
-Config = TypeVar("Config", bound=BaseModel)
+Config = TypeVar("Config", BaseModel, BaseSettings)
 
 
 def read_config_file(path: Path, schema: type[Config]) -> Config:
@@ -41,7 +42,12 @@ def write_config_file(path: Path, config: Config):
         path.parent.mkdir(parents=True)  # pragma: no cover
 
     with open(path, "w") as file:
-        yaml.safe_dump(config.model_dump(mode="json"), file)
+        yaml.safe_dump(
+            # do not export default values or unset values in order to allow
+            # to change the default behavior in the future
+            data=config.model_dump(mode="json", exclude_unset=True),
+            stream=file,
+        )
 
 
 def read_config() -> DeviceConfig:  # pragma: no cover

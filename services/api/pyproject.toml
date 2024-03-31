@@ -10,8 +10,11 @@ exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
+"carlos.edge.interface" = {path = "../../lib/py_edge_interface"}
+"carlos.edge.device" = {path = "../../lib/py_edge_device"}
+"carlos.edge.server" = {path = "../../lib/py_edge_server"}
 # Web
-uvicorn = "^0.29.0"
+uvicorn = {extras = ["standard"], version = "^0.29.0"}
 fastapi = "^0.110.0"
 pyjwt = {extras = ["crypto"], version = "^2.8.0"}
 pydantic = "^2.6.4"

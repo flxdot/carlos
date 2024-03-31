@@ -7,8 +7,10 @@ from carlos.api.depends.authentication import VerifyToken
 from .edge_routes import edge_router
 from .health import health_router
 
-authentication = VerifyToken()
-main_router = APIRouter(dependencies=[Security(authentication.verify)])
+# todo: activate authentication
+# authentication = VerifyToken()
+# main_router = APIRouter(dependencies=[Security(authentication.verify)])
+main_router = APIRouter()
 """This is the main router for the API. It is for routes that require authentication."""
 main_router.include_router(edge_router, prefix="/edge")
 

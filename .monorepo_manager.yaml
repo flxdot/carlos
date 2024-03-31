@@ -13,3 +13,5 @@ lib/py_monorepo_manager:
     - poetry run monorepo_manager all
 services/api:
   language: python
+services/device:
+  language: python

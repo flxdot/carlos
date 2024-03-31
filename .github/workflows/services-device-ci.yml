@@ -4,7 +4,7 @@
 # This CI workflow will run on every push to a branch that has an open pull request
 # not in draft mode.
 
-name: "services-api-ci"
+name: "services-device-ci"
 
 # cancel previous runs if the branch is updated.
 concurrency:
@@ -15,11 +15,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, review_requested]
     paths:
-      - .github/workflows/services-api-ci.yml
-      - services/api/**
-      - lib/py_edge_interface/**
+      - .github/workflows/services-device-ci.yml
+      - services/device/**
       - lib/py_edge_device/**
-      - lib/py_edge_server/**
       - lib/py_dev_dependencies/**
 
 
@@ -90,24 +88,24 @@ jobs:
       # Cache your dependencies (i.e. all the stuff in your `pyproject.toml`). Note the cache
       # key: if you're using multiple Python versions, or multiple OSes, you'd need to include
       # them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
-      - name: cache services/api dependencies
+      - name: cache services/device dependencies
         id: cache-deps
         uses: actions/cache@v4
         with:
-          path: ./services/api/.venv
-          key: api-${{ hashFiles('./services/api/poetry.lock', './lib/py_edge_interface/**/*.py', './lib/py_edge_device/**/*.py', './lib/py_edge_server/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_edge_interface/**/*.sql', './lib/py_edge_device/**/*.sql', './lib/py_edge_server/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_edge_interface/poetry.lock', './lib/py_edge_device/poetry.lock', './lib/py_edge_server/poetry.lock', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
+          path: ./services/device/.venv
+          key: device-${{ hashFiles('./services/device/poetry.lock', './lib/py_edge_device/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_edge_device/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_edge_device/poetry.lock', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
 
       # Install dependencies. `--no-root` means "install all dependencies but not the project
       # itself", which is what you want to avoid caching _your_ code. The `if` statement
       # ensures this only runs on a cache miss.
-      - name: Install services/api dependencies
+      - name: Install services/device dependencies
         run: poetry install --no-interaction --no-root --all-extras
-        working-directory: ./services/api
+        working-directory: ./services/device
 
 
       - name: format
         run: make format
-        working-directory: ./services/api
+        working-directory: ./services/device
 
       - uses: actions-js/push@master
         name: Push changes
@@ -116,30 +114,30 @@ jobs:
           branch: ${{ github.head_ref }}
           coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
           coauthor_name: ${{ github.event.pull_request.user.login }}
-          message: "format services/api"      # formatting first is beneficial because it may solve some linting errors
+          message: "format services/device"      # formatting first is beneficial because it may solve some linting errors
 
       - name: format
         run: make format
-        working-directory: ./services/api
+        working-directory: ./services/device
 
       - name: linting
         run: make ruff
-        working-directory: ./services/api
+        working-directory: ./services/device
 
       - name: type checking
         run: make mypy
-        working-directory: ./services/api
+        working-directory: ./services/device
 
       # installing the repository is required to register any pytest plugins
       # that are defined by the repository
       - name: install project
         run: poetry install --no-interaction --all-extras
-        working-directory: ./services/api
+        working-directory: ./services/device
 
       - name: run tests
         run: make pytest
-        working-directory: ./services/api
+        working-directory: ./services/device
 
       - name: ensure test coverage
         run: make coverage
-        working-directory: ./services/api
+        working-directory: ./services/device

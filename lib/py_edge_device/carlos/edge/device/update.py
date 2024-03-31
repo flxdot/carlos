@@ -29,6 +29,16 @@ def update_device():  # pragma: no cover
     else:
         logger.debug(process.stdout.decode("utf-8").strip())
 
+    logger.debug("Installing the latest dependencies...")
+    process = subprocess.run(["poetry", "install", "--sync"], capture_output=True)
+    if process.returncode != 0:  # pragma: no cover
+        raise RuntimeError(
+            "Failed to install the latest dependencies: "
+            + process.stderr.decode("utf-8").strip()
+        )
+    else:
+        logger.debug(process.stdout.decode("utf-8").strip())
+
     # Restart the running process
     logger.debug("Restarting the running process...")
     os.execv(sys.executable, [sys.executable] + sys.argv)
