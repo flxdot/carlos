@@ -1,4 +1,4 @@
-__all__ = ["RetryStrategy", "BackOffRetryStrategy"]
+__all__ = ["RetryStrategy", "BackOff", "NoRetry"]
 
 from abc import ABC, abstractmethod
 from asyncio import sleep
@@ -17,7 +17,7 @@ class RetryStrategy(ABC):
     condition is met."""
 
     @abstractmethod
-    async def retry_until_success(
+    async def execute(
         self,
         func: FunctionToTry,
         expected_exceptions: tuple[type[Exception], ...],
@@ -32,23 +32,28 @@ class RetryStrategy(ABC):
         raise NotImplementedError()
 
 
-class BackOffRetryStrategy(RetryStrategy):
-    """A retry strategy that retries a function call with a backoff strategy."""
+class NoRetry(RetryStrategy):
+    """This retry strategy does not retry the function. It will raise any exception
+    immediately."""
 
-    @staticmethod
-    def exponential_backoff_factory(factor: int) -> BackoffFcn:
-        """Creates a function that returns the next backoff time based on the
-        previous backoff time.
+    async def execute(
+        self,
+        func: FunctionToTry,
+        expected_exceptions: tuple[type[BaseException], ...],
+    ):
+        """Retry the function until it succeeds.
 
-        :param base: The base backoff time.
-        :param factor: The factor to increase the backoff time.
-        :return: A function that returns the next backoff time.
+        :param func: A sync function without arguments. If your function requires
+            arguments, use functools.partial.
+        :param expected_exceptions: The exception that is expected to be raised.
+            Any other exception will be raised immediately.
         """
 
-        def next_backoff(previous_backoff: timedelta) -> timedelta:
-            return previous_backoff * factor
+        return await func()
 
-        return next_backoff
+
+class BackOff(RetryStrategy):
+    """A retry strategy that retries a function call with a backoff strategy."""
 
     def __init__(
         self,
@@ -65,7 +70,7 @@ class BackOffRetryStrategy(RetryStrategy):
         self.initial_backoff = start
         self.max_backoff = max_backoff
 
-    async def retry_until_success(
+    async def execute(
         self,
         func: FunctionToTry,
         expected_exceptions: tuple[type[BaseException], ...],
@@ -94,3 +99,20 @@ class BackOffRetryStrategy(RetryStrategy):
             backoff_time = self.backoff_fcn(backoff_time)
             if self.max_backoff is not None:
                 backoff_time = min(backoff_time, self.max_backoff)
+
+
+
+    @staticmethod
+    def exponential_backoff_factory(factor: int) -> BackoffFcn:
+        """Creates a function that returns the next backoff time based on the
+        previous backoff time.
+
+        :param base: The base backoff time.
+        :param factor: The factor to increase the backoff time.
+        :return: A function that returns the next backoff time.
+        """
+
+        def next_backoff(previous_backoff: timedelta) -> timedelta:
+            return previous_backoff * factor
+
+        return next_backoff

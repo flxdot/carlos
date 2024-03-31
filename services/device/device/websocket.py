@@ -7,7 +7,7 @@ __all__ = [
 from functools import partial
 
 import websockets
-from carlos.edge.device.retry import BackOffRetryStrategy
+from carlos.edge.device.retry import BackOff
 from carlos.edge.interface import CarlosMessage, EdgeProtocol
 from carlos.edge.interface.protocol import EdgeConnectionDisconnected
 from loguru import logger
@@ -41,8 +41,8 @@ class DeviceWebsocketClient(EdgeProtocol):
 
         connection_fcn = partial(websockets.connect, uri=self._settings.websocket_uri)
 
-        connection_strategy = BackOffRetryStrategy()
-        self._connection = await connection_strategy.retry_until_success(
+        connection_strategy = BackOff()
+        self._connection = await connection_strategy.execute(
             func=connection_fcn, expected_exceptions=(Exception,)
         )
 
