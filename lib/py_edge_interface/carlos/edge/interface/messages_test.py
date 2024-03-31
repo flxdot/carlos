@@ -1,12 +1,12 @@
 import pytest
 
 from carlos.edge.interface.messages import (
-    _MESSAGE_TYPE_TO_MODEL,
+    MESSAGE_TYPE_TO_MODEL,
     CarlosMessage,
-    EdgeVersionMessage,
+    CarlosPayload,
+    CarlosSchema,
+    EdgeVersionPayload,
     MessageType,
-    build_payload,
-    parse_payload,
 )
 
 
@@ -14,66 +14,81 @@ from carlos.edge.interface.messages import (
 def test_all_message_types_have_model(message_type: MessageType):
     """This test ensures that all message types have a corresponding model."""
 
-    assert message_type in _MESSAGE_TYPE_TO_MODEL, f"Missing model for {message_type}"
+    assert message_type in MESSAGE_TYPE_TO_MODEL, f"Missing model for {message_type}"
 
 
-@pytest.mark.parametrize(
-    "message_type, message",
-    [
-        pytest.param(MessageType.PING, None, id="message without payload"),
-        pytest.param(
-            MessageType.EDGE_VERSION,
-            EdgeVersionMessage(version="1.0.0"),
-            id="message with payload",
-        ),
-    ],
-)
-def test_payload_conversion(message_type: MessageType, message: CarlosMessage):
-    """This test ensures that the conversion function are compatible."""
+class NonUsedPayload(CarlosSchema):
+    """A payload that is not used in the message types."""
 
-    payload = build_payload(message_type=message_type, message=message)
-
-    parsed_message_type, parsed_message = parse_payload(payload=payload)
-    assert (
-        message_type == parsed_message_type
-    ), f"Expected {message_type}, got {parsed_message_type}"
-    assert message == parsed_message, f"Expected {message}, got {parsed_message}"
+    some_attr: str
 
 
-@pytest.mark.parametrize(
-    "message_type, message",
-    [
-        pytest.param(
-            MessageType.PING,
-            EdgeVersionMessage(version="1.0.0"),
-            id="wrong message type",
-        ),
-        pytest.param(MessageType.EDGE_VERSION, None, id="wrong message"),
-    ],
-)
-def test_build_payload_raises_value_error(
-    message_type: MessageType, message: CarlosMessage
-):
-    """This test ensures that the build_payload function raises a ValueError for
-    invalid payloads."""
+class TestCarlosMessage:
+    """This test class tests the CarlosMessage class."""
 
-    with pytest.raises(ValueError):
-        build_payload(message_type=message_type, message=message)
+    @pytest.mark.parametrize(
+        "message_type, payload",
+        [
+            pytest.param(
+                MessageType.PING,
+                EdgeVersionPayload(version="1.0.0"),
+                id="Wrong payload for payloadless message",
+            ),
+            pytest.param(MessageType.EDGE_VERSION, None, id="Missing payload"),
+            pytest.param(
+                MessageType.EDGE_VERSION,
+                NonUsedPayload(some_attr="1.1.0"),
+                id="wrong payload model",
+            ),
+        ],
+    )
+    def test_model_validator(self, message_type: MessageType, payload: CarlosPayload):
+        """This test ensures that the build_payload function raises a ValueError for
+        invalid payloads."""
 
+        with pytest.raises(ValueError):
+            CarlosMessage(message_type=message_type, payload=payload)
 
-@pytest.mark.parametrize(
-    "payload",
-    [
-        pytest.param("INVALID|", id="invalid message type"),
-        pytest.param(
-            MessageType.EDGE_VERSION.value + '|{"some_attr": "2.3.1"}',
-            id="wrong format",
-        ),
-    ],
-)
-def test_parse_payload_raises_value_error(payload: str):
-    """This test ensures that the parse_payload function raises a ValueError for
-    invalid payloads."""
+    @pytest.mark.parametrize(
+        "message_type, payload",
+        [
+            pytest.param(MessageType.PING, None, id="message without payload"),
+            pytest.param(
+                MessageType.EDGE_VERSION,
+                EdgeVersionPayload(version="1.0.0"),
+                id="message with payload",
+            ),
+        ],
+    )
+    def test_payload_conversion(
+        self, message_type: MessageType, payload: CarlosMessage
+    ):
+        """This test ensures that the conversion function are compatible."""
 
-    with pytest.raises(ValueError):
-        parse_payload(payload=payload)
+        transport_layer_payload = CarlosMessage(
+            message_type=message_type, payload=payload
+        ).build()
+
+        parsed = CarlosMessage.from_str(transport_layer_payload)
+        assert (
+            message_type == parsed.message_type
+        ), f"Expected {message_type}, got {parsed.message_type}"
+        assert payload == parsed.payload, f"Expected {payload}, got {parsed.payload}"
+
+    @pytest.mark.parametrize(
+        "transport_layer_payload",
+        [
+            pytest.param("INVALID|", id="invalid message type"),
+            pytest.param(MessageType.EDGE_VERSION.value + "|", id="missing payload"),
+            pytest.param(
+                MessageType.EDGE_VERSION.value + '|{"some_attr": "2.3.1"}',
+                id="wrong format",
+            ),
+        ],
+    )
+    def test_from_str(self, transport_layer_payload: str):
+        """This test ensures that the parse_payload function raises a ValueError for
+        invalid payloads."""
+
+        with pytest.raises(ValueError):
+            CarlosMessage.from_str(transport_layer_payload)
