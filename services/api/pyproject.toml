@@ -1,16 +1,15 @@
 [tool.poetry]
-name = "carlos"
+name = "carlos.api"
 version = "0.1.0"
 description = "The API for the Carlos project"
+authors = ["Felix Fanghänel"]
 readme = "README.md"
 license = "MIT"
-authors = [
-    "Felix Fanghänel",
-]
+packages = [{include = "carlos"}]
 exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.12"
 # Web
 uvicorn = "^0.29.0"
 fastapi = "^0.110.0"

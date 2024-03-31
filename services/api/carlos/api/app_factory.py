@@ -1,7 +1,7 @@
 __all__ = ["create_app"]
 
-from typing import Any
 from importlib.metadata import version
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute

@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="py_dev_dependencies" />
     <orderEntry type="module" module-name="api" />
+    <orderEntry type="module" module-name="py_edge_interface" />
   </component>
 </module>
