@@ -11,6 +11,7 @@ exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
 "carlos.edge.interface" = {path = "../py_edge_interface"}
+loguru = "^0.7.2"
 
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}

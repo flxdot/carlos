@@ -15,11 +15,12 @@ pydantic = "^2.6.4"
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry.plugins.pytest11]
+qmulus_core = "carlos.edge.interface.plugin_pytest"
 
 [tool.isort]
 multi_line_output = 3

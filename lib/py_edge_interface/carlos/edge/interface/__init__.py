@@ -1,10 +1,12 @@
 __all__ = [
+    "CarlosMessage",
+    "EdgeCommunicationHandler",
     "EdgeProtocol",
     "EdgeVersionPayload",
+    "MessageHandler",
     "MessageType",
     "PingMessage",
     "PongMessage",
-    "CarlosMessage",
 ]
 
 from .messages import (
@@ -14,4 +16,4 @@ from .messages import (
     PingMessage,
     PongMessage,
 )
-from .protocol import EdgeProtocol
+from .protocol import EdgeCommunicationHandler, EdgeProtocol, MessageHandler

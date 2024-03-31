@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.1.0] - 2024-04-01
 
 ### Added
-- Basic message interface including `ping`, `pong` and `edge_version` messages.
+- Basic device code that allows to handle communication with the server.
 
 ### Changed
 

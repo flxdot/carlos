@@ -24,7 +24,7 @@ def update_device():  # pragma: no cover
     if process.returncode != 0:  # pragma: no cover
         raise RuntimeError(
             "Failed to pull the latest changes from the git repository: "
-            + process.stderr.decode("utf-8")
+            + process.stderr.decode("utf-8").strip()
         )
     else:
         logger.debug(process.stdout.decode("utf-8").strip())
