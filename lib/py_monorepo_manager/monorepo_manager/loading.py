@@ -35,7 +35,7 @@ def explore_repo() -> list[Project]:
 
     for library in LIBRARIES_PATH.iterdir():
         if not library.is_dir():
-            continue
+            continue  # pragma: no cover
         projects.append(project_from_path(library))
 
     for service in SERVICES_PATH.iterdir():
