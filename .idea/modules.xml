@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/lib/py_dev_dependencies/.idea/py_dev_dependencies.iml" filepath="$PROJECT_DIR$/lib/py_dev_dependencies/.idea/py_dev_dependencies.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/py_edge_device/.idea/py_edge_device.iml" filepath="$PROJECT_DIR$/lib/py_edge_device/.idea/py_edge_device.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/py_edge_interface/.idea/py_edge_interface.iml" filepath="$PROJECT_DIR$/lib/py_edge_interface/.idea/py_edge_interface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/py_edge_server/.idea/py_edge_server.iml" filepath="$PROJECT_DIR$/lib/py_edge_server/.idea/py_edge_server.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/py_monorepo_manager/.idea/py_monorepo_manager.iml" filepath="$PROJECT_DIR$/lib/py_monorepo_manager/.idea/py_monorepo_manager.iml" />
     </modules>
   </component>

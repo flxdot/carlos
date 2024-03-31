@@ -8,5 +8,6 @@
     <orderEntry type="module" module-name="py_edge_interface" />
     <orderEntry type="module" module-name="py_monorepo_manager" />
     <orderEntry type="module" module-name="py_edge_device" />
+    <orderEntry type="module" module-name="py_edge_server" />
   </component>
 </module>
