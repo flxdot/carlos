@@ -4,6 +4,7 @@ server and client to perform the necessary operations."""
 __all__ = [
     "EdgeCommunicationHandler",
     "EdgeConnectionDisconnected",
+    "EdgeConnectionFailed",
     "EdgeProtocol",
     "MessageHandler",
 ]
@@ -20,6 +21,10 @@ from .messages import CarlosMessage, MessageType
 
 class EdgeConnectionDisconnected(Exception):
     """Raised when the connection is disconnected."""
+
+
+class EdgeConnectionFailed(Exception):
+    """Raised when the connection attempt fails."""
 
 
 class EdgeProtocol(ABC):
@@ -42,6 +47,24 @@ class EdgeProtocol(ABC):
         :return: The received message.
         :raises EdgeConnectionDisconnected: If the connection is disconnected.
         """
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def is_connected(self) -> bool:
+        """Returns True if the connection is connected."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    async def connect(self):
+        """Connects to the server.
+
+        :raises EdgeConnectionFailed: If the connection attempt fails."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    async def disconnect(self):
+        """Called when the connection is disconnected."""
         raise NotImplementedError()
 
 
@@ -129,6 +152,8 @@ class EdgeCommunicationHandler:
 
         :param message: The incoming message.
         """
+
+        logger.info(f"Received message: {message.message_type}")
 
         if handler := self._handlers.get(message.message_type):
             await handler(protocol=self.protocol, message=message)

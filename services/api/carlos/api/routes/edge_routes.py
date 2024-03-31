@@ -3,6 +3,9 @@ the API."""
 
 __all__ = ["edge_router"]
 
+from importlib import metadata
+
+from carlos.edge.interface import CarlosMessage, EdgeVersionPayload, MessageType
 from fastapi import APIRouter, WebSocket
 from starlette.websockets import WebSocketDisconnect
 
@@ -16,6 +19,14 @@ class EdgeConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
+        await websocket.send_text(
+            CarlosMessage(
+                message_type=MessageType.EDGE_VERSION,
+                payload=EdgeVersionPayload(
+                    version=metadata.version("carlos.edge.device")
+                ),
+            ).build()
+        )
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)

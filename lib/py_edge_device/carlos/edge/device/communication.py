@@ -7,6 +7,7 @@ from carlos.edge.interface import (
     EdgeVersionPayload,
     MessageType,
 )
+from loguru import logger
 from semver import Version
 
 from .constants import VERSION
@@ -53,4 +54,9 @@ async def handle_edge_version(
     device_semver = Version.parse(VERSION.strip("v"))
 
     if server_semver > device_semver:
+        logger.info(
+            f"Device version is outdated. Updating device to version {server_semver}.",
+        )
         update_device()
+    else:
+        logger.info(f"Device version ({device_semver}) is up-to-date.")

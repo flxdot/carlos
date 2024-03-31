@@ -32,7 +32,9 @@ class EdgeProtocolTestingConnection(EdgeProtocol):
 
     def connect(self):
         """Set the connection to connected. This will allow the receive method to
-        return at some point."""
+        return at some point.
+
+        :raises EdgeConnectionFailed: If the connection attempt fails."""
         self._is_connected = True
 
     async def send(self, message: CarlosMessage) -> None:
