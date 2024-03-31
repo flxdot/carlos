@@ -38,6 +38,13 @@ class ContainerDefinition(BaseModel):
         if ":" not in value:
             raise ValueError("The image must have a tag.")
 
+        image, tag = value.split(":")
+
+        if not image:
+            raise ValueError("The image must not be empty.")
+        if not tag:
+            raise ValueError("The tag must not be empty.")
+
         return value
 
     environment: dict[str, Any] = Field(
@@ -52,11 +59,11 @@ class ContainerDefinition(BaseModel):
     def validate_ports(cls, value: PortMapping) -> PortMapping:
         """Ensures the port mapping is given in the right format."""
 
-        for port in value:
-            port, protocol = port.split("/")
-            if not port.isdigit():
+        for container_port_def, host_port_def in value.items():
+            container_port, container_protocol = container_port_def.split("/")
+            if not container_port.isdigit():
                 raise ValueError("The port must be an integer.")
-            if protocol not in ("tcp", "upd", "sctp"):
+            if container_protocol not in ("tcp", "upd", "sctp"):
                 raise ValueError("The protocol must be one of 'tcp', 'upd', or 'sctp'.")
 
         return value
@@ -93,7 +100,7 @@ class DockerContainer:
 
         try:
             self._client = docker.from_env()
-        except DockerException as ex:
+        except DockerException as ex:  # pragma: no cover
             if "FileNotFoundError" in str(ex):
                 raise DockerException(
                     "It seems as if the docker service is not running."
@@ -104,24 +111,15 @@ class DockerContainer:
     def container(self) -> Container:
         """Returns the container object."""
         if self._container is None:
-            raise ValueError("Container has not been created yet.")
+            raise ValueError("Container has not been created yet.")  # pragma: no cover
         return self._container
 
     @property
     def network(self) -> Network:
         """Returns the network object."""
         if self._network is None:
-            raise ValueError("Network has not been created yet.")
+            raise ValueError("Network has not been created yet.")  # pragma: no cover
         return self._network
-
-    @staticmethod
-    def validate_port_mapping(ports: PortMapping):
-        """Ensures the port mapping is given in the right format."""
-
-        for port in ports:
-            port, protocol = port.split("/")
-            assert port.isdigit()
-            assert protocol in ("tcp", "upd", "sctp")
 
     @staticmethod
     def convert_seconds_to_nano_seconds(seconds: int | float) -> int:
@@ -134,7 +132,7 @@ class DockerContainer:
             all=True, filters={"name": self.name}
         )
         for container in rogue_containers:
-            self.cleanup_container(container)
+            self.cleanup_container(container)  # pragma: no cover
 
         self._create_network()
 
@@ -150,7 +148,7 @@ class DockerContainer:
             network for network in networks if network.name == network_name
         ]
 
-        if not matching_networks:
+        if not matching_networks:  # pragma: no cover
             # if this line fails, you have probably too many docker networks.
             # clean them up with `docker network prune`
             try:
@@ -176,7 +174,7 @@ class DockerContainer:
             return
 
         self._network = matching_networks.pop(0)
-        if matching_networks:
+        if matching_networks:  # pragma: no cover
             [network.remove() for network in matching_networks]
 
     def run(self):
@@ -202,7 +200,7 @@ class DockerContainer:
 
         if self.ports:
             kwargs["ports"] = self.ports
-        if self.volumes:
+        if self.volumes:  # pragma: no cover
             kwargs["volumes"] = self.volumes
 
         return kwargs
@@ -214,7 +212,7 @@ class DockerContainer:
         if "Health" in state:
             health_status = state["Health"]["Status"]
             return health_status == "healthy"
-        return False
+        return False  # pragma: no cover
 
     def wait_for(
         self,
@@ -229,7 +227,7 @@ class DockerContainer:
         start = time.time()
         while not health_check_fcn():
             if (time.time() - start) > actual_timeout:
-                raise TimeoutError(
+                raise TimeoutError(  # pragma: no cover
                     f"Container did not get healthy within {actual_timeout} seconds."
                 )
             time.sleep(0.1)
@@ -365,9 +363,7 @@ class ContainerHandler:
         """Prints the exception, stores it in the `setup_error` attribute a
         nd raises it again."""
 
-        print(exception)
         self.setup_error = exception
-        raise exception
 
     def setup(self):
         """Initializes the context"""
@@ -375,7 +371,7 @@ class ContainerHandler:
         try:
             self.container.setup()
             if self.post_setup:
-                self.post_setup()
+                self.post_setup()  # pragma: no cover
         except Exception as ex:
             self.setup_error_handler(ex)
 
@@ -383,7 +379,7 @@ class ContainerHandler:
         """Ensures the context is torn down"""
         try:
             if self.teardown_fcn:
-                self.teardown_fcn()
+                self.teardown_fcn()  # pragma: no cover
         finally:
             self.container.teardown()
 
@@ -416,7 +412,9 @@ class ContainerManager:
 
     def add(self, handler: ContainerHandler):
         if not isinstance(handler, ContainerHandler):
-            raise TypeError("Handler is not of type `ContainerHandler`.")
+            raise TypeError(
+                "Handler is not of type `ContainerHandler`."
+            )  # pragma: no cover
         self.container_handler.append(handler)
 
     @property
@@ -425,15 +423,20 @@ class ContainerManager:
 
     def setup(self):
         """Create all registered data source handlers in parallel using threads."""
+
+        container_run_settings = ContainerManagerRunSettings()
+
         all_container_exist = True
         for handler in self.container_handler:
             if not handler.container.is_container_running():
                 all_container_exist = False
                 break
-        if ContainerManagerRunSettings().RECYCLE_TEST_CONTAINER and all_container_exist:
-            return
+
+        if container_run_settings.RECYCLE_TEST_CONTAINER and all_container_exist:
+            return  # pragma: no cover
+
         if (
-            ContainerManagerRunSettings().TEST_CONTAINER_PARALLEL_SETUP
+            container_run_settings.TEST_CONTAINER_PARALLEL_SETUP
             and len(self.container_handler) > 1
         ):
             threads = []

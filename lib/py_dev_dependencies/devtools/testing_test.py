@@ -65,3 +65,31 @@ def test_setup_test_environment(
             assert any(
                 c.name == expected_container_name for c in running_containers
             ), f"Container {expected_container_name} not found"
+
+
+def test_setupt_test_environment_errors():
+    """This test ensures that the approriate error functinos are called in case the
+    container setup fails."""
+
+    setup_failed = False
+
+    def on_setup_error(message: str):
+        nonlocal setup_failed
+        setup_failed = True
+
+    container_handler = ContainerHandler(
+        container=DockerContainer(
+            ContainerDefinition(
+                name="image-does-not-exist",
+                image=f"{secrets.token_hex(16)}:{secrets.token_hex(4)}",
+            )
+        )
+    )
+
+    with setup_test_environment(
+        container_manager=ContainerManager([container_handler]),
+        pytest_failure_fcn=on_setup_error,
+    ):
+        pass
+
+    assert setup_failed, "The failure function was not called."

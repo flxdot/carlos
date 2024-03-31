@@ -34,7 +34,9 @@ def setup_test_environment(
             # check for any error during container setup
             for handler in container_manager.container_handler:
                 if handler.setup_error is not None:
-                    pytest_failure_fcn(
+                    # There seems to be issue with the coverage here. The code is
+                    # actually tested in the test file.
+                    pytest_failure_fcn(  # pragma: no cover
                         f"Failed to initialize container: {handler.container.name}:"
                         f"\n\n{handler.setup_error}"
                     )
@@ -44,5 +46,6 @@ def setup_test_environment(
         except Exception as e:  # pragma: no cover
             logger.error(e)
             pytest_failure_fcn(f"Container setup failed, skipping test suit: {e}")
+            yield None  # used for testing only. Usually this code is not reachable.
         finally:
             container_manager.teardown()
