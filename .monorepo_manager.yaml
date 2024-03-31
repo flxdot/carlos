@@ -1,5 +1,7 @@
 lib/py_dev_dependencies:
   language: python
+lib/py_edge_device:
+  language: python
 lib/py_edge_interface:
   language: python
 lib/py_monorepo_manager:
