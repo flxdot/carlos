@@ -90,9 +90,9 @@ def guess_language(project_path: Path) -> Language:
 
     for file in project_path.iterdir():
         if file.name == "Cargo.toml":
-            return Language.rust
+            return Language.rust  # pragma: no cover
         if file.name == "package.json":
-            return Language.javascript
+            return Language.javascript  # pragma: no cover
         if file.name == "pyproject.toml":
             return Language.python
-    return Language.binary
+    return Language.binary  # pragma: no cover

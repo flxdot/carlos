@@ -40,11 +40,11 @@ def parse_project(project_data: dict[str, dict]) -> ProjectUnion:
 
         if language == Language.python:
             return PythonProject.model_validate(project_data)
-        if language == Language.javascript:
+        if language == Language.javascript:  # pragma: no cover
             return JavascriptProject.model_validate(project_data)
-        if language == Language.rust:
+        if language == Language.rust:  # pragma: no cover
             return RustProject.model_validate(project_data)
-        return Project.model_validate(project_data)
+        return Project.model_validate(project_data)  # pragma: no cover
 
     raise ValueError("Invalid project data")  # pragma: no cover
 

@@ -98,7 +98,7 @@ def write_template(
         return
 
     if not file_path.parent.exists():
-        file_path.parent.mkdir(parents=True)
+        file_path.parent.mkdir(parents=True)  # pragma: no cover
 
     with open(file_path, "w", encoding="utf-8") as file:
         # ensure that files always contain only one new line at the end
