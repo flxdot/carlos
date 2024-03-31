@@ -1,4 +1,5 @@
 """This module contains the command line interface for the monorepo."""
+
 import json
 
 import click

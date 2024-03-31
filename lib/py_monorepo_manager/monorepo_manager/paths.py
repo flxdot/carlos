@@ -1,4 +1,5 @@
 """This module contains the paths to the monorepo and its subdirectories."""
+
 from pathlib import Path
 
 __all__ = ["QMULUS_REPO_PATH", "SERVICES_PATH", "LIBRARIES_PATH", "METADATA_PATH"]

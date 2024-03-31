@@ -37,6 +37,6 @@ async def edge_server_websocket(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()
+            _ = await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
