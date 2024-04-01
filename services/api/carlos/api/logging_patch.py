@@ -18,7 +18,8 @@ class InterceptHandler(logging.Handler):
     https://loguru.readthedocs.io/en/stable/overview.html#entirely-compatible-with-standard-logging
     """
 
-    def emit(self, record: logging.LogRecord):
+    # During testing the usual loggers do not emit any logs
+    def emit(self, record: logging.LogRecord):  # pragma: no cover
         # Get corresponding Loguru level if it exists
         try:
             level: str | int = logger.level(record.levelname).name
@@ -38,7 +39,8 @@ class InterceptHandler(logging.Handler):
         )
 
 
-def format_record(record: dict) -> str:
+# During testing the usual loggers do not emit any logs
+def format_record(record: dict) -> str:  # pragma: no cover
     """
     Custom format for loguru loggers.
     Uses pformat for log any data like request/response body during debug.

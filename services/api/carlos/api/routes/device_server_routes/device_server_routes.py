@@ -36,10 +36,12 @@ AUTHENTICATION = VerifyToken()
 def extract_client_hostname(connection: Request | WebSocket) -> str:
     """Extracts the hostname of the client from the request."""
 
-    if connection.client is None:  # pragma: no cover
+    if connection.client is None:
         warnings.warn("The client hostname is unknown.")
         return "unknown"
-    return connection.client.host
+    # The test client has no host connected, thus we can never cover this line during
+    # testing
+    return connection.client.host  # pragma: no cover
 
 
 @device_server_router.get(

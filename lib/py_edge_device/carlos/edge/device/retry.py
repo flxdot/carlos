@@ -1,5 +1,6 @@
 __all__ = ["RetryStrategy", "BackOff", "NoRetry"]
 
+import traceback
 from abc import ABC, abstractmethod
 from asyncio import sleep
 from datetime import timedelta
@@ -90,9 +91,11 @@ class BackOff(RetryStrategy):
         while True:
             try:
                 return await func()
-            except expected_exceptions:
+            except expected_exceptions as ex:
                 logger.info(
-                    f"Failed to run function: {func}. Retrying in {backoff_time}."
+                    f"Failed to run function: {func}.\n\n"
+                    f"Exception: {''.join(traceback.format_exception(ex))}\n\n"
+                    f"Retrying in {backoff_time}."
                 )
 
             await sleep(backoff_time.total_seconds())

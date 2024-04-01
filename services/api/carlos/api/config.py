@@ -27,7 +27,7 @@ class CarlosAPISettings(BaseSettings):
             log_level_int = logging.getLevelName(v)
             if log_level_int is not None:
                 return log_level_int
-        raise TypeError(
+        raise ValueError(
             "Log level needs to be a valid `logging` log level. Either as int or str."
             f"Got: {v} of type {v.__class__.__name__}."
         )
@@ -39,7 +39,7 @@ class CarlosAPISettings(BaseSettings):
             "without authentication"
         ),
     )
-    DEACTIVATE_USER_AUTH: bool = Field(
+    API_DEACTIVATE_USER_AUTH: bool = Field(
         False,
         description=(
             "If True, the user authentication is deactivated. "

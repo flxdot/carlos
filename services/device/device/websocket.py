@@ -4,9 +4,6 @@ __all__ = [
     "DeviceWebsocketClient",
 ]
 
-import urllib.parse as urlparse
-from functools import partial
-from urllib.parse import urlencode
 
 import websockets
 from carlos.edge.device.retry import BackOff
@@ -43,30 +40,27 @@ class DeviceWebsocketClient(EdgeProtocol):
         if self.is_connected:
             return
 
+        connection_strategy = BackOff()
+        self._connection = await connection_strategy.execute(
+            func=self._do_connect, expected_exceptions=(Exception,)
+        )
+
+        logger.info(f"Connected to the server: {self._settings.server_host}")
+
+    async def _do_connect(self) -> websockets.WebSocketClientProtocol:
+        """Internal method to perform the connection to the websocket."""
+
         async with AsyncClient() as client:
             response = await client.get(
                 self._settings.get_websocket_token_uri(device_id=self._device_id)
             )
             token = response.text
 
-        url_parts = list(
-            urlparse.urlparse(
-                self._settings.get_websocket_uri(device_id=self._device_id)
-            )
-        )
-        query = dict(urlparse.parse_qsl(url_parts[4]))
-        query.update({"token": token})
-        url_parts[4] = urlencode(query)
-        websocket_uri = urlparse.urlunparse(url_parts)
-
-        connection_fcn = partial(websockets.connect, uri=websocket_uri)
-
-        connection_strategy = BackOff()
-        self._connection = await connection_strategy.execute(
-            func=connection_fcn, expected_exceptions=(Exception,)
+        websocket_uri = self._settings.get_websocket_uri(
+            device_id=self._device_id, token=token
         )
 
-        logger.info(f"Connected to the server: {websocket_uri}")
+        return await websockets.connect(websocket_uri)
 
     async def disconnect(self):
         """Called when the connection is disconnected."""

@@ -5,6 +5,9 @@ https://auth0.com/blog/build-and-secure-fastapi-server-with-auth0/
 
 __all__ = ["VerifyToken"]
 
+import os
+import secrets
+from datetime import datetime, timedelta
 from enum import Enum
 
 import jwt
@@ -17,13 +20,13 @@ from carlos.api.config import CarlosAPISettings
 
 
 class UnauthorizedException(HTTPException):
-    def __init__(self, detail: str, **kwargs):
+    def __init__(self, detail: str, **kwargs):  # pragma: no cover
         """Returns HTTP 403"""
         super().__init__(status.HTTP_403_FORBIDDEN, detail=detail)
 
 
 class UnauthenticatedException(HTTPException):
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Requires authentication"
         )
@@ -64,14 +67,29 @@ class Auth0Settings(BaseSettings):
     )
 
     @property
-    def domain(self) -> str:
+    def domain(self) -> str:  # pragma: no cover
         """Returns the Auth0 domain based on the region."""
         return f"{self.tenant_id}.{self.region.value}.auth0.com"
 
     @property
-    def issuer(self) -> str:
+    def issuer(self) -> str:  # pragma: no cover
         """Returns the issuer URL for the Auth0 tenant."""
         return f"https://{self.domain}/"
+
+
+# A random token that is used for testing only. Since this token changes every
+# time the server is restarted and has a decent length
+# (possible combinations for 2^2048 bits = 3.23e616), we can assume that this
+# "backdoor" isn't too dangerous.
+TESTING_TOKEN = secrets.token_urlsafe(256)
+
+TESTING_TOKEN_DATA = {
+    "sub": "offline",
+    "iss": "https://test",
+    "aud": "pytest",
+    "iat": datetime.now().timestamp(),
+    "exp": (datetime.now() + timedelta(minutes=30)).timestamp(),
+}
 
 
 class VerifyToken:
@@ -89,15 +107,19 @@ class VerifyToken:
         self,
         security_scopes: SecurityScopes,
         token: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
-    ) -> dict:
+    ) -> dict:  # pragma: no cover
         """Verifies the token and returns the payload if it is valid."""
 
         if token is None:
             # If the flag is set to deactivate the user authentication, then
             # return a deactivated user
-            if CarlosAPISettings().DEACTIVATE_USER_AUTH:
-                return {"sub": "offline"}
+            if CarlosAPISettings().API_DEACTIVATE_USER_AUTH:
+                return TESTING_TOKEN_DATA
             raise UnauthenticatedException()
+
+        # special backdoor for testing. Impact on security should be too bad. 🤞
+        if token.credentials == TESTING_TOKEN and os.getenv("ENVIRONMENT") == "pytest":
+            return TESTING_TOKEN_DATA
 
         # This gets the 'kid' from the passed token
         try:

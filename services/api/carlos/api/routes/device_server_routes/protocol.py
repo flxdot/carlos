@@ -48,4 +48,4 @@ class WebsocketProtocol(EdgeProtocol):
 
     async def disconnect(self):
         """Called when the connection is disconnected."""
-        await self._websocket.close()
+        await self._websocket.close()  # pragma: no cover

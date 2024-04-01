@@ -5,7 +5,7 @@ from fastapi import APIRouter, Security
 from carlos.api.depends.authentication import VerifyToken
 
 from .device_server_routes import device_server_router
-from .health import health_router
+from .health_routes import health_router
 
 # todo: activate authentication
 authentication = VerifyToken()
