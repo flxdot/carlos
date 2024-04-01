@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/pages-build.yml
       - pyproject.toml
+      - mkdocs.yml
       - docs/**
 
 permissions:
