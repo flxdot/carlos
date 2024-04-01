@@ -1,14 +1,13 @@
 """This module contains facade code for the docker api."""
 
 import time
-import warnings
 from contextlib import suppress
 from datetime import timedelta
 from threading import Thread
 from typing import Any, Callable
 
 import docker  # type: ignore[import-untyped]
-from docker.errors import DockerException, APIError  # type: ignore[import-untyped]
+from docker.errors import APIError, DockerException  # type: ignore[import-untyped]
 from docker.models.containers import Container  # type: ignore[import-untyped]
 from docker.models.networks import Network  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field, field_validator
@@ -186,7 +185,7 @@ class DockerContainer:
             self._container = self._client.containers.run(
                 **self.container_kwargs,
             )
-        except APIError as ex:
+        except APIError as ex:  # pragma: no cover
             # This may happen if multiple threads try to pull up test containers.
             # In this case, we simply clean up and try again.
             if f"network {self.__NETWORK__} is ambiguous" in str(ex):
@@ -194,6 +193,8 @@ class DockerContainer:
                 self._container = self._client.containers.run(
                     **self.container_kwargs,
                 )
+                return
+            raise
 
     @property
     def container_kwargs(self) -> dict[str, Any]:
