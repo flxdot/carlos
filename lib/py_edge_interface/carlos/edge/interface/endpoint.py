@@ -1,16 +1,15 @@
+__all__ = ["get_websocket_endpoint", "get_websocket_token_endpoint"]
 
-DEVICE_ENDPOINT = "/devices/{device_id}/ws"
-"""This is the endpoint that needs the be provided to the edge device to connect to 
-the API."""
+_DEVICE_ENDPOINT = "/devices/{device_id}/ws"
 
 
-def get_websocket_endpoint(device_id: str) -> str:
+def get_websocket_endpoint(device_id: str) -> str:  # pragma: no cover
     """Returns the websocket endpoint for the edge device."""
 
-    return DEVICE_ENDPOINT.format(device_id=device_id)
+    return _DEVICE_ENDPOINT.format(device_id=device_id)
 
 
-def get_websocket_token_endpoint(device_id: str) -> str:
+def get_websocket_token_endpoint(device_id: str) -> str:  # pragma: no cover
     """Returns the websocket token endpoint for the edge device."""
 
-    return DEVICE_ENDPOINT.format(device_id=device_id) + "/token"
+    return _DEVICE_ENDPOINT.format(device_id=device_id) + "/token"

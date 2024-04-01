@@ -59,6 +59,10 @@ def verify_token(token: str, device_id: str, hostname: str):
         algorithms=["HS256"],
         audience=hostname,
         issuer=ISSUER,
+        options={
+            "require": ["aud", "sub", "exp", "iss"],
+            "verify_exp": True,
+        },
     )
 
     if decoded["sub"] != device_id:

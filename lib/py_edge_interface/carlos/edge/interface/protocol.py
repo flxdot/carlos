@@ -143,6 +143,9 @@ class EdgeCommunicationHandler:
         :raises EdgeConnectionDisconnected: If the connection is disconnected.
         """
 
+        if not self.protocol.is_connected:
+            await self.protocol.connect()  # pragma: no cover
+
         while not self._stopped:
             await self.handle_message(await self.protocol.receive())
             await sleep(0.1)

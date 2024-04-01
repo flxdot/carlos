@@ -18,7 +18,7 @@ class EdgeProtocolTestingConnection(EdgeProtocol):
         self._send_queue = send_queue
         self._receive_queue = receive_queue
 
-        self._is_connected = False
+        self._is_connected = True
 
     @property
     def is_connected(self) -> bool:

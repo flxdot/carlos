@@ -3,23 +3,26 @@ the API."""
 
 __all__ = ["device_server_router"]
 
-import secrets
-from importlib import metadata
 
-from jwt import InvalidTokenError
-from starlette.responses import PlainTextResponse
-
-from carlos.edge.interface import CarlosMessage, EdgeVersionPayload, MessageType
+from carlos.edge.interface import (
+    CarlosMessage,
+    EdgeCommunicationHandler,
+    EdgeConnectionDisconnected,
+    EdgeProtocol,
+)
 from carlos.edge.interface.endpoint import (
     get_websocket_endpoint,
     get_websocket_token_endpoint,
 )
+from carlos.edge.server.connection import DeviceConnectionManager
+from carlos.edge.server.token import issue_token, verify_token
 from fastapi import APIRouter, Path, Query, Request, Security, WebSocket
+from jwt import InvalidTokenError
 from pydantic.alias_generators import to_camel
-from starlette.websockets import WebSocketDisconnect
+from starlette.responses import PlainTextResponse
+from starlette.websockets import WebSocketDisconnect, WebSocketState
 
-from carlos.api.depends.authentication import VerifyToken, UnauthorizedException
-from carlos.edge.server.token import verify_token, issue_token
+from carlos.api.depends.authentication import VerifyToken
 
 device_server_router = APIRouter()
 
@@ -48,34 +51,50 @@ async def get_device_server_websocket_token(
     return issue_token(device_id=device_id, hostname=request.client.host)
 
 
-class EdgeConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-        await websocket.send_text(
-            CarlosMessage(
-                message_type=MessageType.EDGE_VERSION,
-                payload=EdgeVersionPayload(
-                    version=metadata.version("carlos.edge.device")
-                ),
-            ).build()
-        )
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def send_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
+device_connection_manager = DeviceConnectionManager()
 
 
-manager = EdgeConnectionManager()
+class WebsocketProtocol(EdgeProtocol):
+    """A websocket implementation of the EdgeProtocol."""
+
+    def __init__(self, websocket: WebSocket):
+        self._websocket = websocket
+
+    async def send(self, message: CarlosMessage) -> None:
+        """Send data to the other end of the connection.
+
+        :param message: The message to send.
+        :raises EdgeConnectionDisconnected: If the connection is disconnected.
+        """
+        await self._websocket.send_text(message.build())
+
+    async def receive(self) -> CarlosMessage:
+        """Receive data from the other end of the connection.
+
+        :return: The received message.
+        :raises EdgeConnectionDisconnected: If the connection is disconnected.
+        """
+        try:
+            return CarlosMessage.from_str(await self._websocket.receive_text())
+        except WebSocketDisconnect as ex:
+            raise EdgeConnectionDisconnected(
+                f"Connection was closed by the device (code: {ex.code}): {ex.reason}"
+            ) from ex
+
+    @property
+    def is_connected(self) -> bool:
+        """Returns True if the connection is connected."""
+        return self._websocket.application_state == WebSocketState.CONNECTED
+
+    async def connect(self):
+        """Connects to the server.
+
+        :raises EdgeConnectionFailed: If the connection attempt fails."""
+        await self._websocket.accept()
+
+    async def disconnect(self):
+        """Called when the connection is disconnected."""
+        await self._websocket.close()
 
 
 @device_server_router.websocket(get_websocket_endpoint(device_id_param))
@@ -87,13 +106,18 @@ async def device_server_websocket(
     """Handles the connection of the edge server to the API."""
 
     try:
-        verify_token(token=token, device_id=device_id, hostname=websocket.client.host)
+        token = verify_token(
+            token=token, device_id=device_id, hostname=websocket.client.host
+        )
     except InvalidTokenError:
-        raise UnauthorizedException("Invalid token.")
+        await websocket.close(code=4003, reason="Invalid token.")
+        return
 
-    await manager.connect(websocket)
+    protocol = WebsocketProtocol(websocket)
+    await protocol.connect()  # accepts the connection
+    await device_connection_manager.connect(protocol)
+
     try:
-        while True:
-            _ = await websocket.receive_text()
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        await EdgeCommunicationHandler(protocol=protocol).listen()
+    except EdgeConnectionDisconnected:
+        device_connection_manager.disconnect(protocol)
