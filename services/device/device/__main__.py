@@ -4,7 +4,8 @@ from device.connection import read_connection_settings
 from device.websocket import DeviceWebsocketClient
 
 
-async def main():
+# can only be tested in integration tests
+async def main():  # pragma: no cover
     """The main entry point of the application."""
 
     device_config = read_config()

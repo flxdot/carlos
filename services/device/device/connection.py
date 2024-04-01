@@ -45,6 +45,8 @@ class ConnectionSettings(BaseSettings):
 
 def read_connection_settings() -> ConnectionSettings:
     """Reads the connection settings from the environment variables."""
-    return read_config_file(
+
+    # false positive of mypy
+    return read_config_file(  # type: ignore[return-value]
         path=Path.cwd() / "device_connection", schema=ConnectionSettings
     )

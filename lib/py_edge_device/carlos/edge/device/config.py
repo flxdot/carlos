@@ -25,7 +25,7 @@ class DeviceConfig(BaseModel):
     device_id: str = Field(..., description="The unique identifier of the device.")
 
 
-Config = TypeVar("Config", BaseModel, BaseSettings)
+Config = TypeVar("Config", bound=BaseModel | BaseSettings)
 
 
 def read_config_file(path: Path, schema: type[Config]) -> Config:

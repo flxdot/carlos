@@ -15,7 +15,8 @@ from loguru import logger
 from .connection import ConnectionSettings
 
 
-class DeviceWebsocketClient(EdgeProtocol):
+# can only be tested in integration tests
+class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
 
     def __init__(self, settings: ConnectionSettings, device_id: str):
         """Initializes the websocket client.
@@ -78,7 +79,8 @@ class DeviceWebsocketClient(EdgeProtocol):
         if not self.is_connected:
             raise EdgeConnectionDisconnected("The connection is not connected.")
 
-        await self._connection.send(message.build())
+        # we can guarantee that the connection is not None
+        await self._connection.send(message.build())  # type: ignore[union-attr]
 
     async def receive(self) -> CarlosMessage:
         """Receive data from the other end of the connection.
@@ -91,7 +93,8 @@ class DeviceWebsocketClient(EdgeProtocol):
             raise EdgeConnectionDisconnected("The connection is not connected.")
 
         try:
-            message = await self._connection.recv()
+            # we can guarantee that the connection is not None
+            message = await self._connection.recv()  # type: ignore[union-attr]
         except websockets.ConnectionClosed as ex:
             raise EdgeConnectionDisconnected() from ex
 
