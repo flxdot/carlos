@@ -100,8 +100,6 @@ class BackOff(RetryStrategy):
             if self.max_backoff is not None:
                 backoff_time = min(backoff_time, self.max_backoff)
 
-
-
     @staticmethod
     def exponential_backoff_factory(factor: int) -> BackoffFcn:
         """Creates a function that returns the next backoff time based on the
