@@ -35,6 +35,20 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.24.1.tgz#1e416d3627393fab1cb5b0f2f1796a100ae9133a"
   integrity sha512-Zo9c7N3xdOIQrNip7Lc9wvRPzlRtovHVE4lkz8WEDr7uYh/GMQhSiIgFxGIArRHYdJE5kxtZjAf8rT0xhdLCzg==
 
+"@carbon/icon-helpers@^10.45.0":
+  version "10.47.0"
+  resolved "https://registry.yarnpkg.com/@carbon/icon-helpers/-/icon-helpers-10.47.0.tgz#40a6618867980a6da3aedf0da9d8fd7fd078200a"
+  integrity sha512-vv2Wkuw7lYkYVKrn5ABzlZD+6ioAYwMuyKi2XPqYY3hrHYoL4CQUnuSFDhlj0DR2HHCB0L5MGRLxHLucx5cc7g==
+  dependencies:
+    "@ibm/telemetry-js" "^1.2.1"
+
+"@carbon/icons-vue@^10.83.1":
+  version "10.83.1"
+  resolved "https://registry.yarnpkg.com/@carbon/icons-vue/-/icons-vue-10.83.1.tgz#049ab75769059a651632ff390298f59839ec81c7"
+  integrity sha512-BYUGi/3k7l69oNvykiX6p9aLK3PkOnM1PvuR65XlVNSyN2A9iuAs3xtds+BmonYUrRCwiYdkndpYfx+dpWn5qA==
+  dependencies:
+    "@carbon/icon-helpers" "^10.45.0"
+
 "@convidera-team/eslint-config-convidera@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@convidera-team/eslint-config-convidera/-/eslint-config-convidera-1.5.0.tgz#db27b3633faeafa84c9b6ba8548a487a7dbf61ff"
@@ -261,6 +275,11 @@
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.2.tgz#d9fae00a2d5cb40f92cfe64b47ad749fbc38f917"
   integrity sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==
+
+"@ibm/telemetry-js@^1.2.1":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@ibm/telemetry-js/-/telemetry-js-1.3.0.tgz#321f2ed4bbbc78d69dc1ee9cb6f83d2d2af9baef"
+  integrity sha512-9gIkyF2B9RizWN6rsdQN76DN6D+/Xbr4HGTwm6EUujfXvEVtWbf4jzxDFwKvZkeTC2tjHpkUNJQKdivbMKt8yg==
 
 "@intlify/core-base@9.10.2":
   version "9.10.2"
@@ -2500,6 +2519,11 @@ prettier@^2.8.7:
   version "2.8.8"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
+
+primevue@^3.50.0:
+  version "3.50.0"
+  resolved "https://registry.yarnpkg.com/primevue/-/primevue-3.50.0.tgz#fdebb63d1aa510d9aca97a285e494e2085ffb6aa"
+  integrity sha512-vYpQzvIXSmF0hWUkviHEGnwbFY/G8jI2RSxoa75noJloI2rWhzOX+JarJ8iaesVOr7b2se31N/p7zOx6uh3ddQ==
 
 process@^0.11.1:
   version "0.11.10"

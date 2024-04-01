@@ -1,5 +1,19 @@
 :root {
-  font-family: Geist, system-ui, Helvetica, Arial, sans-serif;
+  /* Overwrite some PrimeVue variables */
+  --font-family: Geist, system-ui, Helvetica, Arial, sans-serif;
+
+  /* Custom Styling variables */
+  --primary-fg-color: #8bc34b;
+  --primary-fg-color--light: #9ccc66;
+  --primary-fg-color--dark: #689f38;
+  --primary-bg-color: #fff;
+  --primary-bg-color--light: #ffffffb3;
+  --accent-fg-color: #00c753;
+  --accent-fg-color--transparent: #00c7531a;
+  --accent-bg-color: #fff;
+  --accent-bg-color--light: #ffffffb3;
+
+  font-family: var(--font-family);
   line-height: 1.5;
   font-weight: 400;
 
@@ -35,6 +49,10 @@ h1 {
   line-height: 1.1;
 }
 
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -59,8 +77,8 @@ button:focus-visible {
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100vw;
+  height: 100dvh;
   padding: 2rem;
   text-align: center;
 }

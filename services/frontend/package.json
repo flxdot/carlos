@@ -16,7 +16,9 @@
     "lint:css:fix": "yarn lint:css --fix"
   },
   "dependencies": {
+    "@carbon/icons-vue": "^10.83.1",
     "path": "^0.12.7",
+    "primevue": "^3.50.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },
