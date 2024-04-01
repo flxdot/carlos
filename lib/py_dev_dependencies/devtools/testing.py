@@ -39,7 +39,7 @@ def setup_test_environment(
                     # actually tested in the test file.
                     pytest_failure_fcn(  # pragma: no cover
                         f"Failed to initialize container: {handler.container.name}:"
-                        f"\n\n{handler.setup_error}"
+                        f"\n\n{traceback.format_exception(handler.setup_error)}"
                     )
 
             logger.info(f"Finished setting up testing containers: {container_names}")
