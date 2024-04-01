@@ -21,13 +21,15 @@ class InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord):
         # Get corresponding Loguru level if it exists
         try:
-            level = logger.level(record.levelname).name
+            level: str | int = logger.level(record.levelname).name
         except ValueError:
             level = record.levelno
 
         # Find caller from where originated the logged message
         frame, depth = logging.currentframe(), 2
         while frame.f_code.co_filename == logging.__file__:
+            if frame.f_back is None:  # pragma: no cover
+                break
             frame = frame.f_back
             depth += 1
 
@@ -62,10 +64,14 @@ LOGGERS_TO_INTERCEPT = (
     "sqlalchemy",
     "uvicorn",
     "uvicorn.access",
+    "uvicorn.error",
+    "uvicorn.asgi",
 )
 
 
-def setup_logging(level: int = logging.INFO, logger_to_intercept: Iterable[str] = None):
+def setup_logging(
+    level: int = logging.INFO, logger_to_intercept: Iterable[str] | None = None
+):
     """
     Replaces logging handlers with a handler for using the custom handler."""
 
@@ -90,11 +96,12 @@ def setup_logging(level: int = logging.INFO, logger_to_intercept: Iterable[str] 
 def replace_logger(logger_name: str):
     """Replaces a logger from standard lib with a loguru logger."""
 
-    loggers = (
+    loggers = [
         logging.getLogger(name)
         for name in logging.root.manager.loggerDict
         if name.startswith(f"{logger_name}.")
-    )
+    ]
+    loggers.append(logging.getLogger(logger_name))
     for lib_logger in loggers:
         lib_logger.handlers = []
 

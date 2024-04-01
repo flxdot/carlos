@@ -20,10 +20,10 @@ async def test_device_connection_manager(
     connection_manager = DeviceConnectionManager()
 
     # connect the clients
-    assert len(connection_manager.active_connections) == 0
-    await connection_manager.connect(client_a)
-    await connection_manager.connect(client_b)
-    assert len(connection_manager.active_connections) == 2
+    assert len(connection_manager.connected_devices) == 0
+    await connection_manager.add_device(device_id="device_a", protocol=client_a)
+    await connection_manager.add_device(device_id="device_b", protocol=client_b)
+    assert connection_manager.connected_devices == ["device_a", "device_b"]
 
     # we need to ignore the handshake messages
     for _ in range(1):
@@ -48,5 +48,5 @@ async def test_device_connection_manager(
     assert message_a.message_type == MessageType.PING
 
     # disconnect client_a
-    connection_manager.disconnect(client_a)
-    assert len(connection_manager.active_connections) == 1
+    connection_manager.remove("device_a")
+    assert len(connection_manager.connected_devices) == 1
