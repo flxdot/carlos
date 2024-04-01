@@ -1,14 +1,13 @@
 """This module contains facade code for the docker api."""
 
 import time
-import warnings
 from contextlib import suppress
 from datetime import timedelta
 from threading import Thread
 from typing import Any, Callable
 
 import docker  # type: ignore[import-untyped]
-from docker.errors import DockerException, APIError  # type: ignore[import-untyped]
+from docker.errors import APIError, DockerException  # type: ignore[import-untyped]
 from docker.models.containers import Container  # type: ignore[import-untyped]
 from docker.models.networks import Network  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field, field_validator
