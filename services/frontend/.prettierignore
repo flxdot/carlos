@@ -1,0 +1,3 @@
+# All font awesome resources are already formatted to be efficient when
+# fetched by the browser. We don't care about how well formatted those are
+/public/fontawesome/
