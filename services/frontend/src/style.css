@@ -1,13 +1,13 @@
 :root {
   /* Overwrite some PrimeVue variables */
   --font-family: Geist, system-ui, Helvetica, Arial, sans-serif;
-
-  /* Custom Styling variables */
   --primary-color: #8bc34b;
   --primary-color--light: #9ccc66;
   --primary-color--dark: #689f38;
   --primary-color-text: #fff;
   --primary-color-text--light: #ffffffb3;
+
+  --header-height: 48px;
 
   font-family: var(--font-family);
   line-height: 1.5;
@@ -37,7 +37,7 @@ body {
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100dvh;
+  min-height: 100vh;
 }
 
 h1 {

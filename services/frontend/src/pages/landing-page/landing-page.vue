@@ -17,7 +17,7 @@ import logo from '@/assets/logo-type-black.png';
 
 <style scoped lang="scss">
 .page {
-  height: 100%;
+  height: calc(100% - var(--header-height));
   width: 100%;
   display: flex;
   place-items: center;

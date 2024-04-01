@@ -31,7 +31,7 @@ const menuItems: MenuItem[] = ref([]);
 <style scoped lang="scss">
 
 .menubar {
-  height: 48px;
+  height: var(--header-height);
   background-color: var(--primary-color);
   border: none;
   color: var(--primary-color-text);
