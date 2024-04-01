@@ -52,7 +52,12 @@ def write_config_file(path: Path, config: Config):
 
 def read_config() -> DeviceConfig:  # pragma: no cover
     """Reads the configuration from the default location."""
-    return read_config_file(path=CONFIG_FILE, schema=DeviceConfig)
+
+    # mypy seems to have false positive here
+    return read_config_file(  # type: ignore[return-value]
+        path=CONFIG_FILE,
+        schema=DeviceConfig,
+    )
 
 
 def write_config(config: DeviceConfig):  # pragma: no cover

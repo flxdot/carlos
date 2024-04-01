@@ -1,5 +1,6 @@
 __all__ = ["setup_test_environment"]
 
+import traceback
 from contextlib import contextmanager
 from typing import Callable, Iterator
 
@@ -45,7 +46,10 @@ def setup_test_environment(
             yield None
         except Exception as e:  # pragma: no cover
             logger.error(e)
-            pytest_failure_fcn(f"Container setup failed, skipping test suit: {e}")
+            pytest_failure_fcn(
+                f"Container setup failed, skipping test suite:\n\n"
+                f"{traceback.format_exc()}"
+            )
             yield None  # used for testing only. Usually this code is not reachable.
         finally:
             container_manager.teardown()
