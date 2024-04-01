@@ -53,7 +53,9 @@ exclude_lines = [
     # Don't complain if tests don't hit defensive assertion code:
     "raise NotImplementedError",
     # Don't complain about abstract methods, they aren't run:
-    "@(abc\\.)?abstractmethod"
+    "@(abc\\.)?abstractmethod",
+    # Don't complain about guard clauses
+    "if __name__ == .__main__.:",
 ]
 omit = [
     # omit all tests

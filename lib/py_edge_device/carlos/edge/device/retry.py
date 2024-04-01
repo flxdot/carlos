@@ -68,7 +68,9 @@ class BackOff(RetryStrategy):
 
         self.backoff_fcn = backoff_fcn or self.exponential_backoff_factory(factor=2)
         self.initial_backoff = start
-        self.max_backoff = max_backoff
+        self.max_backoff = (
+            max_backoff if max_backoff is not None else timedelta(seconds=float("inf"))
+        )
 
     async def execute(
         self,
@@ -96,16 +98,17 @@ class BackOff(RetryStrategy):
 
             await sleep(backoff_time.total_seconds())
 
-            backoff_time = self.backoff_fcn(backoff_time)
-            if self.max_backoff is not None:
-                backoff_time = min(backoff_time, self.max_backoff)
+            backoff_time = min(
+                self.backoff_fcn(backoff_time),
+                # max backoff is set to +inf if set to None, thus deactivating it
+                self.max_backoff,
+            )
 
     @staticmethod
     def exponential_backoff_factory(factor: int) -> BackoffFcn:
         """Creates a function that returns the next backoff time based on the
         previous backoff time.
 
-        :param base: The base backoff time.
         :param factor: The factor to increase the backoff time.
         :return: A function that returns the next backoff time.
         """
