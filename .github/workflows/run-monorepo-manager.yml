@@ -51,6 +51,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+          token: ${{ secrets.WORKFLOW_TOKEN }}
 
       # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
       # reference the matrix python version here.
@@ -122,6 +123,6 @@ jobs:
       - uses: actions-js/push@master
         name: Push changes
         with:
-          github_token: ${{ secrets.WORKFLOW_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
           message: "Update monorepo boilerplate"
