@@ -8,7 +8,7 @@ from threading import Thread
 from typing import Any, Callable
 
 import docker  # type: ignore[import-untyped]
-from docker.errors import DockerException  # type: ignore[import-untyped]
+from docker.errors import DockerException, APIError  # type: ignore[import-untyped]
 from docker.models.containers import Container  # type: ignore[import-untyped]
 from docker.models.networks import Network  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field, field_validator
@@ -146,8 +146,6 @@ class DockerContainer:
 
         networks = self._client.networks.list()
 
-        warnings.warn(f"Networks: {', '.join([network.name for network in networks])}")
-
         matching_networks = [
             network for network in networks if network.name == network_name
         ]
@@ -184,9 +182,18 @@ class DockerContainer:
     def run(self):
         """Runs the container."""
 
-        self._container = self._client.containers.run(
-            **self.container_kwargs,
-        )
+        try:
+            self._container = self._client.containers.run(
+                **self.container_kwargs,
+            )
+        except APIError as ex:
+            # This may happen if multiple threads try to pull up test containers.
+            # In this case, we simply clean up and try again.
+            if f"network {self.__NETWORK__} is ambiguous" in str(ex):
+                self._create_network()
+                self._container = self._client.containers.run(
+                    **self.container_kwargs,
+                )
 
     @property
     def container_kwargs(self) -> dict[str, Any]:
