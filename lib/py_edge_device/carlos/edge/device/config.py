@@ -14,7 +14,6 @@ from typing import TypeVar
 
 import yaml
 from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings
 
 from carlos.edge.device.constants import CONFIG_FILE
 
@@ -25,7 +24,7 @@ class DeviceConfig(BaseModel):
     device_id: str = Field(..., description="The unique identifier of the device.")
 
 
-Config = TypeVar("Config", bound=BaseModel | BaseSettings)
+Config = TypeVar("Config", bound=BaseModel)
 
 
 def read_config_file(path: Path, schema: type[Config]) -> Config:
@@ -53,8 +52,7 @@ def write_config_file(path: Path, config: Config):
 def read_config() -> DeviceConfig:  # pragma: no cover
     """Reads the configuration from the default location."""
 
-    # mypy seems to have false positive here
-    return read_config_file(  # type: ignore[return-value]
+    return read_config_file(
         path=CONFIG_FILE,
         schema=DeviceConfig,
     )
