@@ -19,6 +19,7 @@ on:
       - lib/py_edge_server/**
       - lib/py_edge_interface/**
       - lib/py_dev_dependencies/**
+      - lib/py_edge_device/**
 
 
   workflow_dispatch:
@@ -93,7 +94,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./lib/py_edge_server/.venv
-          key: py_edge_server-${{ hashFiles('./lib/py_edge_server/poetry.lock', './lib/py_edge_interface/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_edge_interface/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_edge_interface/poetry.lock', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
+          key: py_edge_server-${{ hashFiles('./lib/py_edge_server/poetry.lock', './lib/py_edge_interface/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_edge_device/**/*.py', './lib/py_edge_interface/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_edge_device/**/*.sql', './lib/py_edge_interface/poetry.lock', './lib/py_dev_dependencies/poetry.lock', './lib/py_edge_device/poetry.lock')}}-3.11-1.7.1
 
       # Install dependencies. `--no-root` means "install all dependencies but not the project
       # itself", which is what you want to avoid caching _your_ code. The `if` statement
