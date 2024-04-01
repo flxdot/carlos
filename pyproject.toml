@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "carlos"
+version = "0.1.0"
+description = "Your friendly greenhouse manager."
+authors = ["Felix Fanghanel"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "carlos"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.5.16"
+
+[tool.poetry.group.dev.dependencies]
+"devtools" = {path = "lib/py_dev_dependencies"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
