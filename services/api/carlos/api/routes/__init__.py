@@ -4,16 +4,19 @@ from fastapi import APIRouter, Security
 
 from carlos.api.depends.authentication import VerifyToken
 
-from .edge_routes import edge_router
+from .device_server_routes import device_server_router
 from .health import health_router
 
 # todo: activate authentication
-# authentication = VerifyToken()
-# main_router = APIRouter(dependencies=[Security(authentication.verify)])
-main_router = APIRouter()
+authentication = VerifyToken()
+main_router = APIRouter(dependencies=[Security(authentication.verify)])
+# main_router = APIRouter()
 """This is the main router for the API. It is for routes that require authentication."""
-main_router.include_router(edge_router, prefix="/edge")
+
 
 public_router = APIRouter()
 """This route is for routes that are public and do not require authentication."""
+
 public_router.include_router(health_router, prefix="/health")
+# The websocket endpoint needs to be secured individually.
+public_router.include_router(device_server_router)

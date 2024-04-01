@@ -39,6 +39,13 @@ class CarlosAPISettings(BaseSettings):
             "without authentication"
         ),
     )
+    DEACTIVATE_USER_AUTH: bool = Field(
+        False,
+        description=(
+            "If True, the user authentication is deactivated. "
+            "This is useful for testing purposes."
+        ),
+    )
 
     API_CORS_ORIGINS: list[AnyHttpUrl] = Field(
         default_factory=list,

@@ -9,8 +9,11 @@ __all__ = [
     "MessageType",
     "PingMessage",
     "PongMessage",
+    "get_websocket_endpoint",
+    "get_websocket_token_endpoint",
 ]
 
+from .endpoint import get_websocket_endpoint, get_websocket_token_endpoint
 from .messages import (
     CarlosMessage,
     EdgeVersionPayload,

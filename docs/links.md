@@ -16,6 +16,10 @@ This page is a loose collection of helpful articles, blog posts, and other resou
 
 - [Chart.js Tutorial — How To Make Gradient Line Chart](https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9)
 
+## Websockets
+
+- [Websocket Authentication](https://devcenter.heroku.com/articles/websocket-security#authentication-authorization)
+
 ## APIs
 
 - [Open Weather Map](https://openweathermap.org)

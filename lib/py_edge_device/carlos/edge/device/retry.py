@@ -92,8 +92,7 @@ class BackOff(RetryStrategy):
                 return await func()
             except expected_exceptions:
                 logger.info(
-                    f"Failed to run function: {func}. Retrying in"
-                    f" {backoff_time.total_seconds()}s."
+                    f"Failed to run function: {func}. Retrying in {backoff_time}."
                 )
 
             await sleep(backoff_time.total_seconds())

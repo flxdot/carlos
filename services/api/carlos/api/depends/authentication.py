@@ -13,6 +13,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, SecurityS
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from carlos.api.config import CarlosAPISettings
+
 
 class UnauthorizedException(HTTPException):
     def __init__(self, detail: str, **kwargs):
@@ -86,10 +88,16 @@ class VerifyToken:
     async def verify(
         self,
         security_scopes: SecurityScopes,
-        token: HTTPAuthorizationCredentials | None = Depends(HTTPBearer()),
-    ):
+        token: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
+    ) -> dict:
+        """Verifies the token and returns the payload if it is valid."""
+
         if token is None:
-            raise UnauthenticatedException
+            # If the flag is set to deactivate the user authentication, then
+            # return a deactivated user
+            if CarlosAPISettings().DEACTIVATE_USER_AUTH:
+                return {"sub": "offline"}
+            raise UnauthenticatedException()
 
         # This gets the 'kid' from the passed token
         try:

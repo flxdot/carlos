@@ -11,6 +11,8 @@ exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
 "carlos.edge.interface" = {path = "../py_edge_interface"}
+fastapi = "^0.110.0"
+pyjwt = {extras = ["crypto"], version = "^2.8.0"}
 
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}

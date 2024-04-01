@@ -6,9 +6,16 @@ from device.websocket import DeviceWebsocketClient
 
 async def main():
     """The main entry point of the application."""
+
+    device_config = read_config()
+    device_connection = read_connection_settings()
+    protocol = DeviceWebsocketClient(
+        settings=device_connection, device_id=device_config.device_id
+    )
+
     runtime = DeviceRuntime(
-        config=read_config(),
-        protocol=DeviceWebsocketClient(settings=read_connection_settings()),
+        config=device_config,
+        protocol=protocol,
     )
     await runtime.run()
 

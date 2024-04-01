@@ -4,12 +4,15 @@ __all__ = [
     "DeviceWebsocketClient",
 ]
 
+import urllib.parse as urlparse
 from functools import partial
+from urllib.parse import urlencode
 
 import websockets
 from carlos.edge.device.retry import BackOff
 from carlos.edge.interface import CarlosMessage, EdgeProtocol
 from carlos.edge.interface.protocol import EdgeConnectionDisconnected
+from httpx import AsyncClient
 from loguru import logger
 
 from .connection import ConnectionSettings
@@ -17,12 +20,13 @@ from .connection import ConnectionSettings
 
 class DeviceWebsocketClient(EdgeProtocol):
 
-    def __init__(self, settings: ConnectionSettings):
+    def __init__(self, settings: ConnectionSettings, device_id: str):
         """Initializes the websocket client.
 
         :param settings: The settings of the websocket connection.
         """
         self._settings = settings
+        self._device_id = device_id
 
         self._connection: websockets.WebSocketClientProtocol | None = None
 
@@ -39,14 +43,30 @@ class DeviceWebsocketClient(EdgeProtocol):
         if self.is_connected:
             return
 
-        connection_fcn = partial(websockets.connect, uri=self._settings.websocket_uri)
+        async with AsyncClient() as client:
+            response = await client.get(
+                self._settings.get_websocket_token_uri(device_id=self._device_id)
+            )
+            token = response.text
+
+        url_parts = list(
+            urlparse.urlparse(
+                self._settings.get_websocket_uri(device_id=self._device_id)
+            )
+        )
+        query = dict(urlparse.parse_qsl(url_parts[4]))
+        query.update({"token": token})
+        url_parts[4] = urlencode(query)
+        websocket_uri = urlparse.urlunparse(url_parts)
+
+        connection_fcn = partial(websockets.connect, uri=websocket_uri)
 
         connection_strategy = BackOff()
         self._connection = await connection_strategy.execute(
             func=connection_fcn, expected_exceptions=(Exception,)
         )
 
-        logger.info(f"Connected to the server: {self._settings.websocket_uri}")
+        logger.info(f"Connected to the server: {websocket_uri}")
 
     async def disconnect(self):
         """Called when the connection is disconnected."""

@@ -7,5 +7,9 @@
     </content>
     <orderEntry type="jdk" jdkName="/carlos/services/api" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="py_edge_interface" />
+    <orderEntry type="module" module-name="py_dev_dependencies" />
+    <orderEntry type="module" module-name="py_edge_device" />
+    <orderEntry type="module" module-name="py_edge_server" />
   </component>
 </module>

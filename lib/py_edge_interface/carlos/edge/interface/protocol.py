@@ -153,7 +153,7 @@ class EdgeCommunicationHandler:
         :param message: The incoming message.
         """
 
-        logger.info(f"Received message: {message.message_type}")
+        logger.debug(f"Received message: {message.message_type}")
 
         if handler := self._handlers.get(message.message_type):
             await handler(protocol=self.protocol, message=message)
