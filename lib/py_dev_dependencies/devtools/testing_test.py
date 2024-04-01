@@ -67,7 +67,7 @@ def test_setup_test_environment(
             ), f"Container {expected_container_name} not found"
 
 
-def test_setupt_test_environment_errors():
+def test_setup_test_environment_errors():
     """This test ensures that the approriate error functinos are called in case the
     container setup fails."""
 

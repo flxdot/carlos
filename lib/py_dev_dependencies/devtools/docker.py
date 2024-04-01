@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings
 
 __all__ = [
+    "ContainerDefinition",
     "ContainerHandler",
     "ContainerManager",
     "DockerContainer",
@@ -128,17 +129,21 @@ class DockerContainer:
     def setup(self):
         """Creates the Database container."""
 
+        self._clean_rogue_containers()
+        self._ensure_clean_network()
+        self.run()
+
+    def _clean_rogue_containers(self):
+        """It may happen that a container with he same name is still running. This
+        function cleans up all containers with the same name."""
+
         rogue_containers = self._client.containers.list(
             all=True, filters={"name": self.name}
         )
         for container in rogue_containers:
             self.cleanup_container(container)  # pragma: no cover
 
-        self._create_network()
-
-        self.run()
-
-    def _create_network(self):
+    def _ensure_clean_network(self):
         """Creates the required network in case it does not already exist."""
 
         network_name = self.__NETWORK__
@@ -169,7 +174,7 @@ class DockerContainer:
                     for network in networks:
                         if network.name.startswith(self.__NETWORK__):
                             network.remove()
-                    self._create_network()
+                    self._ensure_clean_network()
                     return
                 raise ex
             return
@@ -189,7 +194,10 @@ class DockerContainer:
             # This may happen if multiple threads try to pull up test containers.
             # In this case, we simply clean up and try again.
             if f"network {self.__NETWORK__} is ambiguous" in str(ex):
-                self._create_network()
+
+                self._ensure_clean_network()
+                self._clean_rogue_containers()
+
                 self._container = self._client.containers.run(
                     **self.container_kwargs,
                 )
