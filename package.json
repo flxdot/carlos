@@ -1,0 +1,13 @@
+{
+  "name": "carlos",
+  "private": true,
+  "scripts": {
+    "build": "yarn workspace @carlos/frontend build",
+  },
+  "workspaces": [
+    "services/frontend"
+  ],
+  "devDependencies": {
+  },
+  "packageManager": "yarn@1.22.19"
+}

@@ -1,0 +1,82 @@
+@use './typography.scss';
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-Regular.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-Regular.woff') format('woff'),
+         url('@/assets/font/geist/Geist-Regular.ttf') format('truetype');
+    font-weight: typography.$font-weight-regular;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-Black.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-Black.woff') format('woff'),
+         url('@/assets/font/geist/Geist-Black.ttf') format('truetype');
+    font-weight: typography.$font-weight-black;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-Bold.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-Bold.woff') format('woff'),
+         url('@/assets/font/geist/Geist-Bold.ttf') format('truetype');
+    font-weight: typography.$font-weight-bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-UltraLight.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-UltraLight.woff') format('woff'),
+         url('@/assets/font/geist/Geist-UltraLight.ttf') format('truetype');
+    font-weight: typography.$font-weight-extralight;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-Thin.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-Thin.woff') format('woff'),
+         url('@/assets/font/geist/Geist-Thin.ttf') format('truetype');
+    font-weight: typography.$font-weight-thin;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-Medium.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-Medium.woff') format('woff'),
+         url('@/assets/font/geist/Geist-Medium.ttf') format('truetype');
+    font-weight: typography.$font-weight-medium;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-UltraBlack.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-UltraBlack.woff') format('woff'),
+         url('@/assets/font/geist/Geist-UltraBlack.ttf') format('truetype');
+    font-weight: typography.$font-weight-extrabold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-Light.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-Light.woff') format('woff'),
+         url('@/assets/font/geist/Geist-Light.ttf') format('truetype');
+    font-weight: typography.$font-weight-light;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('@/assets/font/geist/Geist-SemiBold.woff2') format('woff2'),
+         url('@/assets/font/geist/Geist-SemiBold.woff') format('woff'),
+         url('@/assets/font/geist/Geist-SemiBold.ttf') format('truetype');
+    font-weight: typography.$font-weight-semibold;
+    font-style: normal;
+}
