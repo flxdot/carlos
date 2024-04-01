@@ -1,14 +1,14 @@
 """The runtime module contains the device runtime that is used as the main entry point
 of the application."""
 
-from carlos.edge.interface import EdgeProtocol
+from carlos.edge.interface import EdgeConnectionDisconnected, EdgeProtocol
 
-from ..interface.protocol import EdgeConnectionDisconnected
 from .communication import DeviceCommunicationHandler
 from .config import DeviceConfig
 
 
-class DeviceRuntime:
+# We don't cover this in the unit tests. This needs to be tested in an integration test.
+class DeviceRuntime:  # pragma: no cover
 
     def __init__(self, config: DeviceConfig, protocol: EdgeProtocol):
         """Initializes the device runtime.
