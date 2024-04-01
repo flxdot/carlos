@@ -1,7 +1,7 @@
 name: Deploy Documentation
 on:
   push:
-    branches: [ develop ]
+    branches: [ main ]
     paths:
       - .github/workflows/deploy-docs.yml
       - pyproject.toml
