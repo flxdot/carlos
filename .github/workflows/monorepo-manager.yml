@@ -4,7 +4,7 @@
 # This CI workflow will run on every push to a branch that has an open pull request
 # not in draft mode.
 
-name: "run-monorepo-manager"
+name: "monorepo-manager"
 
 # cancel previous runs if the branch is updated.
 concurrency:
@@ -15,7 +15,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, review_requested]
     paths:
-      - .github/workflows/run-monorepo-manager.yml
+      - .github/workflows/monorepo-manager.yml
       - .monorepo_manager.yaml
       - services/**/*
       - lib/**/*

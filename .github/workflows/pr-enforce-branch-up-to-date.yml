@@ -10,7 +10,7 @@
 #      check is enabled (see below).
 #
 # That's why we need this dummy check, because not all parts of the code have unit tests
-name: "enforce-branch-up-to-date"
+name: pr-enforce-branch-up-to-date
 
 
 on:

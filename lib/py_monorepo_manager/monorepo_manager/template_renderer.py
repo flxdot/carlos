@@ -113,7 +113,7 @@ def write_run_cli_ci(project: LanguageProjects | Project):
             "This function should only be called for the monorepo manager project."
         )  # pragma: no cover
 
-    file_path = MONOREPO_ROOT / ".github/workflows/run-monorepo-manager.yml"
+    file_path = MONOREPO_ROOT / ".github/workflows/monorepo-manager.yml"
 
     write_template(
         environment=LANGUAGE_TO_CONTEXT[Language.python].jinja_environment,

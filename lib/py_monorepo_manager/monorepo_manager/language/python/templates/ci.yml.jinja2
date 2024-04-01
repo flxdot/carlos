@@ -5,7 +5,7 @@
 # This CI workflow will run on every push to a branch that has an open pull request
 # not in draft mode.
 
-name: Test - {{ project.path_from_root }}
+name: test-{{ project.path_from_root }}
 
 # cancel previous runs if the branch is updated.
 concurrency:

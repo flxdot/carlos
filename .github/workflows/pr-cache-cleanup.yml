@@ -1,6 +1,6 @@
 # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#managing-caches
 # It has to be investigated if this may also delete some shared caches.
-name: Post PR Cleanup
+name: pr-cache-cleanup
 on:
   pull_request:
     types:

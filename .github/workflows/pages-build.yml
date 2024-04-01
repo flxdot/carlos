@@ -1,9 +1,9 @@
-name: Deploy Documentation
+name: pages-build
 on:
   push:
     branches: [ main ]
     paths:
-      - .github/workflows/deploy-docs.yml
+      - .github/workflows/pages-build.yml
       - pyproject.toml
       - docs/**
 
