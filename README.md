@@ -10,7 +10,7 @@
 
 ---
 
-**Documentation:** <a href="https://flxdot.github.io/carlos" target="_blank" class="external">https://flxdot.github.io/carlos</a>
+**Documentation:** <a href="https://fanghanel.dev/carlos" target="_blank" class="external">https://fanghanel.dev/carlos</a>
 
 **Source Code:** <a href="https://github.com/flxdot/carlos" target="_blank" class="external">https://github.com/flxdot/carlos</a>
 
