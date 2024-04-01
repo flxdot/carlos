@@ -6,9 +6,8 @@
       <div class="logo">
         <img
           alt="logo"
-          src="@/assets/logo.png"
+          src="@/assets/logo-type-white.png"
         >
-        <p>Carlos</p>
       </div>
     </template>
   </menubar>
@@ -30,8 +29,10 @@ const menuItems: MenuItem[] = ref([]);
 <style scoped lang="scss">
 
 .menubar {
-  background-color: var(--primary-fg-color);
-  color: var(--primary-bg-color);
+  height: 48px;
+  background-color: var(--primary-color);
+  border: none;
+  color: var(--primary-color-text);
 }
 
 .logo {
@@ -39,16 +40,10 @@ const menuItems: MenuItem[] = ref([]);
   align-items: center;
 }
 
-.logo > p {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 0;
-  margin-left: 1rem;
-}
-
 .logo > img {
-  height: 2.5rem;
+  height: 1.2rem;
   width: auto;
-  margin-left: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 1rem;
 }
 </style>
