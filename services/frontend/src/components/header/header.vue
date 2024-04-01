@@ -1,5 +1,8 @@
 <template>
-  <menubar :model="menuItems" class="menubar">
+  <menubar
+    :model="menuItems"
+    class="menubar"
+  >
     <template
       #start
     >
@@ -24,7 +27,6 @@ import {
 
 const menuItems: MenuItem[] = ref([]);
 </script>
-
 
 <style scoped lang="scss">
 
