@@ -146,7 +146,7 @@ class DockerContainer:
 
         networks = self._client.networks.list()
 
-        warnings.warn(f"Networks: {networks}")
+        warnings.warn(f"Networks: {', '.join([network.name for network in networks])}")
 
         matching_networks = [
             network for network in networks if network.name == network_name
