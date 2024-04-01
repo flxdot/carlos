@@ -10,6 +10,6 @@ PYTHON_TEMPLATE_TO_PATH = {
     "Makefile.jinja2": "Makefile",
     "poetry.toml.jinja2": "poetry.toml",
     "ci.yml.jinja2": (
-        "/.github/workflows/{{ project.path_from_root|replace('/', '-') }}-ci.yml"
+        "/.github/workflows/test-{{ project.path_from_root|replace('/', '-') }}.yml"
     ),
 }

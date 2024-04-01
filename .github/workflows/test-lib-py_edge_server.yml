@@ -4,7 +4,7 @@
 # This CI workflow will run on every push to a branch that has an open pull request
 # not in draft mode.
 
-name: "lib-py_edge_device-ci"
+name: Test - lib/py_edge_server
 
 # cancel previous runs if the branch is updated.
 concurrency:
@@ -15,10 +15,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, review_requested]
     paths:
-      - .github/workflows/lib-py_edge_device-ci.yml
-      - lib/py_edge_device/**
+      - .github/workflows/test-lib-py_edge_server.yml
+      - lib/py_edge_server/**
       - lib/py_edge_interface/**
       - lib/py_dev_dependencies/**
+      - lib/py_edge_device/**
 
 
   workflow_dispatch:
@@ -88,24 +89,24 @@ jobs:
       # Cache your dependencies (i.e. all the stuff in your `pyproject.toml`). Note the cache
       # key: if you're using multiple Python versions, or multiple OSes, you'd need to include
       # them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
-      - name: cache lib/py_edge_device dependencies
+      - name: cache lib/py_edge_server dependencies
         id: cache-deps
         uses: actions/cache@v4
         with:
-          path: ./lib/py_edge_device/.venv
-          key: py_edge_device-${{ hashFiles('./lib/py_edge_device/poetry.lock', './lib/py_edge_interface/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_edge_interface/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_edge_interface/poetry.lock', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
+          path: ./lib/py_edge_server/.venv
+          key: py_edge_server-${{ hashFiles('./lib/py_edge_server/poetry.lock', './lib/py_edge_interface/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_edge_device/**/*.py', './lib/py_edge_interface/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_edge_device/**/*.sql', './lib/py_edge_interface/poetry.lock', './lib/py_dev_dependencies/poetry.lock', './lib/py_edge_device/poetry.lock')}}-3.11-1.7.1
 
       # Install dependencies. `--no-root` means "install all dependencies but not the project
       # itself", which is what you want to avoid caching _your_ code. The `if` statement
       # ensures this only runs on a cache miss.
-      - name: Install lib/py_edge_device dependencies
+      - name: Install lib/py_edge_server dependencies
         run: poetry install --no-interaction --no-root --all-extras
-        working-directory: ./lib/py_edge_device
+        working-directory: ./lib/py_edge_server
 
 
       - name: format
         run: make format
-        working-directory: ./lib/py_edge_device
+        working-directory: ./lib/py_edge_server
 
       - uses: actions-js/push@master
         name: Push changes
@@ -114,30 +115,30 @@ jobs:
           branch: ${{ github.head_ref }}
           coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
           coauthor_name: ${{ github.event.pull_request.user.login }}
-          message: "format lib/py_edge_device"      # formatting first is beneficial because it may solve some linting errors
+          message: "format lib/py_edge_server"      # formatting first is beneficial because it may solve some linting errors
 
       - name: format
         run: make format
-        working-directory: ./lib/py_edge_device
+        working-directory: ./lib/py_edge_server
 
       - name: linting
         run: make ruff
-        working-directory: ./lib/py_edge_device
+        working-directory: ./lib/py_edge_server
 
       - name: type checking
         run: make mypy
-        working-directory: ./lib/py_edge_device
+        working-directory: ./lib/py_edge_server
 
       # installing the repository is required to register any pytest plugins
       # that are defined by the repository
       - name: install project
         run: poetry install --no-interaction --all-extras
-        working-directory: ./lib/py_edge_device
+        working-directory: ./lib/py_edge_server
 
       - name: run tests
         run: make pytest
-        working-directory: ./lib/py_edge_device
+        working-directory: ./lib/py_edge_server
 
       - name: ensure test coverage
         run: make coverage
-        working-directory: ./lib/py_edge_device
+        working-directory: ./lib/py_edge_server

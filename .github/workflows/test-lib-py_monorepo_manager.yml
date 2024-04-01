@@ -4,7 +4,7 @@
 # This CI workflow will run on every push to a branch that has an open pull request
 # not in draft mode.
 
-name: "lib-py_dev_dependencies-ci"
+name: Test - lib/py_monorepo_manager
 
 # cancel previous runs if the branch is updated.
 concurrency:
@@ -15,7 +15,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, review_requested]
     paths:
-      - .github/workflows/lib-py_dev_dependencies-ci.yml
+      - .github/workflows/test-lib-py_monorepo_manager.yml
+      - lib/py_monorepo_manager/**
       - lib/py_dev_dependencies/**
 
 
@@ -86,24 +87,24 @@ jobs:
       # Cache your dependencies (i.e. all the stuff in your `pyproject.toml`). Note the cache
       # key: if you're using multiple Python versions, or multiple OSes, you'd need to include
       # them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
-      - name: cache lib/py_dev_dependencies dependencies
+      - name: cache lib/py_monorepo_manager dependencies
         id: cache-deps
         uses: actions/cache@v4
         with:
-          path: ./lib/py_dev_dependencies/.venv
-          key: py_dev_dependencies-${{ hashFiles('./lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
+          path: ./lib/py_monorepo_manager/.venv
+          key: py_monorepo_manager-${{ hashFiles('./lib/py_monorepo_manager/poetry.lock', './lib/py_dev_dependencies/**/*.py', './lib/py_dev_dependencies/**/*.sql', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
 
       # Install dependencies. `--no-root` means "install all dependencies but not the project
       # itself", which is what you want to avoid caching _your_ code. The `if` statement
       # ensures this only runs on a cache miss.
-      - name: Install lib/py_dev_dependencies dependencies
+      - name: Install lib/py_monorepo_manager dependencies
         run: poetry install --no-interaction --no-root --all-extras
-        working-directory: ./lib/py_dev_dependencies
+        working-directory: ./lib/py_monorepo_manager
 
 
       - name: format
         run: make format
-        working-directory: ./lib/py_dev_dependencies
+        working-directory: ./lib/py_monorepo_manager
 
       - uses: actions-js/push@master
         name: Push changes
@@ -112,30 +113,30 @@ jobs:
           branch: ${{ github.head_ref }}
           coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
           coauthor_name: ${{ github.event.pull_request.user.login }}
-          message: "format lib/py_dev_dependencies"      # formatting first is beneficial because it may solve some linting errors
+          message: "format lib/py_monorepo_manager"      # formatting first is beneficial because it may solve some linting errors
 
       - name: format
         run: make format
-        working-directory: ./lib/py_dev_dependencies
+        working-directory: ./lib/py_monorepo_manager
 
       - name: linting
         run: make ruff
-        working-directory: ./lib/py_dev_dependencies
+        working-directory: ./lib/py_monorepo_manager
 
       - name: type checking
         run: make mypy
-        working-directory: ./lib/py_dev_dependencies
+        working-directory: ./lib/py_monorepo_manager
 
       # installing the repository is required to register any pytest plugins
       # that are defined by the repository
       - name: install project
         run: poetry install --no-interaction --all-extras
-        working-directory: ./lib/py_dev_dependencies
+        working-directory: ./lib/py_monorepo_manager
 
       - name: run tests
         run: make pytest
-        working-directory: ./lib/py_dev_dependencies
+        working-directory: ./lib/py_monorepo_manager
 
       - name: ensure test coverage
         run: make coverage
-        working-directory: ./lib/py_dev_dependencies
+        working-directory: ./lib/py_monorepo_manager
