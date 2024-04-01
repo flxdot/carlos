@@ -7,6 +7,9 @@ on:
       - pyproject.toml
       - docs/**
 
+permissions:
+  contents: write
+
 jobs:
   build:
     timeout-minutes: 5
@@ -16,6 +19,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       - name: Install Python
         uses: actions/setup-python@v5
@@ -42,6 +49,6 @@ jobs:
         run: poetry install --no-interaction --no-root --all-extras
 
       - name: Deploy Documentation
-        run: poetry run mkdocs gh-deploy
+        run: poetry run mkdocs gh-deploy --force
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
