@@ -44,8 +44,7 @@ def setup_test_environment(
 
             logger.info(f"Finished setting up testing containers: {container_names}")
             yield None
-        except Exception as e:  # pragma: no cover
-            logger.error(e)
+        except Exception:  # pragma: no cover
             pytest_failure_fcn(
                 f"Container setup failed, skipping test suite:\n\n"
                 f"{traceback.format_exc()}"
