@@ -1,4 +1,5 @@
 """This module contains facade code for the docker api."""
+import warnings
 
 import time
 from contextlib import suppress
@@ -144,6 +145,9 @@ class DockerContainer:
         network_name = self.__NETWORK__
 
         networks = self._client.networks.list()
+
+        warnings.warn(f"Networks: {networks}")
+
         matching_networks = [
             network for network in networks if network.name == network_name
         ]
