@@ -1,0 +1,127 @@
+# Do not edit! This file was generated via the /lib/py_monorepo_manager
+# Any manual changes to this file will eventually be overwritten by CI
+#
+# This CI workflow will run on every push to a branch that has an open pull request
+# not in draft mode.
+
+name: "run-monorepo-manager"
+
+# cancel previous runs if the branch is updated.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, review_requested]
+    paths:
+      - .github/workflows/run-monorepo-manager.yml
+      - .monorepo_manager.yaml
+      - services/**/*
+      - lib/**/*
+
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+      useCache:
+        description: 'Activate caching'
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+          - yes
+          - no
+
+jobs:
+
+  generate_boilerplate:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
+      # reference the matrix python version here.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
+      # from installing Poetry every time, which can be slow. Note the use of the Poetry version
+      # number in the cache key, and the "-0" suffix: this allows you to invalidate the cache
+      # manually if/when you want to upgrade Poetry, or if something goes wrong. This could be
+      # mildly cleaner by using an environment variable, but I don't really care.
+      - name: cache poetry install
+        uses: actions/cache@v4
+        with:
+          path: ~/.local
+          key: poetry-latest-python-3.11-1.7.1
+
+      # Install Poetry. You could do this manually, or there are several actions that do this.
+      # `snok/install-poetry` seems to be minimal yet complete, and really just calls out to
+      # Poetry's default install script, which feels correct. I pin the Poetry version here
+      # because Poetry does occasionally change APIs between versions and I don't want my
+      # actions to break if it does.
+      #
+      # The key configuration value here is `virtualenvs-in-project: true`: this creates the
+      # venv as a `.venv` in your testing directory, which allows the next step to easily
+      # cache it.
+      - uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      # Cache your dependencies (i.e. all the stuff in your `pyproject.toml`). Note the cache
+      # key: if you're using multiple Python versions, or multiple OSes, you'd need to include
+      # them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
+      - name: cache lib/py_monorepo_manager dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: ./lib/py_monorepo_manager/.venv
+          key: py_monorepo_manager-${{ hashFiles('./lib/py_monorepo_manager/poetry.lock', './lib/py_dev_dependencies/**/*.py', './lib/py_dev_dependencies/**/*.sql', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
+
+      # Install dependencies. `--no-root` means "install all dependencies but not the project
+      # itself", which is what you want to avoid caching _your_ code. The `if` statement
+      # ensures this only runs on a cache miss.
+      - name: Install lib/py_monorepo_manager dependencies
+        run: poetry install --no-interaction --no-root --all-extras
+        working-directory: ./lib/py_monorepo_manager
+
+
+      - name: generate files
+        # always run poetry install to ensure the entrypoint is up to date
+        run: poetry install && poetry run monorepo_manager all
+        working-directory: ./lib/py_monorepo_manager
+
+      - name: Add add new workflow files
+        run: git add ./.github/workflows/*
+
+      - name: Add add new library files
+        run: git add ./lib/*
+
+      - name: Add add new service files
+        run: git add ./services/*
+
+      - name: Add add new script files
+        run: git add ./scripts/*
+
+      - uses: actions-js/push@master
+        name: Push changes
+        with:
+          github_token: ${{ secrets.WORKFLOW_TOKEN }}
+          branch: ${{ github.head_ref }}
+          message: "Update monorepo boilerplate"

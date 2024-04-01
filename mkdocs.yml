@@ -1,0 +1,13 @@
+site_name: Carlos
+site_description: Your friendly greenhouse manager.
+site_url: https://fanghanel.dev/carlos
+
+theme:
+  name: material
+  logo: assets/carlos_typo_logo_w.png
+  palette:
+    primary: light green
+    accent: green
+
+extra_css:
+  - stylesheets/extra.css

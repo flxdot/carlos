@@ -1,0 +1,54 @@
+name: Deploy Documentation
+on:
+  push:
+    branches: [ develop ]
+    paths:
+      - .github/workflows/deploy-docs.yml
+      - pyproject.toml
+      - docs/**
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    timeout-minutes: 5
+    name: build image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: cache poetry install
+        uses: actions/cache@v4
+        with:
+          path: ~/.local
+          key: poetry-latest-python-3.11-1.7.1
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: cache root dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: root_dependencies-${{ hashFiles('./poetry.lock')}}-3.11-1.7.1
+      - name: Install root dependencies
+        run: poetry install --no-interaction --no-root --all-extras
+
+      - name: Deploy Documentation
+        run: poetry run mkdocs gh-deploy --force
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

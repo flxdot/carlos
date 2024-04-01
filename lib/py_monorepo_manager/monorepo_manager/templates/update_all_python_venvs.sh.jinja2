@@ -1,0 +1,15 @@
+#!/bin/bash
+
+update_venv(){
+  cwd=$(pwd)
+  cd $1
+  rm -rf .venv
+  poetry env use 3.11
+  poetry lock && poetry install
+  cd $cwd
+}
+
+# the order is important
+{%- for project in project_index.python_projects %}
+update_venv {{ project }}
+{%- endfor %}

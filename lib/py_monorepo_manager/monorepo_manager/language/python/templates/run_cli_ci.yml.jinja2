@@ -1,0 +1,78 @@
+# Do not edit! This file was generated via the /lib/py_monorepo_manager
+# Any manual changes to this file will eventually be overwritten by CI
+#
+# This CI workflow will run on every push to a branch that has an open pull request
+# not in draft mode.
+
+name: "{{ context.file_stem }}"
+
+# cancel previous runs if the branch is updated.
+concurrency:
+  group: {% raw %}${{ github.workflow }}-${{ github.head_ref || github.run_id }}{% endraw %}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, review_requested]
+    paths:
+      - .github/workflows/{{ context.file_name }}
+      - .monorepo_manager.yaml
+      - services/**/*
+      - lib/**/*
+
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+      useCache:
+        description: 'Activate caching'
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+          - yes
+          - no
+
+jobs:
+
+  generate_boilerplate:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      {% macro include_runtime_install() %}{% include "ci.install.yml.jinja2" %}{% endmacro %}
+      {{ include_runtime_install()|indent(6) }}
+
+      - name: generate files
+        # always run poetry install to ensure the entrypoint is up to date
+        run: poetry install && poetry run monorepo_manager all
+        working-directory: ./{{ project.path_from_root }}
+
+      - name: Add add new workflow files
+        run: git add ./.github/workflows/*
+
+      - name: Add add new library files
+        run: git add ./lib/*
+
+      - name: Add add new service files
+        run: git add ./services/*
+
+      - name: Add add new script files
+        run: git add ./scripts/*
+
+    {%- raw  %}
+
+      - uses: actions-js/push@master
+        name: Push changes
+        with:
+          github_token: ${{ secrets.WORKFLOW_TOKEN }}
+          branch: ${{ github.head_ref }}
+          message: "Update monorepo boilerplate"
+    {%- endraw %}

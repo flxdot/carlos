@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "monorepo_manager"
+version = "0.1.0"
+description = "Code to maintain and generate the project specific boilerplate code"
+authors = ["Felix Fanghänel"]
+readme = "README.md"
+include = ["*.jinja2"]
+exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+pydantic = "^2.1.1"
+jinja2 = "^3.1.2"
+pyyaml = "^6.0"
+click = "^8.1.3"
+poetry-core = "^1.6.0"
+
+[tool.poetry.group.dev.dependencies]
+"devtools" = {path = "../../lib/py_dev_dependencies"}
+types-pyyaml = "^6.0.12.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+monorepo_manager = "monorepo_manager.cli:cli"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+line_length = 88
+
+[tool.mypy]
+plugins = [
+    "sqlalchemy.ext.mypy.plugin",
+    "pydantic.mypy"
+]
+exclude = ['.*_test\.py$']
+
+[tool.coverage.report]
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "def __hash__",
+    # Don't complain if imports are not covered:
+    "^import .*",
+    "^from .* import .*",
+    "__all__ = .*",
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise NotImplementedError",
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+    # Don't complain about guard clauses
+    "if __name__ == .__main__.:",
+]
+omit = [
+    # omit all tests
+    "*_test.py",
+]

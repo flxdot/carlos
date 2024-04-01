@@ -1,0 +1,17 @@
+lib/py_dev_dependencies:
+  language: python
+lib/py_edge_device:
+  language: python
+lib/py_edge_interface:
+  language: python
+lib/py_edge_server:
+  language: python
+lib/py_monorepo_manager:
+  language: python
+  makefile:
+    boilerplate:
+    - poetry run monorepo_manager all
+services/api:
+  language: python
+services/device:
+  language: python

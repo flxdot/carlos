@@ -1,0 +1,99 @@
+# Do not edit! This file was generated via the /lib/py_monorepo_manager
+# Any manual changes to this file will eventually be overwritten by CI
+
+default: format
+
+all:
+	make format
+	{%- if project.ruff.enabled %}
+	make ruff
+	{%- endif %}
+	{%- if project.mypy.enabled %}
+	make mypy
+	{%- endif %}
+	make pytest
+	make coverage
+	{%- if project.deptry.enabled %}
+	make deptry
+	{%- endif %}
+
+format:
+	{%- if project.ruff.enabled %}
+	poetry run ruff check {{ project.root_package_name }} --fix-only
+	{%- endif %}
+	poetry run black .
+	poetry run isort . --profile=black
+
+pytest:
+	# we run coverage instead of pytest directly to get the coverage of
+	# the pytest plugins as well
+	# --concurrency=thread,greenlet ensures that we get coverage for
+	# async as well as sync code. Without that code after connection.rollback()
+	# is not covered
+	poetry run coverage run --concurrency=thread,greenlet --source={{ project.root_package_name }} -m pytest .
+
+coverage:
+	poetry run coverage html -d tests/coverage_report
+	poetry run coverage report{% if project.coverage.enabled %} --fail-under={{ project.coverage.threshold }}{%- endif %}
+
+{%- if project.mypy.enabled %}
+
+mypy:
+	poetry run mypy {{ project.root_package_name }}
+{%- endif %}
+
+{%- if project.ruff.enabled %}
+
+ruff:
+	poetry run ruff check {{ project.root_package_name }}
+{%- endif %}
+
+{%- if project.deptry.enabled %}
+
+deptry:
+	poetry run deptry .
+{%- endif %}
+
+# Some alias to keep the old names
+test:
+	make pytest
+	make coverage
+
+{%- if project.mypy.enabled %}
+
+type-check:
+	make mypy
+{%- endif %}
+
+{%- if project.ruff.enabled %}
+
+lint:
+	make ruff
+{%- endif %}
+
+{%- if project.deptry.enabled %}
+
+dependency-check:
+	make deptry
+{%- endif %}
+
+ci-check:
+	make format
+	{%- if project.ruff.enabled %}
+	make ruff
+	{%- endif %}
+	{%- if project.mypy.enabled %}
+	make mypy
+	{%- endif %}
+	make pytest
+	make coverage
+	{%- if project.deptry.enabled %}
+	make deptry
+	{%- endif %}
+
+{% for target, commands in project.makefile.items() %}
+{{ target }}:
+{%- for command in commands %}
+	{{ command }}
+{%- endfor %}
+{%- endfor %}
