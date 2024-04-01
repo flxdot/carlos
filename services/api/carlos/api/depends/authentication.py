@@ -3,12 +3,13 @@
 https://auth0.com/blog/build-and-secure-fastapi-server-with-auth0/
 """
 
-__all__ = ["VerifyToken"]
+__all__ = ["VerifyToken", "cached_token_verify_from_env"]
 
 import os
 import secrets
 from datetime import datetime, timedelta
 from enum import Enum
+from functools import lru_cache
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -95,8 +96,8 @@ TESTING_TOKEN_DATA = {
 class VerifyToken:
     """Does all the token verification using PyJWT"""
 
-    def __init__(self):
-        self.config = Auth0Settings()
+    def __init__(self, config: Auth0Settings):
+        self.config = config
 
         # This gets the JWKS from a given URL and does processing so you can
         # use any of the keys available
@@ -135,11 +136,21 @@ class VerifyToken:
             payload = jwt.decode(
                 token.credentials,
                 signing_key,
-                algorithms=self.config.auth0_algorithm,
-                audience=self.config.auth0_api_audience,
-                issuer=self.config.auth0_issuer,
+                algorithms=[self.config.algorithm],
+                audience=self.config.audience,
+                issuer=self.config.issuer,
             )
         except Exception as error:
             raise UnauthorizedException(str(error))
 
         return payload
+
+
+@lru_cache()
+def cached_token_verify_from_env():
+    """A cached dependency to construct the VerifyToken object.
+
+    This is useful to avoid reading the environment variables too often.
+    It further prevents that the environment variables are read during import.
+    """
+    return VerifyToken(config=Auth0Settings()).verify

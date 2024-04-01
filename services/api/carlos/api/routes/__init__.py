@@ -2,14 +2,13 @@ __all__ = ["public_router", "main_router"]
 
 from fastapi import APIRouter, Security
 
-from carlos.api.depends.authentication import VerifyToken
+from carlos.api.depends.authentication import cached_token_verify_from_env
 
 from .device_server_routes import device_server_router
 from .health_routes import health_router
 
 # todo: activate authentication
-authentication = VerifyToken()
-main_router = APIRouter(dependencies=[Security(authentication.verify)])
+main_router = APIRouter(dependencies=[Security(cached_token_verify_from_env)])
 # main_router = APIRouter()
 """This is the main router for the API. It is for routes that require authentication."""
 
