@@ -4,7 +4,8 @@ site_url: https://fanghanel.dev/carlos
 
 theme:
   name: material
-  logo: assets/carlos_typo_logo_w.png
+  logo: assets/type-white.png
+  favicon: assets/favicon.png
   palette:
     primary: light green
     accent: green
