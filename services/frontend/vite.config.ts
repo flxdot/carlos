@@ -1,5 +1,7 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import {
+  defineConfig,
+} from 'vite';
+import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import markdownRawPlugin from 'vite-raw-plugin';
 import svgLoader from 'vite-svg-loader';
@@ -25,16 +27,17 @@ export default defineConfig({
         ],
       },
     }),
-  ],resolve: {
+  ],
+  resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    // host: 'carlos.local',
-    // https: {
-    //   key: fs.readFileSync(`${__dirname}/../../local.qmulus.ai-key.pem`),
-    //   cert: fs.readFileSync(`${__dirname}/../../local.qmulus.ai.pem`),
-    // },
-  },
-})
+  // server: {
+  //   // host: 'carlos.local',
+  //   // https: {
+  //   //   key: fs.readFileSync(`${__dirname}/../../local.qmulus.ai-key.pem`),
+  //   //   cert: fs.readFileSync(`${__dirname}/../../local.qmulus.ai.pem`),
+  //   // },
+  // },
+});
