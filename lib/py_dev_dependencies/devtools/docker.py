@@ -1,7 +1,7 @@
 """This module contains facade code for the docker api."""
-import warnings
 
 import time
+import warnings
 from contextlib import suppress
 from datetime import timedelta
 from threading import Thread
