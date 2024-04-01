@@ -1,4 +1,3 @@
-
 DEVICE_ENDPOINT = "/devices/{device_id}/ws"
 """This is the endpoint that needs the be provided to the edge device to connect to 
 the API."""
