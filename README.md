@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="assets/carlos_typo_logo.png" width="300px">
+    <img src="assets/carlos-logo-type.png" width="300px">
 </p>
 <p align="center">
     <i>🌱 Your friendly greenhouse manager. 🌱</i>

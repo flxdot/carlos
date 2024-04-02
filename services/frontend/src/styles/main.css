@@ -1,12 +1,4 @@
 :root {
-  /* Overwrite some PrimeVue variables */
-  --font-family: Geist, system-ui, Helvetica, Arial, sans-serif;
-  --primary-color: #98b274;
-  --primary-color--light: #9ccc66;
-  --primary-color--dark: #689f38;
-  --primary-color-text: #fff;
-  --primary-color-text--light: #ffffffb3;
-
   --header-height: 48px;
 
   font-family: var(--font-family);

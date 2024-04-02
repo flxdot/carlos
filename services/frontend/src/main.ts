@@ -6,7 +6,9 @@ import App from './app.vue';
 import router from '@/router';
 import 'primevue/resources/themes/aura-light-lime/theme.css';
 import 'primeicons/primeicons.css';
-import './style.css';
+import '@/styles/primetheme.css';
+import '@/styles/main.css';
+import '@/styles/carlos.css';
 
 const app = createApp(App);
 

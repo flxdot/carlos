@@ -7,7 +7,7 @@
         Welcome to
       </h1>
       <img
-        :src="logo"
+        src="@/assets/carlos-logo-type-white.png"
         alt="Carlos"
         class="logo"
       >
@@ -19,7 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import logo from '@/assets/logo-type-white.png';
 import FancyPanel from '@/components/containers/fancy-panel.vue';
 
 </script>

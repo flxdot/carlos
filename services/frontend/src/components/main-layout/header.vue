@@ -21,7 +21,7 @@
           <div class="logo">
             <img
               alt="logo"
-              src="@/assets/logo-type-white.png"
+              src="@/assets/carlos-logo-type-white.png"
             >
           </div>
         </a>
