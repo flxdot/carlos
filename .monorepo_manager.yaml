@@ -17,3 +17,5 @@ services/device:
   language: python
 services/frontend:
   language: javascript
+services/nginx:
+  language: binary
