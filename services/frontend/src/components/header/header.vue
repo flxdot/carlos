@@ -6,12 +6,26 @@
     <template
       #start
     >
-      <div class="logo">
-        <img
-          alt="logo"
-          src="@/assets/logo-type-white.png"
+      <router-link
+        v-slot="{ href, navigate }"
+        :to="{
+          name: ERouteName.HOME
+        }"
+        custom
+      >
+        <a
+          :href="href"
+          title="Carlos"
+          @click="navigate"
         >
-      </div>
+          <div class="logo">
+            <img
+              alt="logo"
+              src="@/assets/logo-type-white.png"
+            >
+          </div>
+        </a>
+      </router-link>
     </template>
   </menubar>
 </template>
@@ -24,6 +38,9 @@ import Menubar from 'primevue/menubar';
 import {
   MenuItem,
 } from 'primevue/menuitem';
+import {
+  ERouteName,
+} from '@/router/route-name.ts';
 
 const menuItems: MenuItem[] = ref([]);
 </script>

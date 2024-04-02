@@ -13,6 +13,11 @@ export const routes: RouteRecordRaw[] = [
     name: ERouteName.LANDING_PAGE,
     component: () => import('@/pages/landing-page/landing-page.vue'),
   },
+  {
+    path: '/',
+    name: ERouteName.HOME,
+    component: () => import('@/pages/landing-page/landing-page.vue'),
+  },
 ];
 
 const router = createRouter({
