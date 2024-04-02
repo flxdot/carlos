@@ -42,7 +42,7 @@ import {
   ERouteName,
 } from '@/router/route-name.ts';
 
-const menuItems: MenuItem[] = ref([]);
+const menuItems = ref<MenuItem[]>([]);
 </script>
 
 <style scoped lang="scss">

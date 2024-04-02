@@ -1,6 +1,5 @@
 __all__ = ["create_app"]
 
-from importlib.metadata import version
 from typing import Any
 
 from fastapi import FastAPI
@@ -27,7 +26,8 @@ def create_app(api_settings: CarlosAPISettings | None = None) -> FastAPI:
 
     app = FastAPI(
         title="Carlos API",
-        version=version(__package__),
+        # todo: find a way to get the version from the package in the Dockerfile
+        version="0.1.0",  # version(__package__),
         docs_url=DOCS_URL if api_settings.API_DOCS_ENABLED else None,
         openapi_url=OPENAPI_URL if api_settings.API_DOCS_ENABLED else None,
         generate_unique_id_function=_generate_openapi_operation_id,

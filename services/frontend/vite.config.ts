@@ -5,11 +5,13 @@ import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import markdownRawPlugin from 'vite-raw-plugin';
 import svgLoader from 'vite-svg-loader';
+import viteCompression from 'vite-plugin-compression';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
+    viteCompression(),
     markdownRawPlugin({
       fileRegex: /\.md$/,
     }),
