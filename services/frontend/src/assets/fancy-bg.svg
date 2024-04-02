@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="50 50 600 600" width="600" height="600">
+  <defs>
+    <linearGradient id="sw-gradient" x1="0" x2="1" y1="1" y2="0">
+      <stop id="stop1" stop-color="rgba(139, 195, 75, 1)" offset="0%"></stop>
+      <stop id="stop2" stop-color="rgba(239.582, 255, 226.125, 1)" offset="100%"></stop>
+    </linearGradient>
+    <filter id="bbblur-filter" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="40" in="SourceGraphic" result="blur"></feGaussianBlur>
+    </filter>
+    <filter id="gggrain-filter" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="45" stitchTiles="stitch" x="0%" y="0%" width="100%" height="100%" result="turbulence"></feTurbulence>
+      <feColorMatrix type="saturate" values="0" x="0%" y="0%" width="100%" height="100%" in="turbulence" result="colormatrix"></feColorMatrix>
+      <feComponentTransfer x="0%" y="0%" width="100%" height="100%" in="colormatrix" result="componentTransfer">
+        <feFuncR type="linear" slope="3"></feFuncR>
+        <feFuncG type="linear" slope="3"></feFuncG>
+        <feFuncB type="linear" slope="3"></feFuncB>
+      </feComponentTransfer>
+      <feColorMatrix x="0%" y="0%" width="100%" height="100%" in="componentTransfer" result="colormatrix2" type="matrix" values="1 0 0 0 0
+          0 1 0 0 0
+          0 0 1 0 0
+          0 0 0 19 -11"></feColorMatrix>
+    </filter>
+  </defs>
+  <g opacity="0.8">
+    <g filter="url(#bbblur-filter)">
+      <rect x="0" y="0" width="700" height="700" fill="#fffcf5"></rect>
+      <path d="M189.9409350263487 539.0630533011499C225.0194720136534 579.3771910778428 494.9147662031065 585.6599008353298 555.1241930829893 550.0578042777126C615.3336199628721 514.455707720095 586.2760332929503 365.76461173213846 551.1974963056456 325.4504739554458C516.1189593183409 285.1363361787531 404.862398039044 272.57088105993796 344.6529711591612 308.17297761755515C284.4435442792784 343.77507417517234 154.86239803904402 498.7489155244562 189.9409350263487 539.0630533011499C225.0194720136534 579.3771910778428 494.9147662031065 585.6599008353298 555.1241930829893 550.0578042777126 " fill="#ddfac8" transform="matrix(1.1547309375000003,0.394941240746334,-0.20361021974003024,1.0850921409619443,15.682452022630912,-183.4831252792186)"></path>
+      <path d="M129.1884765625,496.3350830078125C79.31936899820963,474.8691126505534,102.87958780924478,179.7120361328125,157.4607391357422,142.14659118652344C212.0418904622396,104.58114624023438,461.3874282836914,211.91099802652994,456.6753845214844,270.9424133300781C451.96334075927734,329.9738286336263,179.05758412679037,517.8010533650717,129.1884765625,496.3350830078125C79.31936899820963,474.8691126505534,102.87958780924478,179.7120361328125,157.4607391357422,142.14659118652344" fill="url(#sw-gradient)" stroke-width="0"></path>
+      <path fill="url(#sw-gradient)" d="M24.6,-34C30.9,-29.2,34.5,-20.8,36.6,-12.4C38.6,-4,39.1,4.4,36,10.9C32.8,17.4,26,21.9,19.4,26.6C12.8,31.3,6.4,36.2,0.2,35.9C-6.1,35.7,-12.1,30.4,-17.1,25.2C-22.1,19.9,-26,14.8,-30.1,8.3C-34.3,1.8,-38.8,-6.1,-37.5,-12.8C-36.1,-19.4,-29,-24.7,-21.8,-29.3C-14.6,-33.9,-7.3,-37.7,0.9,-39C9.1,-40.2,18.2,-38.9,24.6,-34Z" width="100%" height="100%" transform="translate(350 50) scale(7 7)" stroke-width="0" style="transition: all 0.3s ease 0s;" stroke="url(#sw-gradient)"></path>
+    </g>
+    <rect width="100%" height="100%" fill="transparent" filter="url(#gggrain-filter)" opacity="0.4" style="mix-blend-mode: soft-light"></rect>
+  </g>
+</svg>

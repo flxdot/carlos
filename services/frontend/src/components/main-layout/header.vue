@@ -65,4 +65,11 @@ const menuItems: MenuItem[] = ref([]);
   margin-left: 0.5rem;
   margin-right: 1rem;
 }
+
+@media only screen and (max-width: 769px) {
+  .app {
+    padding: 0;
+  }
+}
+
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <page-header class="app__header" />
-   <main class="app__main">
+    <main class="app__main">
       <router-view />
     </main>
   </div>
@@ -48,4 +48,22 @@ import PageHeader from './components/main-layout/header.vue';
     overflow: auto;
   }
 }
+
+// for mobile view
+@media only screen and (max-width: 481px) {
+
+}
+
+// for tablet view
+@media only screen and (max-width: 769px) {
+  .app {
+    padding: 0;
+    gap: 0;
+
+    &__header {
+      border-radius: 0;
+    }
+  }
+}
+
 </style>
