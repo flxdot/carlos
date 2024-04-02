@@ -3,6 +3,7 @@
   --md-primary-fg-color--light: var(--carlos-primary-color--light);
   --md-primary-fg-color--dark: var(--carlos-primary-color--dark);
   --md-accent-fg-color: var(--carlos-accent-color);
+  --md-default-bg-color: var(--carlos-bg-color);
 }
 
 /* From: https://christianoliff.com/blog/styling-external-links-with-an-icon-in-css/ */
