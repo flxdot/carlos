@@ -12,7 +12,7 @@
         class="logo"
       >
       <p style="font-weight: 600;">
-        🌱 Your friendly greenhouse manager. 🌱
+        Your friendly greenhouse manager.
       </p>
     </div>
   </fancy-panel>
@@ -48,7 +48,7 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
   height: auto;
 }
 
-@media only screen and (max-width: 769px) {
+@media only screen and (width <= 769px) {
   .container {
     border-radius: 0;
     border: none;

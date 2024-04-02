@@ -66,7 +66,7 @@ const menuItems: MenuItem[] = ref([]);
   margin-right: 1rem;
 }
 
-@media only screen and (max-width: 769px) {
+@media only screen and (width <= 769px) {
   .app {
     padding: 0;
   }

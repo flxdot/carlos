@@ -26,8 +26,8 @@ import PageHeader from './components/main-layout/header.vue';
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas:
-    "header header"
-    "navbar main";
+    'header header'
+    'navbar main';
 
   &__navbar {
     grid-area: navbar;
@@ -50,12 +50,12 @@ import PageHeader from './components/main-layout/header.vue';
 }
 
 // for mobile view
-@media only screen and (max-width: 481px) {
+@media only screen and (width <= 481px) {
 
 }
 
 // for tablet view
-@media only screen and (max-width: 769px) {
+@media only screen and (width <= 769px) {
   .app {
     padding: 0;
     gap: 0;

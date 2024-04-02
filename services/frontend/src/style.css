@@ -1,7 +1,7 @@
 :root {
   /* Overwrite some PrimeVue variables */
   --font-family: Geist, system-ui, Helvetica, Arial, sans-serif;
-  --primary-color: #8bc34b;
+  --primary-color: #98b274;
   --primary-color--light: #9ccc66;
   --primary-color--dark: #689f38;
   --primary-color-text: #fff;
@@ -52,6 +52,6 @@ h1, h2, h3, h4, h5, h6, p {
 @media (prefers-color-scheme: light) {
   :root {
     color: rgba(0, 0, 0, 0.87);
-    background-color: #ffffff;
+    background-color: #e2e2e2;
   }
 }
