@@ -4,7 +4,7 @@ services:
 
   api:
     build:
-      context: .
+      context: ../..
       dockerfile: ./services/api/Dockerfile
     restart: unless-stopped
     environment:
@@ -30,8 +30,8 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: ./services/frontend/Dockerfile
+      context: ../..
+      dockerfile: ./server/frontend/Dockerfile
     restart: unless-stopped
     environment:
       - VITE_APP_API_URL=http://api:8000
@@ -47,7 +47,7 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./services/nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/templates:/etc/nginx/templates:ro
       - ./.carlos_data/letsencrypt:/etc/letsencrypt:ro
       - ./.carlos_data/certbot:/var/www/certbot
 
@@ -72,7 +72,7 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ../../.carlos_data/postgres:/var/lib/postgresql/data
     expose:
       - 5432
     healthcheck:
@@ -80,6 +80,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-volumes:
-  db_data:

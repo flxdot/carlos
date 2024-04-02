@@ -1,0 +1,2 @@
+# m h  dom mon dow   command
+0 0  * * *  /carlos/deployment/server/scripts/cron_job.sh
