@@ -1,0 +1,9 @@
+:root {
+  /* Overwrite some PrimeVue variables */
+  --font-family: Geist, system-ui, Helvetica, Arial, sans-serif;
+  --primary-color: var(--carlos-primary-color);
+  --primary-color--light: var(--carlos-primary-color--light);
+  --primary-color--dark: var(--carlos-primary-color--dark);
+  --primary-color-text: var(--carlos-primary-color-text);
+  --primary-color-text--light: var(--carlos-primary-color-text--light);
+}

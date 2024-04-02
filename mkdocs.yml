@@ -4,11 +4,13 @@ site_url: https://fanghanel.dev/carlos
 
 theme:
   name: material
-  logo: assets/type-white.png
+  logo: assets/carlos-logo-type.png
   favicon: assets/favicon.png
   palette:
-    primary: light green
-    accent: green
+    primary: carlos
+    accent: carlos
+    scheme: slate
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/carlos.css

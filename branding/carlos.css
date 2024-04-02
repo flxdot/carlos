@@ -1,0 +1,18 @@
+/* Theme: Carlos
+
+This CSS files is shared among all frontend projects (docs, frontend) and is used to
+define the Carlos theme.
+*/
+
+
+:root {
+  --carlos-primary-color: #98b274;
+  --carlos-primary-color--light: #b6c99c;
+  --carlos-primary-color--dark: #86a45b;
+  --carlos-primary-color-text: #e2e4e9;
+  --carlos-primary-color-text--light: #ffffffb3;
+
+  --carlos-accent-color: #afe06c;
+
+  --carlos-bg-color: #1f2128;
+}

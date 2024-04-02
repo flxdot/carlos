@@ -10,8 +10,8 @@ import {
 export const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: ERouteName.LANDING_PAGE,
-    component: () => import('@/pages/landing-page/landing-page.vue'),
+    name: ERouteName.HOME,
+    component: () => import('@/pages/home/home.vue'),
   },
 ];
 
