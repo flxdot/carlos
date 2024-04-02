@@ -1,5 +1,5 @@
 {
-  "name": "carlos-frontend",
+  "name": "@carlos/frontend",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -20,6 +20,7 @@
     "path": "^0.12.7",
     "primeicons": "^7.0.0",
     "primevue": "^3.50.0",
+    "vite-plugin-compression": "^0.5.1",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },
