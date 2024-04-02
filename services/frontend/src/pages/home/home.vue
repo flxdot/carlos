@@ -34,13 +34,6 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
   align-items: center;
 }
 
-@media only screen and (max-width: 769px) {
-  .container {
-    border-radius: 0;
-    border: none;
-  }
-}
-
 .welcome {
   color: #fff;
   margin-left: -20%;
@@ -50,8 +43,24 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
   flex-wrap: wrap;
 }
 
-img.logo {
+.logo {
   width: 450px;
   height: auto;
+}
+
+@media only screen and (max-width: 769px) {
+  .container {
+    border-radius: 0;
+    border: none;
+  }
+
+  .welcome {
+    margin: 0;
+    align-items: flex-end;
+  }
+
+  .logo {
+    width: 80%;
+  }
 }
 </style>
