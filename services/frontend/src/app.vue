@@ -66,4 +66,11 @@ import PageHeader from './components/main-layout/header.vue';
   }
 }
 
+@media only screen and (width > 1249px) {
+  .app {
+    max-width: 1250px;
+    margin: 0 auto;
+  }
+}
+
 </style>

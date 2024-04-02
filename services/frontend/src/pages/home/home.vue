@@ -26,8 +26,10 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
 <style scoped lang="scss">
 
 .container {
-  width: 100%;
-  height: 100%;
+  --padding: 48px;
+  width: 100%; //calc(100% - var(--padding));
+  height: calc(100% - var(--padding));
+  margin: calc(var(--padding) / 2) 0;
   display: flex;
   justify-content: center;
   align-items: center;
