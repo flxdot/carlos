@@ -7,7 +7,7 @@
 import {
   RouterView,
 } from 'vue-router';
-import PageHeader from './components/header/header.vue';
+import PageHeader from './components/main-layout/header.vue';
 </script>
 
 <style lang="scss">
