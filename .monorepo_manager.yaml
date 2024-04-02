@@ -15,3 +15,5 @@ services/api:
   language: python
 services/device:
   language: python
+services/frontend:
+  language: javascript
