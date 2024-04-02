@@ -34,7 +34,6 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
 }
 
 .welcome {
-  color: #fff;
   margin-left: -20%;
   display: flex;
   gap: 1rem;
