@@ -65,8 +65,8 @@ import PageFooter from './components/main-layout/footer.vue';
 // for tablet view
 @media only screen and (width <= 769px) {
   .app {
-    gap: 0;
     padding: 0;
+    gap: 0;
 
     &__header {
       border-radius: 0;
