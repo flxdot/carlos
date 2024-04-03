@@ -2,15 +2,21 @@ site_name: Carlos
 site_description: Your friendly greenhouse manager.
 site_url: https://fanghanel.dev/carlos
 
+
 theme:
   name: material
-  logo: assets/carlos-logo-type.png
-  favicon: assets/favicon.png
+  logo: _assets/carlos-logo-type.png
+  favicon: _assets/favicon.png
   palette:
     primary: carlos
     accent: carlos
     scheme: slate
+  features:
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.path
 
 extra_css:
-  - stylesheets/extra.css
-  - stylesheets/carlos.css
+  - _stylesheets/extra.css
+  - _stylesheets/carlos.css
