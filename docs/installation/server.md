@@ -4,15 +4,18 @@ This guide will explain how to setup a fresh Debian 12 server.
 But you are free to use any other Linux distribution or even a Windows server.
 But keep in mind that the commands and paths may differ.
 
-To keep the maintenance effort minimal we only require and rely on: `git`, `docker` (`docker-compose`) and `cron`.
+To keep the maintenance effort minimal we only require and rely on: `git`, `docker` (`docker-compose`), `cron`, `ufw`.
 `git` is used to clone the carlos repository and therefore allow us to update the server easily.
 `docker` and `docker-compose` are used to run the carlos server without the need to install any dependencies on the host system.
 `cron` is used to automatically renew the SSL certificates.
+`ufw` is used to manage the firewall and to allow HTTP and HTTPS connections.
 
 We install all tools by running the following commands:
  
 ```bash
-sudo apt update && sudo apt install git docker.io docker-compose cron
+sudo apt update && sudo apt install git docker.io docker-compose cron ufw
+sudo ufw allow 80/tcp comment 'accept HTTP connections'
+sudo ufw allow 443/tcp comment 'accept HTTPS connections'
 ```
 
 Now you are ready to clone the carlos repository in the root of your server.
