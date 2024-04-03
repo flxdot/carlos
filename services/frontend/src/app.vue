@@ -4,6 +4,7 @@
     <main class="app__main">
       <router-view />
     </main>
+    <page-footer class="app__footer" />
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import {
   RouterView,
 } from 'vue-router';
 import PageHeader from './components/main-layout/header.vue';
+import PageFooter from './components/main-layout/footer.vue';
 </script>
 
 <style lang="scss">
@@ -27,7 +29,8 @@ import PageHeader from './components/main-layout/header.vue';
   grid-template-rows: auto 1fr;
   grid-template-areas:
     'header header'
-    'navbar main';
+    'navbar main'
+    'footer footer';
 
   &__navbar {
     grid-area: navbar;
@@ -40,6 +43,11 @@ import PageHeader from './components/main-layout/header.vue';
     position: sticky;
     top: 0;
     grid-area: header;
+  }
+
+  &__footer {
+    grid-area: footer;
+    bottom: 0;
   }
 
   &__main {
@@ -62,6 +70,10 @@ import PageHeader from './components/main-layout/header.vue';
 
     &__header {
       border-radius: 0;
+    }
+
+    &__footer {
+      margin: 1rem 0;
     }
   }
 }
