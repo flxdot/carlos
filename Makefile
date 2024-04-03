@@ -13,14 +13,16 @@ frontend:
 ## Run #################################################################################
 ########################################################################################
 
+install-server:
+
 server-dev:
-	docker compose -f deployment/server/docker-compose.dev.yml --env-file .env up --build
+	docker-compose -f deployment/server/docker-compose.dev.yml --env-file .env up --build
 
 server-dev-no-build:
-	docker compose -f deployment/server/docker-compose.dev.yml --env-file .env up
+	docker-compose -f deployment/server/docker-compose.dev.yml --env-file .env up
 
 server:
-	docker compose -f deployment/server/docker-compose.yml --env-file .env up --build
+	docker-compose -f deployment/server/docker-compose.yml --env-file .env up --build
 
 run-frontend:
 	docker run -p 5173:80 --rm --env-file .env carlos/frontend

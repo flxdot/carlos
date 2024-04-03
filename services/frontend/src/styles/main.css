@@ -1,13 +1,17 @@
 :root {
   --header-height: 48px;
+  --default-font-weight: 400;
+
+  --text-color: var(--carlos-primary-color-text);
+  --bg-color: var(--carlos-bg-color);
 
   font-family: var(--font-family);
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: var(--default-font-weight);
 
   color-scheme: light dark;
-  color: var(--carlos-primary-color-text);
-  background-color: var(--carlos-bg-color);
+  color: var(--text-color);
+  background-color: var(--bg-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -47,7 +51,7 @@ h1, h2, h3, h4, h5, h6, p {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: rgba(0, 0, 0, 0.87);
-    background-color: #e2e2e2;
+    --text-color: rgba(0, 0, 0, 0.87);
+    --bg-color: #e2e2e2;
   }
 }
