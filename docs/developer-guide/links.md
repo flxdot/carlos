@@ -15,6 +15,7 @@ This page is a loose collection of helpful articles, blog posts, and other resou
 ## Frontend
 
 - [Chart.js Tutorial — How To Make Gradient Line Chart](https://blog.vanila.io/chart-js-tutorial-how-to-make-gradient-line-chart-af145e5c92f9)
+- [Customising an iOS home screen web app in 2021](https://johan.im/writings/ios-homescreen-web-app/)
 
 ## Websockets
 
