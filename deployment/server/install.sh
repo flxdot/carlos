@@ -1,4 +1,10 @@
 #!/bin/bash
+# takes two paramters, the domain name and the email to be associated with the certificate
+DOMAIN=$1
+EMAIL=$2
+
+echo DOMAIN=${DOMAIN} >> .env
+echo EMAIL=${EMAIL} >> .env
 
 # Phase 1
 docker-compose -f ./deployment/server/docker-compose-initiate.yaml --env /carlos/.env up -d nginx
