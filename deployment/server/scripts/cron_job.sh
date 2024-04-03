@@ -9,5 +9,5 @@ else
 fi
 
 # renew certbot certificate
-docker-compose -f /carlos/deployment/server/docker-compose.yaml --env ../../.env run --rm certbot
-docker-compose -f /carlos/deployment/server/docker-compose.yaml --env ../../.env exec nginx nginx -s reload
+docker-compose -f /carlos/deployment/server/docker-compose.yaml --env /carlos/.env run --rm certbot
+docker-compose -f /carlos/deployment/server/docker-compose.yaml --env /carlos/.env exec nginx nginx -s reload
