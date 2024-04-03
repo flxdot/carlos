@@ -1,0 +1,66 @@
+name: test-services/frontend
+
+# cancel previous runs if the branch is updated.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+# Down scope as necessary via https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
+permissions:
+  checks: write
+  contents: write
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, review_requested]
+    paths:
+      - .github/workflows/test-services-frontend.yml
+      - services/frontend/**
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+
+jobs:
+
+  test:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Frontend
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: select yarn version
+        run: |
+          corepack enable
+          yarn set version classic
+
+      - name: cache deps
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: ./**/node_modules/*
+          key: frontend-lock-${{ hashFiles('./yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run security audit
+        run: yarn audit --groups dependencies
+
+      - name: build workspace
+        working-directory: .
+        run: yarn build
