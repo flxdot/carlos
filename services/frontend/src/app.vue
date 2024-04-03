@@ -22,7 +22,7 @@ import PageFooter from './components/main-layout/footer.vue';
 .app {
   width: 100dvw;
   min-height: 100dvh;
-  padding: 1.5rem;
+  padding: calc(1.5rem + env(safe-area-inset-top)) calc(1.5rem + env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom)) calc(1.5rem + env(safe-area-inset-left));
   display: grid;
   gap: 1rem 0;
   grid-template-columns: auto 1fr;
@@ -65,15 +65,15 @@ import PageFooter from './components/main-layout/footer.vue';
 // for tablet view
 @media only screen and (width <= 769px) {
   .app {
-    padding: 0;
     gap: 0;
+    padding: 0;
 
     &__header {
       border-radius: 0;
     }
 
     &__footer {
-      margin: 1rem 0;
+      margin: 1rem 0 env(safe-area-inset-bottom);
     }
   }
 }
