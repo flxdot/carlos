@@ -51,7 +51,7 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - /nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/templates:/etc/nginx/templates:ro
       - /carlos/.carlos_data/letsencrypt:/etc/letsencrypt:ro
       - /carlos/.carlos_data/certbot:/var/www/certbot
 
