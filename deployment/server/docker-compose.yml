@@ -51,9 +51,9 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./nginx/templates:/etc/nginx/templates:ro
-      - ./.carlos_data/letsencrypt:/etc/letsencrypt:ro
-      - ./.carlos_data/certbot:/var/www/certbot
+      - /nginx/templates:/etc/nginx/templates:ro
+      - /carlos/.carlos_data/letsencrypt:/etc/letsencrypt:ro
+      - /carlos/.carlos_data/certbot:/var/www/certbot
 
   certbot:
     container_name: certbot
@@ -65,8 +65,8 @@ services:
              -m ${EMAIL} --agree-tos --no-eff-email
              -d ${DOMAIN} -d api.${DOMAIN}
     volumes:
-      - ./.carlos_data/letsencrypt:/etc/letsencrypt
-      - ./.carlos_data/certbot:/var/www/certbot
+      - /carlos/.carlos_data/letsencrypt:/etc/letsencrypt
+      - /carlos/.carlos_data/certbot:/var/www/certbot
 
   db:
     image: postgres:15
@@ -76,7 +76,7 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
     volumes:
-      - ../../.carlos_data/postgres:/var/lib/postgresql/data
+      - /carlos/.carlos_data/postgres:/var/lib/postgresql/data
     expose:
       - 5432
     healthcheck:
