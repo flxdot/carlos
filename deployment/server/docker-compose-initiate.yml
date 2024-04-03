@@ -19,7 +19,7 @@ services:
     command: >- 
              certonly --reinstall --webroot --webroot-path=/var/www/certbot
              -m ${EMAIL} --agree-tos --no-eff-email
-             -d ${DOMAIN} -d api.${DOMAIN} -v
+             -d ${DOMAIN} -d api.${DOMAIN} -v --staging
     volumes:
       - /carlos/.carlos_data/letsencrypt:/etc/letsencrypt
       - /carlos/.carlos_data/certbot:/var/www/certbot
