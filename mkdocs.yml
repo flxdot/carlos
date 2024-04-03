@@ -12,6 +12,7 @@ theme:
     accent: carlos
     scheme: slate
   features:
+    - content.code.copy
     - navigation.indexes
     - navigation.instant
     - navigation.instant.progress

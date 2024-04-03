@@ -1,1 +1,0 @@
-# Installation: Carlos Device (Raspberry Pi)
