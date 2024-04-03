@@ -30,5 +30,5 @@ cd /carlos && cp .env.example .env
 Now you need to adjust the `.env` file to your needs.
 
 ```bash
-sh /carlos/deployment/server/install.sh
+sh /carlos/deployment/server/install.sh your-domain.com your-email@provider.com
 ```
