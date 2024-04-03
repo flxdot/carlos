@@ -17,4 +17,4 @@ openssl dhparam -out /carlos/.carlos_data/letsencrypt/ssl-dhparams.pem 2048
 
 # Phase 2
 crontab /carlos/deployment/server/crontab
-docker-compose -f /carlos/deployment/server/docker-compose.yml --env-file /carlos/.env -d up
+docker-compose -f /carlos/deployment/server/docker-compose.yml --env-file /carlos/.env up --detach
