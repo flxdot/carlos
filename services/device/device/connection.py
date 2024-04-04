@@ -1,18 +1,20 @@
 from pathlib import Path
 
-from carlos.edge.device.config import read_config_file
+from carlos.edge.device.config import read_config_file, write_config_file
 from carlos.edge.interface import get_websocket_endpoint, get_websocket_token_endpoint
 from carlos.edge.interface.endpoint import append_token_query
-from pydantic import Field
+from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings
 
 
 class ConnectionSettings(BaseSettings):
     """A selection of settings required to make the connection to the server."""
 
-    server_host: str = Field(..., description="The domain of the server to connect to.")
-
-    use_ssl: bool = Field(True, description="Whether to use SSL for the connection.")
+    server_url: AnyHttpUrl = Field(
+        ...,
+        description="Please provide the URL to the Carlos server.",
+        examples=["https://carlos.my-domain.com"],
+    )
 
     def get_websocket_uri(self, device_id: str, token: str | None = None) -> str:
         """Returns the URI of the websocket.
@@ -22,10 +24,9 @@ class ConnectionSettings(BaseSettings):
         the URI.
         """
 
-        uri_without_token = (
-            f"ws{'s' if self.use_ssl else ''}://{self.server_host}"
-            + get_websocket_endpoint(device_id)
-        )
+        uri_without_token = self.server_url.replace(
+            "http", "ws"
+        ) + get_websocket_endpoint(device_id)
 
         if token is None:
             return uri_without_token
@@ -37,10 +38,7 @@ class ConnectionSettings(BaseSettings):
         :param device_id: The ID of the device.
         """
 
-        return (
-            f"http{'s' if self.use_ssl else ''}://{self.server_host}"
-            + get_websocket_token_endpoint(device_id)
-        )
+        return self.server_url + get_websocket_token_endpoint(device_id)
 
 
 def read_connection_settings() -> ConnectionSettings:
@@ -48,4 +46,12 @@ def read_connection_settings() -> ConnectionSettings:
 
     return read_config_file(
         path=Path.cwd() / "device_connection", schema=ConnectionSettings
+    )
+
+
+def write_connection_settings(connection_settings: ConnectionSettings):
+    """Writes the connection settings to the current working directory."""
+
+    return write_config_file(
+        path=Path.cwd() / "device_connection", config=connection_settings
     )
