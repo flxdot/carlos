@@ -4,13 +4,16 @@ from typing import TypeVar
 
 import typer
 from carlos.edge.device import DeviceConfig
-from carlos.edge.device.config import write_config, read_config
+from carlos.edge.device.config import read_config, write_config
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
-from rich import print_json, print
+from rich import print, print_json
 
-from device.connection import ConnectionSettings, write_connection_settings, \
-    read_connection_settings
+from device.connection import (
+    ConnectionSettings,
+    read_connection_settings,
+    write_connection_settings,
+)
 
 config_cli = typer.Typer()
 
