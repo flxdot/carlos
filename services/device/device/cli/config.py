@@ -4,13 +4,16 @@ from typing import TypeVar
 
 import typer
 from carlos.edge.device import DeviceConfig
-from carlos.edge.device.config import write_config, read_config
+from carlos.edge.device.config import read_config, write_config
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
-from rich import print_json, print
+from rich import print, print_json
 
-from device.connection import ConnectionSettings, write_connection_settings, \
-    read_connection_settings
+from device.connection import (
+    ConnectionSettings,
+    read_connection_settings,
+    write_connection_settings,
+)
 
 config_cli = typer.Typer()
 
@@ -22,15 +25,14 @@ def ask_pydantic_model(model: type[Model]) -> Model:
     """Asks the user to fill the values of a pydantic model."""
 
     answers = {}
-    for name, field in model.__fields__.items():
-        prompt_kwargs = {
-            "text": field.description,
-            "type": field.annotation,
-        }
+    for name, field in model.model_fields.items():
+        prompt_kwargs = {}
         if not isinstance(field.default, PydanticUndefinedType):
             prompt_kwargs["default"] = field.default
 
-        answer = typer.prompt(**prompt_kwargs)
+        answer = typer.prompt(
+            text=field.description or name, type=field.annotation, **prompt_kwargs
+        )
 
         answers[name] = answer
 

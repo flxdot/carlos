@@ -1,7 +1,7 @@
 import random
 import secrets
 from pathlib import Path
-from string import ascii_lowercase, ascii_uppercase
+from string import ascii_lowercase, digits
 
 import pytest
 from carlos.edge.device.config import write_config_file
@@ -11,7 +11,7 @@ from .connection import ConnectionSettings, read_connection_settings
 
 
 def rand_printable_letters(length: int) -> str:
-    return "".join(random.choices(ascii_lowercase + ascii_uppercase, k=length))
+    return "".join(random.choices(ascii_lowercase + digits, k=length))
 
 
 class TestConnectionSettings:
@@ -34,7 +34,7 @@ class TestConnectionSettings:
     def settings(self, domain: str) -> ConnectionSettings:
         """Returns a bunch of connection settings."""
 
-        return ConnectionSettings(server_host=domain)
+        return ConnectionSettings(server_url=f"http://{domain}")
 
     @pytest.fixture()
     def random_device_id(self) -> str:
@@ -84,7 +84,7 @@ class TestConnectionSettings:
 def test_read_connection_settings(tmp_path: Path):
     """This function ensures that the connection settings can be read."""
 
-    settings = ConnectionSettings(server_host="example.com")
+    settings = ConnectionSettings(server_url="http://example.com")
 
     write_config_file(path=tmp_path / "device_connection", config=settings)
 

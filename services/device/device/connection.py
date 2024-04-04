@@ -24,8 +24,8 @@ class ConnectionSettings(BaseSettings):
         the URI.
         """
 
-        uri_without_token = self.server_url.replace(
-            "http", "ws"
+        uri_without_token = str(self.server_url).replace("http", "ws").strip(
+            "/"
         ) + get_websocket_endpoint(device_id)
 
         if token is None:
@@ -38,7 +38,7 @@ class ConnectionSettings(BaseSettings):
         :param device_id: The ID of the device.
         """
 
-        return self.server_url + get_websocket_token_endpoint(device_id)
+        return str(self.server_url).strip("/") + get_websocket_token_endpoint(device_id)
 
 
 def read_connection_settings() -> ConnectionSettings:
