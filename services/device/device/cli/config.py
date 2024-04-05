@@ -28,7 +28,7 @@ def ask_pydantic_model(model: type[Model]) -> Model:
     for name, field in model.model_fields.items():
         prompt_kwargs = {}
         if not isinstance(field.default, PydanticUndefinedType):
-            prompt_kwargs["default"] = field.default
+            prompt_kwargs["default"] = field.default  # pragma: no cover
 
         answer = typer.prompt(
             text=field.description or name, type=field.annotation, **prompt_kwargs

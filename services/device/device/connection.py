@@ -41,11 +41,14 @@ class ConnectionSettings(BaseSettings):
         return str(self.server_url).strip("/") + get_websocket_token_endpoint(device_id)
 
 
+DEVICE_CONNECTION_FILE_NAME = "device_connection"
+
+
 def read_connection_settings() -> ConnectionSettings:
     """Reads the connection settings from the environment variables."""
 
     return read_config_file(
-        path=Path.cwd() / "device_connection", schema=ConnectionSettings
+        path=Path.cwd() / DEVICE_CONNECTION_FILE_NAME, schema=ConnectionSettings
     )
 
 
@@ -53,5 +56,5 @@ def write_connection_settings(connection_settings: ConnectionSettings):
     """Writes the connection settings to the current working directory."""
 
     return write_config_file(
-        path=Path.cwd() / "device_connection", config=connection_settings
+        path=Path.cwd() / DEVICE_CONNECTION_FILE_NAME, config=connection_settings
     )

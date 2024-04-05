@@ -7,7 +7,8 @@ cli.add_typer(config_cli, name="config")
 
 
 @cli.command()
-def run():
+def run():  # pragma: no cover
+    """Runs the device services."""
     import asyncio
 
     from ..run import main
@@ -15,7 +16,8 @@ def run():
     asyncio.run(main())
 
 
-def main():
+def main():  # pragma: no cover
+    """Used to run the CLI."""
     cli()
 
 
