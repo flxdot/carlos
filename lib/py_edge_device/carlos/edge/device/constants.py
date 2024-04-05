@@ -1,5 +1,4 @@
 from importlib import metadata
-from pathlib import Path
 
 VERSION = metadata.version(__package__)
 
