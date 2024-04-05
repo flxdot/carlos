@@ -85,7 +85,7 @@ def setup_logging(
         syslogger = logging.getLogger(logger_name)
         syslogger.handlers = []
 
-        if syslogger.parent.name in seen:
+        if syslogger.parent is not None and syslogger.parent.name in seen:
             continue
 
         # change handler for default uvicorn logger
