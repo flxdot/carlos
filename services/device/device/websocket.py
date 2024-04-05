@@ -42,10 +42,9 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
             return
 
         connection_strategy = BackOff()
-        # self._connection = await connection_strategy.execute(
-        #     func=self._do_connect, expected_exceptions=(Exception,)
-        # )
-        self._connection = await self._do_connect()
+        self._connection = await connection_strategy.execute(
+            func=self._do_connect, expected_exceptions=(Exception,)
+        )
 
         logger.info(f"Connected to the server: {self._settings.server_url}")
 
