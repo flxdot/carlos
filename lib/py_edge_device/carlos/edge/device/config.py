@@ -15,7 +15,7 @@ from typing import TypeVar
 import yaml
 from pydantic import BaseModel, Field
 
-from carlos.edge.device.constants import CONFIG_FILE
+from carlos.edge.device.constants import CONFIG_FILE_NAME
 
 
 class DeviceConfig(BaseModel):
@@ -53,11 +53,11 @@ def read_config() -> DeviceConfig:  # pragma: no cover
     """Reads the configuration from the default location."""
 
     return read_config_file(
-        path=CONFIG_FILE,
+        path=Path.cwd() / CONFIG_FILE_NAME,
         schema=DeviceConfig,
     )
 
 
 def write_config(config: DeviceConfig):  # pragma: no cover
     """Writes the configuration to the default location."""
-    write_config_file(path=CONFIG_FILE, config=config)
+    write_config_file(path=Path.cwd() / CONFIG_FILE_NAME, config=config)

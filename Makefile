@@ -13,8 +13,6 @@ frontend:
 ## Run #################################################################################
 ########################################################################################
 
-install-server:
-
 server-dev:
 	docker-compose -f deployment/server/docker-compose.dev.yml --env-file .env up --build
 
