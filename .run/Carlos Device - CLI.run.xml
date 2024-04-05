@@ -23,7 +23,7 @@
         <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
       </ENTRIES>
     </EXTENSION>
-    <option name="SCRIPT_NAME" value="device.cli:main" />
+    <option name="SCRIPT_NAME" value="device.cli" />
     <option name="PARAMETERS" value="config create" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />

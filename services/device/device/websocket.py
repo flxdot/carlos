@@ -42,11 +42,12 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
             return
 
         connection_strategy = BackOff()
-        self._connection = await connection_strategy.execute(
-            func=self._do_connect, expected_exceptions=(Exception,)
-        )
+        # self._connection = await connection_strategy.execute(
+        #     func=self._do_connect, expected_exceptions=(Exception,)
+        # )
+        self._connection = await self._do_connect()
 
-        logger.info(f"Connected to the server: {self._settings.server_host}")
+        logger.info(f"Connected to the server: {self._settings.server_url}")
 
     async def _do_connect(self) -> websockets.WebSocketClientProtocol:
         """Internal method to perform the connection to the websocket."""
@@ -55,6 +56,8 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
             response = await client.get(
                 self._settings.get_websocket_token_uri(device_id=self._device_id)
             )
+            if not response.is_success:
+                raise ConnectionError("Failed to get the token.")
             token = response.text
 
         websocket_uri = self._settings.get_websocket_uri(
