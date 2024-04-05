@@ -80,8 +80,17 @@ def setup_logging(
     if logger_to_intercept is None:
         logger_to_intercept = LOGGERS_TO_INTERCEPT
 
+    seen = set()
     for logger_name in logger_to_intercept:
-        replace_logger(logger_name)
+        syslogger = logging.getLogger(logger_name)
+        syslogger.handlers = []
+
+        if syslogger.parent.name in seen:
+            continue
+
+        # change handler for default uvicorn logger
+        logging.getLogger(logger_name).handlers = [InterceptHandler()]
+        seen.add(logger_name)
 
     # set logs output, level and format
     logger.configure(
@@ -93,20 +102,3 @@ def setup_logging(
             }
         ]
     )
-
-
-def replace_logger(logger_name: str):
-    """Replaces a logger from standard lib with a loguru logger."""
-
-    loggers = [
-        logging.getLogger(name)
-        for name in logging.root.manager.loggerDict
-        if name.startswith(f"{logger_name}.")
-    ]
-    loggers.append(logging.getLogger(logger_name))
-    for lib_logger in loggers:
-        lib_logger.handlers = []
-
-    # change handler for default uvicorn logger
-    intercept_handler = InterceptHandler()
-    logging.getLogger(logger_name).handlers = [intercept_handler]
