@@ -10,10 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
     steps:
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          script: sh /carlos/scripts/server-update.sh
+      # https://blog.benoitblanchon.fr/github-action-run-ssh-commands/
+      - name: Configure SSH on host
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$KEY" > ~/.ssh/carlos.key
+          chmod 600 ~/.ssh/carlos.key
+          cat >>~/.ssh/config <<END
+          Host staging
+            HostName $HOST
+            User $USER
+            IdentityFile ~/.ssh/carlos.key
+            StrictHostKeyChecking no
+          END
+        env:
+          HOST: ${{ secrets.HOST }}
+          USER: ${{ secrets.USERNAME }}
+          KEY: ${{ secrets.KEY }}
+      - name: Update the server
+        run: ssh staging 'sh /carlos/scripts/server-update.sh'
