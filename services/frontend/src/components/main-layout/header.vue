@@ -29,9 +29,15 @@
     </template>
     <template #end>
       <prm-button
+        v-if="!isAuthenticated"
         text
         label="Login"
         @click="login"
+      />
+      <prm-avatar
+        v-else
+        :label="getUserInitials()"
+        style="background-color: #fff3;"
       />
     </template>
   </menubar>
@@ -46,6 +52,7 @@ import {
   MenuItem,
 } from 'primevue/menuitem';
 import PrmButton from 'primevue/button';
+import PrmAvatar from 'primevue/avatar';
 import {
   useAuth0,
 } from '@auth0/auth0-vue';
@@ -55,12 +62,27 @@ import {
 
 const {
   loginWithRedirect,
+  user,
+  isAuthenticated,
 } = useAuth0();
+
 const menuItems = ref<MenuItem[]>([]);
 
 function login() {
   loginWithRedirect();
 }
+
+function getUserInitials() {
+  if (isAuthenticated && user.value && user.value.name) {
+    const [
+      firstName,
+      lastName,
+    ] = user.value.name.split(' ');
+    return `${firstName.charAt(0)}${lastName ? lastName.charAt(0) : ''}`;
+  }
+  return '';
+}
+
 </script>
 
 <style scoped lang="scss">

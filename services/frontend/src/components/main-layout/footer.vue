@@ -54,6 +54,7 @@ import MaterialForMkDocsIcon from '@/assets/icons/materialformkdocs.svg';
   color: var(--text-color);
   fill: var(--text-color);
 }
+
 .icon-link:not(:last-child) {
   margin-right: 1rem;
 }

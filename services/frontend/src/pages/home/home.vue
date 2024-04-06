@@ -27,6 +27,7 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
 
 .container {
   --padding: 48px;
+
   width: 100%;
   height: 100%;
   display: flex;
@@ -38,8 +39,7 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
   margin-left: -20%;
   display: flex;
   gap: 1rem;
-  flex-direction: column;
-  flex-wrap: wrap;
+  flex-flow: column wrap;
 }
 
 .logo {
