@@ -17,10 +17,12 @@ import '@/styles/primetheme.scss';
 import '@/styles/main.css';
 import '@/styles/carlos.css';
 import config from '@/config.ts';
+import i18n from '@/plugins/i18n';
 
 const pinia = createPinia();
 const app = createApp(App);
 
+app.use(i18n);
 app.use(pinia);
 app.use(PrimeVue);
 app.use(

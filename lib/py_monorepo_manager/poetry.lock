@@ -443,7 +443,7 @@ files = [
 MarkupSafe = ">=2.0"
 
 [package.extras]
-i18n = ["Babel (>=2.7)"]
+index = ["Babel (>=2.7)"]
 
 [[package]]
 name = "loguru"
