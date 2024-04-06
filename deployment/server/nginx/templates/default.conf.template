@@ -7,7 +7,7 @@ map $http_upgrade $connection_upgrade {
 server {
     listen [::]:80 default_server;
     listen 80 default_server;
-    server_name _;
+    server_name *.$DOMAIN $DOMAIN;
     return 301 https://$host$request_uri;
 }
 
@@ -15,7 +15,7 @@ server {
     listen [::]:443 ssl;
     listen 443 ssl;
     http2 on;
-    server_name $DOMAIN;
+    server_name $DOMAIN www.$DOMAIN;
 
     ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
