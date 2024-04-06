@@ -474,7 +474,7 @@ files = [
 MarkupSafe = ">=2.0"
 
 [package.extras]
-index = ["Babel (>=2.7)"]
+i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "loguru"
@@ -616,7 +616,7 @@ pyyaml-env-tag = ">=0.1"
 watchdog = ">=2.0"
 
 [package.extras]
-index = ["babel (>=2.9.0)"]
+i18n = ["babel (>=2.9.0)"]
 min-versions = ["babel (==2.9.0)", "click (==7.0)", "colorama (==0.4)", "ghp-import (==1.0)", "importlib-metadata (==4.3)", "jinja2 (==2.11.1)", "markdown (==3.2.1)", "markupsafe (==2.0.1)", "mergedeep (==1.3.4)", "packaging (==20.5)", "pathspec (==0.11.1)", "platformdirs (==2.2.0)", "pyyaml (==5.1)", "pyyaml-env-tag (==0.1)", "typing-extensions (==3.10)", "watchdog (==2.0)"]
 
 [[package]]
