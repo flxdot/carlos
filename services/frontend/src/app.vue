@@ -6,23 +6,14 @@
     </main>
     <page-footer class="app__footer" />
   </div>
-  <overlay-loading v-if="isLoading" />
 </template>
 
 <script setup lang="ts">
 import {
   RouterView,
 } from 'vue-router';
-import {
-  useAuth0,
-} from '@auth0/auth0-vue';
 import PageHeader from './components/main-layout/header.vue';
 import PageFooter from './components/main-layout/footer.vue';
-import OverlayLoading from '@/components/overlay-loading/overlay-loading.vue';
-
-const {
-  isLoading,
-} = useAuth0();
 
 </script>
 

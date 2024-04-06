@@ -28,103 +28,110 @@
       </router-link>
     </template>
     <template #end>
-      <prm-button
-        v-if="!isAuthenticated"
-        text
-        label="Login"
-        icon="pi pi-sign-in"
-        @click="login"
-      />
-      <button
-        v-else
-        type="button"
-        size="large"
-        @click="userMenu!.toggle"
-      >
-        <prm-avatar
-          :label="userInitials"
+      <div class="mr-2">
+        <prm-skeleton
+          v-if="isLoading"
+          size="2rem"
+          style="opacity: 0.5;"
         />
-      </button>
-      <prm-menu
-        ref="userMenu"
-        popup
-        :model="avatarMenuItems"
-        a
-        class="carlos-nav"
-        style="width: 18rem;"
-      >
-        <template #start>
-          <div class="p-4 font-semibold">
-            <prm-avatar :label="userInitials" />
-            <span class="pl-2">{{ userName || '' }}</span>
-          </div>
-        </template>
-        <template #item="{ item, props }">
-          <router-link
-            v-if="item.routeName"
-            v-slot="{ href, navigate }"
-            :to="item.routeName"
-            custom
-          >
-            <a
-              v-ripple
-              :href="href"
-              v-bind="props.action"
-              class="menu-item"
-              :style="item.style"
-              @click="navigate"
-            >
-              <span :class="item.icon" />
-              <span class="ml-2">{{ item.label }}</span>
-            </a>
-          </router-link>
-          <button
-            v-else-if="item.command"
-            v-ripple
-            v-bind="props.action"
-            :style="item.style"
-            type="button"
-            class="w-full menu-item"
-          >
-            <span :class="item.icon" />
-            <span class="ml-2">{{ item.label }}</span>
-          </button>
-          <div
-            v-else
-            class="menu-item"
-            :style="item.style"
-            @hover.capture.stop
-            @click.capture.stop
-          >
-            <span class="mx-4">{{ item.label }}</span>
-          </div>
-        </template>
-        <template
-          #end
+        <prm-button
+          v-else-if="!isLoading && !isAuthenticated"
+          text
+          :label="i18n.global.t('authentication.login')"
+          icon="pi pi-sign-in"
+          @click="login"
+        />
+        <button
+          v-else
+          type="button"
+          size="large"
+          @click="userMenu!.toggle"
         >
-          <div
-            class="p-4"
-            style="display: flex; justify-content: space-between;"
-          >
+          <prm-avatar
+            :label="userInitials"
+          />
+        </button>
+        <prm-menu
+          ref="userMenu"
+          popup
+          :model="avatarMenuItems"
+          a
+          class="carlos-nav"
+          style="width: 18rem;"
+        >
+          <template #start>
+            <div class="p-4 font-semibold">
+              <prm-avatar :label="userInitials" />
+              <span class="pl-2">{{ userName || '' }}</span>
+            </div>
+          </template>
+          <template #item="{ item, props }">
             <router-link
+              v-if="item.routeName"
               v-slot="{ href, navigate }"
-              :to="{
-                name: ERouteName.RELEASE_NOTES
-              }"
+              :to="item.routeName"
               custom
             >
               <a
                 v-ripple
                 :href="href"
+                v-bind="props.action"
                 class="menu-item"
+                :style="item.style"
                 @click="navigate"
               >
-                <span class="font-bold">{{ packageInfo.version }}</span>
+                <span :class="item.icon" />
+                <span class="ml-2">{{ item.label }}</span>
               </a>
             </router-link>
-          </div>
-        </template>
-      </prm-menu>
+            <button
+              v-else-if="item.command"
+              v-ripple
+              v-bind="props.action"
+              :style="item.style"
+              type="button"
+              class="w-full menu-item"
+            >
+              <span :class="item.icon" />
+              <span class="ml-2">{{ item.label }}</span>
+            </button>
+            <div
+              v-else
+              class="menu-item"
+              :style="item.style"
+              @hover.capture.stop
+              @click.capture.stop
+            >
+              <span class="mx-4">{{ item.label }}</span>
+            </div>
+          </template>
+          <template
+            #end
+          >
+            <div
+              class="p-4"
+              style="display: flex; justify-content: space-between;"
+            >
+              <router-link
+                v-slot="{ href, navigate }"
+                :to="{
+                  name: ERouteName.RELEASE_NOTES
+                }"
+                custom
+              >
+                <a
+                  v-ripple
+                  :href="href"
+                  class="menu-item"
+                  @click="navigate"
+                >
+                  <span class="font-bold">{{ packageInfo.version }}</span>
+                </a>
+              </router-link>
+            </div>
+          </template>
+        </prm-menu>
+      </div>
     </template>
   </menubar>
 </template>
@@ -141,6 +148,7 @@ import {
 import PrmButton from 'primevue/button';
 import PrmAvatar from 'primevue/avatar';
 import PrmMenu from 'primevue/menu';
+import PrmSkeleton from 'primevue/skeleton';
 import {
   useAuth0,
 } from '@auth0/auth0-vue';
@@ -148,12 +156,14 @@ import {
   ERouteName,
 } from '@/router/route-name.ts';
 import packageInfo from '@/../package.json';
+import i18n from '@/plugins/i18n';
 
 const {
   loginWithRedirect,
   user,
   isAuthenticated,
   logout,
+  isLoading,
 } = useAuth0();
 
 const userMenu = ref<InstanceType<typeof PrmMenu> | null>(null);
@@ -165,7 +175,7 @@ const avatarMenuItems = ref([
     separator: true,
   },
   {
-    label: 'Logout',
+    label: i18n.global.t('authentication.logout'),
     icon: 'pi pi-sign-out',
     style: {
       color: 'var(--carlos-danger-color)',
