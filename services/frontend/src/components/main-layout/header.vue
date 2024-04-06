@@ -1,7 +1,7 @@
 <template>
   <menubar
     :model="menuItems"
-    class="menubar"
+    class="carlos-nav"
   >
     <template
       #start
@@ -32,13 +32,99 @@
         v-if="!isAuthenticated"
         text
         label="Login"
+        icon="pi pi-sign-in"
         @click="login"
       />
-      <prm-avatar
+      <button
         v-else
-        :label="getUserInitials()"
-        style="background-color: #fff3;"
-      />
+        type="button"
+        size="large"
+        @click="userMenu!.toggle"
+      >
+        <prm-avatar
+          :label="userInitials"
+        />
+      </button>
+      <prm-menu
+        ref="userMenu"
+        popup
+        :model="avatarMenuItems"
+        a
+        class="carlos-nav"
+        style="width: 18rem;"
+      >
+        <template #start>
+          <div class="p-4 font-semibold">
+            <prm-avatar :label="userInitials" />
+            <span class="pl-2">{{ userName || '' }}</span>
+          </div>
+        </template>
+        <template #item="{ item, props }">
+          <router-link
+            v-if="item.routeName"
+            v-slot="{ href, navigate }"
+            :to="item.routeName"
+            custom
+          >
+            <a
+              v-ripple
+              :href="href"
+              v-bind="props.action"
+              class="menu-item"
+              :style="item.style"
+              @click="navigate"
+            >
+              <span :class="item.icon" />
+              <span class="ml-2">{{ item.label }}</span>
+            </a>
+          </router-link>
+          <button
+            v-else-if="item.command"
+            v-ripple
+            v-bind="props.action"
+            :style="item.style"
+            type="button"
+            class="w-full menu-item"
+          >
+            <span :class="item.icon" />
+            <span class="ml-2">{{ item.label }}</span>
+          </button>
+          <div
+            v-else
+            class="menu-item"
+            :style="item.style"
+            @hover.capture.stop
+            @click.capture.stop
+          >
+            <span class="mx-4">{{ item.label }}</span>
+          </div>
+        </template>
+        <template
+          #end
+        >
+          <div
+            class="p-4"
+            style="display: flex; justify-content: space-between;"
+          >
+            <router-link
+              v-slot="{ href, navigate }"
+              :to="{
+                name: ERouteName.RELEASE_NOTES
+              }"
+              custom
+            >
+              <a
+                v-ripple
+                :href="href"
+                class="menu-item"
+                @click="navigate"
+              >
+                <span class="font-bold">{{ packageInfo.version }}</span>
+              </a>
+            </router-link>
+          </div>
+        </template>
+      </prm-menu>
     </template>
   </menubar>
 </template>
@@ -46,6 +132,7 @@
 <script setup lang="ts">
 import {
   ref,
+  computed,
 } from 'vue';
 import Menubar from 'primevue/menubar';
 import {
@@ -53,45 +140,78 @@ import {
 } from 'primevue/menuitem';
 import PrmButton from 'primevue/button';
 import PrmAvatar from 'primevue/avatar';
+import PrmMenu from 'primevue/menu';
 import {
   useAuth0,
 } from '@auth0/auth0-vue';
 import {
   ERouteName,
 } from '@/router/route-name.ts';
+import packageInfo from '@/../package.json';
 
 const {
   loginWithRedirect,
   user,
   isAuthenticated,
+  logout,
 } = useAuth0();
+
+const userMenu = ref<InstanceType<typeof PrmMenu> | null>(null);
 
 const menuItems = ref<MenuItem[]>([]);
 
-function login() {
-  loginWithRedirect();
-}
+const avatarMenuItems = ref([
+  {
+    separator: true,
+  },
+  {
+    label: 'Logout',
+    icon: 'pi pi-sign-out',
+    style: {
+      color: 'var(--carlos-danger-color)',
+    },
+    command: () => logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    }),
+  },
+  {
+    separator: true,
+  },
+]);
 
-function getUserInitials() {
-  if (isAuthenticated && user.value && user.value.name) {
+const userName = computed<string | undefined>(() => {
+  return isAuthenticated && user.value && user.value.name ? user.value.name : undefined;
+});
+
+const userInitials = computed<string>(() => {
+  if (userName.value) {
     const [
       firstName,
       lastName,
-    ] = user.value.name.split(' ');
+    ] = userName.value.split(' ');
     return `${firstName.charAt(0)}${lastName ? lastName.charAt(0) : ''}`;
   }
   return '';
+});
+
+function login() {
+  loginWithRedirect();
 }
 
 </script>
 
 <style scoped lang="scss">
 
-.menubar {
-  height: var(--header-height);
+.p-menu.p-menu-overlay, .p-menubar {
   background-color: var(--primary-color);
   border: none;
   color: var(--primary-color-text);
+}
+
+.p-menubar {
+  height: var(--header-height);
 }
 
 .logo {
@@ -114,5 +234,10 @@ function getUserInitials() {
 
 .p-button.p-button-text {
   color: var(--primary-color-text);
+}
+
+.menu-item {
+  text-align: start;
+  word-break: break-word;
 }
 </style>

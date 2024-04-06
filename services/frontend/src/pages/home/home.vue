@@ -1,6 +1,6 @@
 <template>
   <fancy-panel
-    class="container"
+    class="home-container"
   >
     <div class="welcome">
       <h1 style="font-weight: 200;">
@@ -25,7 +25,7 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
 
 <style scoped lang="scss">
 
-.container {
+.home-container {
   --padding: 48px;
 
   width: 100%;
@@ -48,7 +48,7 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
 }
 
 @media only screen and (width <= 769px) {
-  .container {
+  .home-container {
     border-radius: 0;
     border: none;
   }

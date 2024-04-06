@@ -18,6 +18,11 @@ export const routes: RouteRecordRaw[] = [
     name: ERouteName.ACCEPT_LOGIN,
     component: () => import('@/pages/auth/accept-login.vue'),
   },
+  {
+    path: '/release-notes',
+    name: ERouteName.RELEASE_NOTES,
+    component: () => import('@/pages/release-notes/release-notes.vue'),
+  },
   // This route should be the last one
   {
     path: '/:pathMatch(.*)*',
