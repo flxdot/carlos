@@ -6,14 +6,24 @@
     </main>
     <page-footer class="app__footer" />
   </div>
+  <overlay-loading v-if="isLoading" />
 </template>
 
 <script setup lang="ts">
 import {
   RouterView,
 } from 'vue-router';
+import {
+  useAuth0,
+} from '@auth0/auth0-vue';
 import PageHeader from './components/main-layout/header.vue';
 import PageFooter from './components/main-layout/footer.vue';
+import OverlayLoading from '@/components/overlay-loading/overlay-loading.vue';
+
+const {
+  isLoading,
+} = useAuth0();
+
 </script>
 
 <style lang="scss">
@@ -27,6 +37,7 @@ import PageFooter from './components/main-layout/footer.vue';
   gap: 1rem 0;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
+  /* stylelint-disable-next-line declaration-block-no-redundant-longhand-properties */
   grid-template-areas:
     'header header'
     'navbar main'
@@ -51,16 +62,14 @@ import PageFooter from './components/main-layout/footer.vue';
   }
 
   &__main {
-    position: relative;
     grid-area: main;
     overflow: auto;
   }
 }
 
 // for mobile view
-@media only screen and (width <= 481px) {
-
-}
+// @media only screen and (width <= 481px) {
+// }
 
 // for tablet view
 @media only screen and (width <= 769px) {

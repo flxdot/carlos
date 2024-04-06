@@ -35,6 +35,8 @@ services:
     restart: unless-stopped
     environment:
       - VITE_APP_API_URL=http://localhost/api
+      - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
+      - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID}
     depends_on:
       - api
     healthcheck:

@@ -61,6 +61,10 @@ jobs:
       - name: Run security audit
         run: yarn audit --groups dependencies
 
+      - name: Lint services/frontend
+        working-directory: services/frontend
+        run: yarn lint
+
       - name: build workspace
         working-directory: .
         run: yarn build
