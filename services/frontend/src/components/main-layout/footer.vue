@@ -53,7 +53,12 @@ import MaterialForMkDocsIcon from '@/assets/icons/materialformkdocs.svg';
   font-weight: 300;
   color: var(--text-color);
   fill: var(--text-color);
+
+  svg {
+    display: inline;
+  }
 }
+
 .icon-link:not(:last-child) {
   margin-right: 1rem;
 }

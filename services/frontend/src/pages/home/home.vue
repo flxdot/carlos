@@ -1,6 +1,6 @@
 <template>
   <fancy-panel
-    class="container"
+    class="home-container"
   >
     <div class="welcome">
       <h1 style="font-weight: 200;">
@@ -25,8 +25,9 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
 
 <style scoped lang="scss">
 
-.container {
+.home-container {
   --padding: 48px;
+
   width: 100%;
   height: 100%;
   display: flex;
@@ -38,8 +39,7 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
   margin-left: -20%;
   display: flex;
   gap: 1rem;
-  flex-direction: column;
-  flex-wrap: wrap;
+  flex-flow: column wrap;
 }
 
 .logo {
@@ -48,7 +48,7 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
 }
 
 @media only screen and (width <= 769px) {
-  .container {
+  .home-container {
     border-radius: 0;
     border: none;
   }
