@@ -27,6 +27,13 @@
         </a>
       </router-link>
     </template>
+    <template #end>
+      <prm-button
+        text
+        label="Login"
+        @click="login"
+      />
+    </template>
   </menubar>
 </template>
 
@@ -38,11 +45,22 @@ import Menubar from 'primevue/menubar';
 import {
   MenuItem,
 } from 'primevue/menuitem';
+import PrmButton from 'primevue/button';
+import {
+  useAuth0,
+} from '@auth0/auth0-vue';
 import {
   ERouteName,
 } from '@/router/route-name.ts';
 
+const {
+  loginWithRedirect,
+} = useAuth0();
 const menuItems = ref<MenuItem[]>([]);
+
+function login() {
+  loginWithRedirect();
+}
 </script>
 
 <style scoped lang="scss">
@@ -72,4 +90,7 @@ const menuItems = ref<MenuItem[]>([]);
   }
 }
 
+.p-button.p-button-text {
+  color: var(--primary-color-text);
+}
 </style>
