@@ -35,13 +35,15 @@
   width: 100dvw;
   height: 100dvh;
   z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+
   background-color: var(--bg-color);
 
   img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     width: 150px;
     height: 150px;
   }

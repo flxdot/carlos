@@ -31,7 +31,9 @@ app.use(
     clientId: config.VITE_AUTH0_CLIENT_ID,
     authorizationParams: {
       redirect_uri: `${window.location.origin}/accept-login`,
+      scope: 'openid profile email offline_access',
     },
+    cacheLocation: 'localstorage',
   }),
 );
 app.use(router);
