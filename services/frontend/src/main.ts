@@ -33,7 +33,9 @@ app.use(
       redirect_uri: `${window.location.origin}/accept-login`,
       scope: 'openid profile email offline_access',
     },
+    useRefreshTokens: true,
     cacheLocation: 'localstorage',
+    cookieDomain: `.${window.location.hostname}`,
   }),
 );
 app.use(router);
