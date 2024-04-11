@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/services/api/.idea/api.iml" filepath="$PROJECT_DIR$/services/api/.idea/api.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/carlos.iml" filepath="$PROJECT_DIR$/.idea/carlos.iml" />
       <module fileurl="file://$PROJECT_DIR$/services/device/.idea/device.iml" filepath="$PROJECT_DIR$/services/device/.idea/device.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/py_carlos_database/.idea/py_carlos_database.iml" filepath="$PROJECT_DIR$/lib/py_carlos_database/.idea/py_carlos_database.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/py_dev_dependencies/.idea/py_dev_dependencies.iml" filepath="$PROJECT_DIR$/lib/py_dev_dependencies/.idea/py_dev_dependencies.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/py_edge_device/.idea/py_edge_device.iml" filepath="$PROJECT_DIR$/lib/py_edge_device/.idea/py_edge_device.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/py_edge_interface/.idea/py_edge_interface.iml" filepath="$PROJECT_DIR$/lib/py_edge_interface/.idea/py_edge_interface.iml" />

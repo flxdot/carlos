@@ -11,5 +11,6 @@
     <orderEntry type="module" module-name="py_dev_dependencies" />
     <orderEntry type="module" module-name="py_edge_device" />
     <orderEntry type="module" module-name="py_edge_server" />
+    <orderEntry type="module" module-name="py_carlos_database" />
   </component>
 </module>

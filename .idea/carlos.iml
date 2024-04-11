@@ -4,7 +4,6 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="/carlos" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="py_dev_dependencies" />
     <orderEntry type="module" module-name="api" />
@@ -13,5 +12,6 @@
     <orderEntry type="module" module-name="py_edge_device" />
     <orderEntry type="module" module-name="py_edge_server" />
     <orderEntry type="module" module-name="device" />
+    <orderEntry type="module" module-name="py_carlos_database" />
   </component>
 </module>

@@ -1,0 +1,67 @@
+[tool.poetry]
+name = "carlos.database"
+version = "0.1.0"
+description = "The library for the edge device of the carlos project."
+authors = ["Felix Fanghanel"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "carlos"}]
+exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+loguru = "^0.7.2"
+pydantic = "^2.6.4"
+sqlalchemy = "^2.0.29"
+asyncpg = "^0.29.0"
+alembic = "^1.13.1"
+psycopg2-binary = "^2.9.9"
+
+[tool.poetry.group.dev.dependencies]
+"devtools" = {path = "../py_dev_dependencies"}
+
+
+
+[tool.poetry.plugins.pytest11]
+carlos_database = "carlos.database.plugin_pytest"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+line_length = 88
+
+[tool.mypy]
+plugins = [
+    "sqlalchemy.ext.mypy.plugin",
+    "pydantic.mypy"
+]
+exclude = ['.*_test\.py$']
+
+[tool.coverage.report]
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "def __hash__",
+    # Don't complain if imports are not covered:
+    "^import .*",
+    "^from .* import .*",
+    "__all__ = .*",
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise NotImplementedError",
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+    # Don't complain about guard clauses
+    "if __name__ == .__main__.:",
+]
+omit = [
+    # omit all tests
+    "*_test.py",
+]
