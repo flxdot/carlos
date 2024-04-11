@@ -35,7 +35,6 @@ app.use(
     },
     useRefreshTokens: true,
     cacheLocation: 'localstorage',
-    cookieDomain: `.${window.location.hostname}`,
   }),
 );
 app.use(router);

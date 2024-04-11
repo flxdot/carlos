@@ -16,10 +16,14 @@ import {
 } from '@/router/route-name.ts';
 
 const {
+  isLoading,
   getAccessTokenSilently,
 } = useAuth0();
 
 const handleAcceptLogin = async () => {
+  while (isLoading.value) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
   const token = await getAccessTokenSilently();
   await setAuthTokens({
     accessToken: token,
