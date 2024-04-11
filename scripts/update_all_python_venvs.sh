@@ -11,6 +11,7 @@ update_venv(){
 
 # the order is important
 update_venv lib/py_dev_dependencies
+update_venv lib/py_carlos_database
 update_venv lib/py_edge_interface
 update_venv lib/py_edge_device
 update_venv lib/py_edge_server

@@ -1,3 +1,5 @@
+lib/py_carlos_database:
+  language: python
 lib/py_dev_dependencies:
   language: python
 lib/py_edge_device:
