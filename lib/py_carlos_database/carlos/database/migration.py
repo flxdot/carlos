@@ -66,3 +66,9 @@ async def setup_quality_test_db(connection_settings: DatabaseConnectionSettings)
     This function assumes that the carlos schema as well as the
     quality schema are already migrated to the latest
     revision."""
+
+
+if __name__ == '__main__': # pragma: no cover
+    connection_settings = DatabaseConnectionSettings()
+
+    migrate_carlos_schema(connection_settings=connection_settings)

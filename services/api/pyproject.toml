@@ -10,6 +10,7 @@ exclude = ["**/*_test.py", "**/conftest.py", "**/test/**"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
+"carlos.database" = {path = "../../lib/py_carlos_database"}
 "carlos.edge.interface" = {path = "../../lib/py_edge_interface"}
 "carlos.edge.device" = {path = "../../lib/py_edge_device"}
 "carlos.edge.server" = {path = "../../lib/py_edge_server"}
