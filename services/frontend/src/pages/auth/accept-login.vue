@@ -16,16 +16,23 @@ import {
 } from '@/router/route-name.ts';
 
 const {
+  isLoading,
   getAccessTokenSilently,
 } = useAuth0();
 
 const handleAcceptLogin = async () => {
+  while (isLoading.value) {
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+  }
   const token = await getAccessTokenSilently();
   await setAuthTokens({
     accessToken: token,
     refreshToken: '',
   });
-  await router.replace({
+  router.replace({
     name: ERouteName.HOME,
   });
 };

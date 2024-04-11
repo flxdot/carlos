@@ -1,2 +1,7 @@
 .venv
 node_modules
+.git
+.carlos_data
+.github
+.idea
+.run
