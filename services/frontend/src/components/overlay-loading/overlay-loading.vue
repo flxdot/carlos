@@ -35,12 +35,9 @@
   width: 100dvw;
   height: 100dvh;
   z-index: 10;
-
   display: flex;
-  justify-content: center;
-  align-content: center;
+  place-content: center center;
   align-items: center;
-
   background-color: var(--bg-color);
 
   img {
