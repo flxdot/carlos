@@ -47,7 +47,7 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      {% macro include_runtime_install() %}{% include "ci.install.yml.jinja2" %}{% endmacro %}
+      {% macro include_runtime_install() %}{% include "ci.install_workflow.yml.jinja2" %}{% endmacro %}
       {{ include_runtime_install()|indent(6) }}
 
       - name: generate files

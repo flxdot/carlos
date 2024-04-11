@@ -23,11 +23,11 @@ def to_environment(settings: BaseSettings) -> dict[str, str]:
             env_name = settings.model_config["env_prefix"] + field_name
             if not isinstance(native_field_value, SecretStr):
                 environment[env_name] = environment_values[field_name]
-            else:
+            else:  # pragma: no cover
                 # could not find a better way in the pydantic docs on how to include
                 # the value of the secret in the json() method.
                 environment[env_name] = native_field_value.get_secret_value()
-        else:
+        else:  # pragma: no cover
             environment |= to_environment(native_field_value)
 
     if settings.model_config["case_sensitive"]:
