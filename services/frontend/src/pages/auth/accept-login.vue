@@ -22,6 +22,7 @@ const {
 
 const handleAcceptLogin = async () => {
   while (isLoading.value) {
+    // eslint-disable-next-line no-await-in-loop
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
   const token = await getAccessTokenSilently();
@@ -29,7 +30,7 @@ const handleAcceptLogin = async () => {
     accessToken: token,
     refreshToken: '',
   });
-  await router.replace({
+  router.replace({
     name: ERouteName.HOME,
   });
 };
