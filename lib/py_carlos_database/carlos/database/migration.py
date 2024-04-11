@@ -68,7 +68,7 @@ async def setup_quality_test_db(connection_settings: DatabaseConnectionSettings)
     revision."""
 
 
-if __name__ == '__main__': # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     connection_settings = DatabaseConnectionSettings()
 
     migrate_carlos_schema(connection_settings=connection_settings)

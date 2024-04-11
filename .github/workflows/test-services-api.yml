@@ -17,6 +17,7 @@ on:
     paths:
       - .github/workflows/test-services-api.yml
       - services/api/**
+      - lib/py_carlos_database/**
       - lib/py_edge_interface/**
       - lib/py_edge_device/**
       - lib/py_edge_server/**
@@ -95,7 +96,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./services/api/.venv
-          key: api-${{ hashFiles('./services/api/poetry.lock', './lib/py_edge_interface/**/*.py', './lib/py_edge_device/**/*.py', './lib/py_edge_server/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_edge_interface/**/*.sql', './lib/py_edge_device/**/*.sql', './lib/py_edge_server/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_edge_interface/poetry.lock', './lib/py_edge_device/poetry.lock', './lib/py_edge_server/poetry.lock', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
+          key: api-${{ hashFiles('./services/api/poetry.lock', './lib/py_carlos_database/**/*.py', './lib/py_edge_interface/**/*.py', './lib/py_edge_device/**/*.py', './lib/py_edge_server/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_carlos_database/**/*.sql', './lib/py_edge_interface/**/*.sql', './lib/py_edge_device/**/*.sql', './lib/py_edge_server/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_carlos_database/poetry.lock', './lib/py_edge_interface/poetry.lock', './lib/py_edge_device/poetry.lock', './lib/py_edge_server/poetry.lock', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
 
       # Install dependencies. `--no-root` means "install all dependencies but not the project
       # itself", which is what you want to avoid caching _your_ code. The `if` statement
