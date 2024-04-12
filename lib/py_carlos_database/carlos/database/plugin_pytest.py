@@ -23,6 +23,7 @@ from carlos.database.connection import (
     get_async_carlos_database_engine,
     get_carlos_database_engine,
 )
+from carlos.database.context import RequestContext
 from carlos.database.migration import setup_test_db_data
 
 connection_settings = DatabaseConnectionSettings(
@@ -84,11 +85,7 @@ async def new_async_engine() -> AsyncIterator[AsyncEngine]:
         await async_engine.dispose()
 
 
-# The session scope works, due to the redefinition of the `event_loop` fixture
-# above.
-# see:
-# https://pytest-asyncio.readthedocs.io/en/latest/reference/decorators.html
-@pytest_asyncio.fixture(scope="session", name="async_carlos_db_engine")
+@pytest_asyncio.fixture(name="async_carlos_db_engine")
 async def fixture_async_engine() -> AsyncIterator[AsyncEngine]:
     """Provides a global async engine to the test database"""
     async with new_async_engine() as async_engine_:
@@ -103,6 +100,15 @@ async def fixture_async_connection(
     pool"""
     async with async_carlos_db_engine.connect() as conn:
         yield conn
+
+
+@pytest_asyncio.fixture(name="async_carlos_db_context")
+async def fixture_async_context(
+    async_carlos_db_connection: AsyncConnection,
+) -> AsyncIterator[RequestContext]:
+    """Provides a fresh async connection to the test database from the connection
+    pool"""
+    yield RequestContext(connection=async_carlos_db_connection)
 
 
 def format_any_of(expected: Sequence[str]) -> str:  # pragma: no cover

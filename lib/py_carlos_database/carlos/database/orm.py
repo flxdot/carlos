@@ -1,4 +1,8 @@
-__all__ = ["CarlosModelBase", "ALL_SCHEMA_NAMES"]
+__all__ = [
+    "ALL_SCHEMA_NAMES",
+    "CarlosDeviceOrm",
+    "CarlosModelBase",
+]
 
 import inspect
 from datetime import datetime
@@ -10,13 +14,13 @@ from sqlalchemy.dialects.postgresql import UUID as SQLUUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
-class CarlosSchema(str, Enum):
+class CarlosDatabaseSchema(str, Enum):
     """A list of the available schemas in the Carlos database."""
 
     CARLOS = "carlos"
 
 
-ALL_SCHEMA_NAMES = sorted([schema.value for schema in CarlosSchema])
+ALL_SCHEMA_NAMES = sorted([schema.value for schema in CarlosDatabaseSchema])
 
 
 def _clean_doc(comment: str) -> str:
@@ -37,7 +41,7 @@ class CarlosDeviceOrm(CarlosModelBase):
 
     __tablename__ = "device"
     __table_args__ = {
-        "schema": CarlosSchema.CARLOS.value,
+        "schema": CarlosDatabaseSchema.CARLOS.value,
         "comment": _clean_doc(__doc__),
     }
 

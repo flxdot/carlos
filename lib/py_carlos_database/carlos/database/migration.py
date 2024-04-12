@@ -9,14 +9,9 @@ __all__ = [
 
 import asyncio
 
-from carlos.database.utils.alembic_helper import (
-    alembic_downgrade,
-    alembic_upgrade,
-    build_alembic_config,
-)
-
 from ._migrations import ALEMBIC_DIRECTORY
 from .config import DatabaseConnectionSettings
+from .utils import alembic_downgrade, alembic_upgrade, build_alembic_config
 
 
 def migrate_carlos_schema(
