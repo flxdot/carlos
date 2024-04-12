@@ -36,9 +36,10 @@ async def health():
     """Endpoint to determine the health of the API."""
 
     try:
-        async with carlos_db_connection() as con:
+        async for con in carlos_db_connection():
             await con.execute(text("SELECT 1"))
-    except Exception:  # pragma: no cover
+            break
+    except Exception as ex:  # pragma: no cover
         return JSONResponse(
             content=HealthResponse(
                 status=HealthStatus.NO_DB_CONNECTION,
