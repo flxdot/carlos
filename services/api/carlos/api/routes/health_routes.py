@@ -39,7 +39,7 @@ async def health():
         async for con in carlos_db_connection():
             await con.execute(text("SELECT 1"))
             break
-    except Exception as ex:  # pragma: no cover
+    except Exception:  # pragma: no cover
         return JSONResponse(
             content=HealthResponse(
                 status=HealthStatus.NO_DB_CONNECTION,
