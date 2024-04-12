@@ -48,6 +48,7 @@ def extract_client_hostname(connection: Request | WebSocket) -> str:
     dependencies=[Security(cached_token_verify_from_env)],
     response_model=str,
     response_class=PlainTextResponse,
+    tags=["devices"],
 )
 async def get_device_server_websocket_token(
     request: Request, device_id: str = DEVICE_ID_PATH

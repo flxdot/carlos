@@ -5,10 +5,9 @@ __all__ = ["health_router"]
 from enum import Enum
 
 from carlos.database.schema import CarlosSchema
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from pydantic import Field
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncConnection
 from starlette.responses import JSONResponse
 from starlette.status import HTTP_503_SERVICE_UNAVAILABLE
 
@@ -33,17 +32,18 @@ class HealthResponse(CarlosSchema):
 
 
 @health_router.get("", response_model=HealthResponse, tags=["health"])
-async def health(connection: AsyncConnection = Depends(carlos_db_connection)):
+async def health():
     """Endpoint to determine the health of the API."""
 
     try:
-        await connection.execute(text("SELECT 1"))
+        async with carlos_db_connection() as con:
+            await con.execute(text("SELECT 1"))
     except Exception:  # pragma: no cover
         return JSONResponse(
             content=HealthResponse(
                 status=HealthStatus.NO_DB_CONNECTION,
                 message="Could not establish a connection to the database.",
-            ),
+            ).model_dump(mode="json"),
             status_code=HTTP_503_SERVICE_UNAVAILABLE,
         )
 
