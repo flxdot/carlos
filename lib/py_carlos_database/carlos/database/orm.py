@@ -33,7 +33,7 @@ def _clean_doc(comment: str) -> str:
 
 
 class CarlosModelBase(DeclarativeBase):
-    """Base class for all Qmulus ORM classes."""
+    """Base class for all Carlos ORM classes."""
 
 
 class CarlosDeviceOrm(CarlosModelBase):

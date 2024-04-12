@@ -7,7 +7,7 @@ from carlos.api.depends.authentication import TESTING_TOKEN, Auth0Region
 
 
 @pytest.fixture(scope="session", autouse=True)
-def api_test_environment():
+def api_test_environment(carlos_db_test_environment):
 
     env = {
         "API_CORS_ORIGINS": '["http://127.0.0.1:8000"]',
