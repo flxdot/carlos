@@ -1,9 +1,13 @@
 __all__ = ["CarlosModelBase", "ALL_SCHEMA_NAMES"]
 
 import inspect
+from datetime import datetime
 from enum import Enum
+from uuid import UUID
 
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import TEXT, TIMESTAMP, VARCHAR, text
+from sqlalchemy.dialects.postgresql import UUID as SQLUUID
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class CarlosSchema(str, Enum):
@@ -21,8 +25,44 @@ def _clean_doc(comment: str) -> str:
     :param comment: The comment string to clean.
     :return: The cleaned comment string.
     """
-    return inspect.cleandoc(comment).replace("\n", " ")  # pragma: no cover
+    return inspect.cleandoc(comment).replace("\n", " ")
 
 
 class CarlosModelBase(DeclarativeBase):
     """Base class for all Qmulus ORM classes."""
+
+
+class CarlosDeviceOrm(CarlosModelBase):
+    """Contains all known devices for the tenant."""
+
+    __tablename__ = "device"
+    __table_args__ = {
+        "schema": CarlosSchema.CARLOS.value,
+        "comment": _clean_doc(__doc__),
+    }
+
+    device_id: Mapped[UUID] = mapped_column(
+        SQLUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+        comment="The unique identifier of the device.",
+    )
+    display_name: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The name of the device that is displayed to the user.",
+    )
+    description: Mapped[str] = mapped_column(
+        TEXT, nullable=True, comment="A description of the device for the user."
+    )
+    registered_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=text("(now() AT TIME ZONE 'UTC'::text)"),
+        comment="The date and time when the device was registered.",
+    )
+    last_seen_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True),
+        nullable=True,
+        comment="The date and time when the server last received data from the device.",
+    )

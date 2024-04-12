@@ -1,8 +1,9 @@
 __all__ = [
     "EngineFactory",
     "OptionalConnectArgs",
-    "get_async_data_model_engine",
+    "get_async_carlos_database_engine",
     "get_async_qmulus_connection",
+    "get_carlos_database_engine",
 ]
 
 import asyncio
@@ -258,7 +259,26 @@ class EngineFactory:
 
 
 @lru_cache(maxsize=2)
-def get_async_data_model_engine(
+def get_carlos_database_engine(
+    connection_settings: DatabaseConnectionSettings | None = None,
+    client_name: str = _DEFAULT_CLIENT_NAME,
+    connection_args: OptionalConnectArgs = None,
+) -> Engine:
+    """This function returns a sqlalchemy engine for the Qmulus Data Model."""
+
+    engine_factory = EngineFactory(
+        client_name=client_name,
+        connection_settings=connection_settings or DatabaseConnectionSettings(),
+    )
+    _db_engine = engine_factory.new_engine(
+        connect_args=DEFAULT_CONNECTION_OPTIONS | connection_args
+    )
+
+    return _db_engine
+
+
+@lru_cache(maxsize=2)
+def get_async_carlos_database_engine(
     connection_settings: DatabaseConnectionSettings | None = None,
     client_name: str = _DEFAULT_CLIENT_NAME,
     connection_args: OptionalConnectArgs = None,
@@ -286,7 +306,7 @@ async def get_async_qmulus_connection(
 ) -> AsyncIterator[AsyncConnection]:  # pragma: no cover
     """Returns an async connection for the qmulus database."""
 
-    async_engine = get_async_data_model_engine(
+    async_engine = get_async_carlos_database_engine(
         client_name=f"{client_name} (async - EventLoop {id(asyncio.get_event_loop())})",
         connection_args=connection_args,
     )
