@@ -8,7 +8,7 @@ api:
 
 api-openapi:
 	cd ./services/api && poetry run python -m scripts.generate_openapi
-	cd ./services/frontend && npx --yes openapi-typescript@latest ../api/generated/openapi.json --output ./src/types/openapi.ts
+	cd ./services/frontend && npx --yes openapi-typescript@latest ../api/generated/openapi.json --output ./src/api/openapi.ts
 
 frontend:
 	docker build . -f services/frontend/Dockerfile -t carlos/frontend

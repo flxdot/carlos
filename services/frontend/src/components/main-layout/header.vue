@@ -157,6 +157,9 @@ import {
 } from '@/router/route-name.ts';
 import packageInfo from '@/../package.json';
 import i18n from '@/plugins/i18n';
+import {
+  useDevicesStore,
+} from '@/store/devices.ts';
 
 const {
   loginWithRedirect,
@@ -166,9 +169,18 @@ const {
   isLoading,
 } = useAuth0();
 
-const userMenu = ref<InstanceType<typeof PrmMenu> | null>(null);
+const devicesStore = useDevicesStore();
 
-const menuItems = ref<MenuItem[]>([]);
+const menuItems = computed<MenuItem[]>(() => {
+  if (!isAuthenticated || isLoading) {
+    return [];
+  }
+  return [];
+});
+
+const devices = devicesStore.fetchDevicesList();
+
+const userMenu = ref<InstanceType<typeof PrmMenu> | null>(null);
 
 const avatarMenuItems = ref([
   {
