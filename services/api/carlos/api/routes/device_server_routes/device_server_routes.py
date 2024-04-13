@@ -16,7 +16,7 @@ from jwt import InvalidTokenError
 from pydantic.alias_generators import to_camel
 from starlette.responses import PlainTextResponse
 
-from carlos.api.depends.authentication import cached_token_verify_from_env
+from carlos.api.depends.authentication import verify_token as auth_verify_token
 
 from .protocol import WebsocketProtocol
 from .state import DEVICE_CONNECTION_MANAGER
@@ -45,7 +45,7 @@ def extract_client_hostname(connection: Request | WebSocket) -> str:
 @device_server_router.get(
     get_websocket_token_endpoint(device_id_param),
     summary="Get a token to be used to connect to the websocket.",
-    dependencies=[Security(cached_token_verify_from_env)],
+    dependencies=[Security(auth_verify_token)],
     response_model=str,
     response_class=PlainTextResponse,
     tags=["devices"],

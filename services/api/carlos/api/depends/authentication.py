@@ -3,7 +3,7 @@
 https://auth0.com/blog/build-and-secure-fastapi-server-with-auth0/
 """
 
-__all__ = ["VerifyToken", "cached_token_verify_from_env"]
+__all__ = ["VerifyToken", "verify_token"]
 
 import os
 import secrets
@@ -104,10 +104,10 @@ class VerifyToken:
         jwks_url = f"https://{self.config.domain}/.well-known/jwks.json"
         self.jwks_client = jwt.PyJWKClient(jwks_url)
 
-    async def verify(
+    def verify(
         self,
         security_scopes: SecurityScopes,
-        token: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
+        token: HTTPAuthorizationCredentials,
     ) -> dict:  # pragma: no cover
         """Verifies the token and returns the payload if it is valid."""
 
@@ -146,11 +146,16 @@ class VerifyToken:
         return payload
 
 
-@lru_cache()
-def cached_token_verify_from_env():
-    """A cached dependency to construct the VerifyToken object.
+def verify_token(
+    security_scopes: SecurityScopes,
+    token: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
+) -> dict:
+    """Can be used as a FastAPI dependency to verify the token."""
 
-    This is useful to avoid reading the environment variables too often.
-    It further prevents that the environment variables are read during import.
-    """
-    return VerifyToken(config=Auth0Settings()).verify
+    return _cached_verify_token().verify(security_scopes=security_scopes, token=token)
+
+
+@lru_cache()
+def _cached_verify_token() -> VerifyToken:
+    """Reads the Auth0 settings from the environment."""
+    return VerifyToken(config=Auth0Settings())

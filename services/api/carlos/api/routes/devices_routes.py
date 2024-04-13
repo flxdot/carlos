@@ -5,6 +5,7 @@ from uuid import UUID
 from carlos.database.context import RequestContext
 from carlos.database.device.device_management import (
     CarlosDevice,
+    CarlosDeviceCreate,
     CarlosDeviceUpdate,
     create_device,
     get_device,
@@ -28,7 +29,7 @@ async def list_devices_route(
 
 @devices_router.post("", summary="Register a new device", response_model=CarlosDevice)
 async def register_device_route(
-    device: CarlosDevice,
+    device: CarlosDeviceCreate,
     context: RequestContext = Depends(request_context),
 ):  # pragma: no cover
     """Register a new device."""
