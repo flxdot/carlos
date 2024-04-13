@@ -7,6 +7,7 @@ export type appConfig = {
   // Authentication
   VITE_AUTH0_DOMAIN: string,
   VITE_AUTH0_CLIENT_ID: string,
+  VITE_AUTH0_AUDIENCE: string,
   // Sentry
   VITE_SENTRY_DSN?: string,
   VITE_SENTRY_ENVIRONMENT?: string,
@@ -20,6 +21,7 @@ export default {
   // Authentication
   VITE_AUTH0_DOMAIN: window.config.VITE_AUTH0_DOMAIN || import.meta.env.VITE_AUTH0_DOMAIN,
   VITE_AUTH0_CLIENT_ID: window.config.VITE_AUTH0_CLIENT_ID || import.meta.env.VITE_AUTH0_CLIENT_ID,
+  VITE_AUTH0_AUDIENCE: window.config.VITE_AUTH0_AUDIENCE || import.meta.env.VITE_AUTH0_AUDIENCE,
   // Sentry
   VITE_SENTRY_DSN: window.config.VITE_SENTRY_DSN || import.meta.env.VITE_SENTRY_DSN,
   VITE_SENTRY_ENVIRONMENT: window.config.VITE_SENTRY_ENVIRONMENT || import.meta.env.VITE_SENTRY_ENVIRONMENT || 'development',

@@ -32,8 +32,8 @@ app.use(
     authorizationParams: {
       redirect_uri: `${window.location.origin}/accept-login`,
       scope: 'openid profile email offline_access',
+      audience: config.VITE_AUTH0_AUDIENCE,
     },
-    useRefreshTokens: true,
     cacheLocation: 'localstorage',
   }),
 );

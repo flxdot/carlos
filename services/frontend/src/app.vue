@@ -38,11 +38,14 @@ const {
 watch([
   isAuthenticated,
   isLoading,
-], async () => {
-  if (isAuthenticated && !isLoading) {
-    authStore.token = await getAccessTokenSilently();
+], async ([
+  newIsAuthenticate,
+  newIsLoading,
+]) => {
+  if (newIsAuthenticate && !newIsLoading) {
+    authStore.setToken(await getAccessTokenSilently());
   } else {
-    authStore.token = undefined;
+    authStore.clearToken();
   }
   setToken(authStore.token);
 });

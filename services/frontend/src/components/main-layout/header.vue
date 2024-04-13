@@ -160,6 +160,7 @@ import i18n from '@/plugins/i18n';
 import {
   useDevicesStore,
 } from '@/store/devices.ts';
+import {useAuthStore} from "@/store/auth.ts";
 
 const {
   loginWithRedirect,
@@ -170,17 +171,12 @@ const {
 } = useAuth0();
 
 const devicesStore = useDevicesStore();
+const authStore = useAuthStore();
 
 const menuItems = ref<MenuItem[]>([]);
 
-watch([
-  isAuthenticated,
-  isLoading,
-], ([
-  newIsAuthenticated,
-  newIsLoading,
-]) => {
-  if (!newIsLoading && newIsAuthenticated) {
+authStore.$subscribe(() => {
+  if (authStore.isAuthenticated) {
     devicesStore.fetchDevicesList().then((devices) => {
       menuItems.value = devices.map((device) => {
         return {
