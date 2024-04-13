@@ -23,8 +23,17 @@
     background-color: #fff3;
   }
 
-  .p-menuitem-content {
+  .p-menuitem.p-focus {
     background-color: var(--carlos-primary-color--dark);
+  }
+
+  &.p-menubar .p-menuitem:not(.p-highlight):not(.p-disabled).p-focus > .p-menuitem-content {
+    color: var(--carlos-primary-color-text);
+    background-color: var(--carlos-primary-color--dark);
+}
+
+  .p-menuitem .p-menuitem-icon, .p-menuitem .p-menuitem-text {
+    color: var(--carlos-primary-color-text);
   }
 
   .p-menuitem-content:hover {

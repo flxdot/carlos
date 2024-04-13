@@ -1,2 +1,2 @@
 dist
-src/types/openapi.ts
+src/api/openapi.ts

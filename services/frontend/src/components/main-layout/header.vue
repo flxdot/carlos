@@ -139,7 +139,7 @@
 <script setup lang="ts">
 import {
   ref,
-  computed, watch,
+  computed,
 } from 'vue';
 import Menubar from 'primevue/menubar';
 import {
@@ -160,7 +160,9 @@ import i18n from '@/plugins/i18n';
 import {
   useDevicesStore,
 } from '@/store/devices.ts';
-import {useAuthStore} from "@/store/auth.ts";
+import {
+  useAuthStore,
+} from '@/store/auth.ts';
 
 const {
   loginWithRedirect,
@@ -181,7 +183,7 @@ authStore.$subscribe(() => {
       menuItems.value = devices.map((device) => {
         return {
           label: device.displayName,
-          icon: 'pi pi-desktop',
+          icon: 'pi pi-sitemap',
         };
       });
     });
