@@ -20,6 +20,7 @@ def build_environment() -> dict[str, str]:
         "ENVIRONMENT": "pytest",
     }
 
+
 @pytest.fixture(scope="session", autouse=True)
 def api_test_environment(carlos_db_test_environment):
 
