@@ -5,6 +5,7 @@ from uuid import UUID
 from carlos.database.context import RequestContext
 from carlos.database.device.device_management import (
     CarlosDevice,
+    CarlosDeviceCreate,
     CarlosDeviceUpdate,
     create_device,
     get_device,
