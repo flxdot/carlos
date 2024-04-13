@@ -5,7 +5,7 @@ import {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: null as string | null,
+    token: undefined as string | undefined,
   }),
 });
 

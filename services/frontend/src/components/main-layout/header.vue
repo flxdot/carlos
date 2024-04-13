@@ -139,7 +139,7 @@
 <script setup lang="ts">
 import {
   ref,
-  computed,
+  computed, watch,
 } from 'vue';
 import Menubar from 'primevue/menubar';
 import {
@@ -171,14 +171,26 @@ const {
 
 const devicesStore = useDevicesStore();
 
-const menuItems = computed<MenuItem[]>(() => {
-  if (!isAuthenticated || isLoading) {
-    return [];
-  }
-  return [];
-});
+const menuItems = ref<MenuItem[]>([]);
 
-const devices = devicesStore.fetchDevicesList();
+watch([
+  isAuthenticated,
+  isLoading,
+], ([
+  newIsAuthenticated,
+  newIsLoading,
+]) => {
+  if (!newIsLoading && newIsAuthenticated) {
+    devicesStore.fetchDevicesList().then((devices) => {
+      menuItems.value = devices.map((device) => {
+        return {
+          label: device.displayName,
+          icon: 'pi pi-desktop',
+        };
+      });
+    });
+  }
+});
 
 const userMenu = ref<InstanceType<typeof PrmMenu> | null>(null);
 
