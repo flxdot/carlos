@@ -9,7 +9,7 @@ from carlos.database.device.device_management import (
     create_device,
     get_device,
     list_devices,
-    update_device,
+    update_device, CarlosDeviceCreate,
 )
 from fastapi import APIRouter, Depends, Path
 
@@ -28,7 +28,7 @@ async def list_devices_route(
 
 @devices_router.post("", summary="Register a new device", response_model=CarlosDevice)
 async def register_device_route(
-    device: CarlosDevice,
+    device: CarlosDeviceCreate,
     context: RequestContext = Depends(request_context),
 ):  # pragma: no cover
     """Register a new device."""
