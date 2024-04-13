@@ -9,7 +9,7 @@ PYTHON_JINJA_ENVIRONMENT = build_environment(Path(__file__).parent)
 PYTHON_TEMPLATE_TO_PATH = {
     "Makefile.jinja2": "Makefile",
     "poetry.toml.jinja2": "poetry.toml",
-    "ci.yml.jinja2": (
+    "github-action-python.yml.jinja2": (
         "/.github/workflows/test-{{ project.path_from_root|replace('/', '-') }}.yml"
     ),
 }

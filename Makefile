@@ -6,6 +6,10 @@ api:
 	docker build . -f services/api/Dockerfile -t carlos/api
 	make run-api
 
+api-openapi:
+	cd ./services/api && poetry run python -m scripts.generate_openapi
+	cd ./services/frontend && npx --yes openapi-typescript@latest ../api/generated/openapi.json --output ./src/types/openapi.ts
+
 frontend:
 	docker build . -f services/frontend/Dockerfile -t carlos/frontend
 	make run-frontend

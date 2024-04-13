@@ -45,7 +45,7 @@ def extract_client_hostname(connection: Request | WebSocket) -> str:
 @device_server_router.get(
     get_websocket_token_endpoint(device_id_param),
     summary="Get a token to be used to connect to the websocket.",
-    dependencies=[Security(cached_token_verify_from_env)],
+    dependencies=[Security(cached_token_verify_from_env())],
     response_model=str,
     response_class=PlainTextResponse,
     tags=["devices"],

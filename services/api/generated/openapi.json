@@ -1,0 +1,475 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Carlos API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/devices": {
+      "get": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Get all devices.",
+        "description": "List all devices.",
+        "operationId": "listDevicesRoute",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CarlosDevice"
+                  },
+                  "type": "array",
+                  "title": "Response Listdevicesroute"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Register a new device",
+        "description": "Register a new device.",
+        "operationId": "registerDeviceRoute",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarlosDeviceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarlosDevice"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/devices/{deviceId}": {
+      "get": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Get a device by its ID.",
+        "description": "Get a device by its ID.",
+        "operationId": "getDeviceRoute",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Device ID",
+              "description": "The unique identifier of the device."
+            },
+            "description": "The unique identifier of the device."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarlosDevice"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Update a device by its ID.",
+        "description": "Update a device by its ID.",
+        "operationId": "updateDeviceRoute",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Device ID",
+              "description": "The unique identifier of the device."
+            },
+            "description": "The unique identifier of the device."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarlosDeviceUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarlosDevice"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "health",
+          "health"
+        ],
+        "summary": "Health",
+        "description": "Endpoint to determine the health of the API.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/{deviceId}/ws/token": {
+      "get": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Get a token to be used to connect to the websocket.",
+        "description": "Returns a token that can be used to authenticate the edge device to the API.",
+        "operationId": "getDeviceServerWebsocketToken",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the device.",
+              "title": "Deviceid"
+            },
+            "description": "The unique identifier of the device."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CarlosDevice": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Displayname",
+            "description": "The name of the device that is displayed to the user."
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "A description of the device for the user."
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Deviceid",
+            "description": "The unique identifier of the device."
+          },
+          "registeredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registeredat",
+            "description": "The date and time when the device was registered."
+          },
+          "lastSeenAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastseenat",
+            "description": "The date and time when the device was last seen."
+          },
+          "isOnline": {
+            "type": "boolean",
+            "title": "Isonline",
+            "description": "Check if the device is online.",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName",
+          "deviceId",
+          "registeredAt",
+          "lastSeenAt",
+          "isOnline"
+        ],
+        "title": "CarlosDevice",
+        "description": "Represents an existing device."
+      },
+      "CarlosDeviceCreate": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Displayname",
+            "description": "The name of the device that is displayed to the user."
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "A description of the device for the user."
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName"
+        ],
+        "title": "CarlosDeviceCreate",
+        "description": "Allow you to create a new device."
+      },
+      "CarlosDeviceUpdate": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Displayname",
+            "description": "The name of the device that is displayed to the user."
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "A description of the device for the user."
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName"
+        ],
+        "title": "CarlosDeviceUpdate",
+        "description": "Allows you to update the device information."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/HealthStatus"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "A message about the status of the API."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "title": "HealthResponse",
+        "description": "Defines the status of the API."
+      },
+      "HealthStatus": {
+        "type": "string",
+        "enum": [
+          "ok",
+          "no_db_connection",
+          "error"
+        ],
+        "title": "HealthStatus",
+        "description": "The status of the API."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

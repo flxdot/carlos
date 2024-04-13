@@ -4,7 +4,7 @@
 # This CI workflow will run on every push to a branch that has an open pull request
 # not in draft mode.
 
-name: test-services/api
+name: "test-services/api"
 
 # cancel previous runs if the branch is updated.
 concurrency:
@@ -47,100 +47,128 @@ on:
 jobs:
 
   test:
-    timeout-minutes: 5
+    timeout-minutes: 8
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
+    - uses: actions/checkout@v4
+  name: Set up - Checkout services/api
+  with:
+    ref: ${{ github.head_ref }}
 
-      # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
-      # reference the matrix python version here.
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.11
+# Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
+# from installing Poetry every time, which can be slow. Note the use of the Poetry version
+# number in the cache key, and the "-0" suffix: this allows you to invalidate the cache
+# manually if/when you want to upgrade Poetry, or if something goes wrong. This could be
+# mildly cleaner by using an environment variable, but I don't really care.
+- name: Set up - Cache Poetry 1.7.1
+  uses: actions/cache@v4
+  with:
+    path: ~/.local
+    key: python-3.11-poetry-1.7.1
 
-      # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
-      # from installing Poetry every time, which can be slow. Note the use of the Poetry version
-      # number in the cache key, and the "-0" suffix: this allows you to invalidate the cache
-      # manually if/when you want to upgrade Poetry, or if something goes wrong. This could be
-      # mildly cleaner by using an environment variable, but I don't really care.
-      - name: cache poetry install
-        uses: actions/cache@v4
-        with:
-          path: ~/.local
-          key: poetry-latest-python-3.11-1.7.1
+# If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
+# reference the matrix python version here.
+- uses: actions/setup-python@v5
+  name: Set up - Install Python 3.11
+  with:
+    python-version: 3.11
 
-      # Install Poetry. You could do this manually, or there are several actions that do this.
-      # `snok/install-poetry` seems to be minimal yet complete, and really just calls out to
-      # Poetry's default install script, which feels correct. I pin the Poetry version here
-      # because Poetry does occasionally change APIs between versions and I don't want my
-      # actions to break if it does.
-      #
-      # The key configuration value here is `virtualenvs-in-project: true`: this creates the
-      # venv as a `.venv` in your testing directory, which allows the next step to easily
-      # cache it.
-      - uses: snok/install-poetry@v1
-        with:
-          version: 1.7.1
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+# Install Poetry. You could do this manually, or there are several actions that do this.
+# `snok/install-poetry` seems to be minimal yet complete, and really just calls out to
+# Poetry's default install script, which feels correct. I pin the Poetry version here
+# because Poetry does occasionally change APIs between versions and I don't want my
+# actions to break if it does.
+#
+# The key configuration value here is `virtualenvs-in-project: true`: this creates the
+# venv as a `.venv` in your testing directory, which allows the next step to easily
+# cache it.
+- name: Set up - Install Poetry 1.7.1
+  uses: snok/install-poetry@v1
+  with:
+    version: 1.7.1
+    virtualenvs-create: true
+    virtualenvs-in-project: true
 
-      # Cache your dependencies (i.e. all the stuff in your `pyproject.toml`). Note the cache
-      # key: if you're using multiple Python versions, or multiple OSes, you'd need to include
-      # them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
-      - name: cache services/api dependencies
-        id: cache-deps
-        uses: actions/cache@v4
-        with:
-          path: ./services/api/.venv
-          key: api-${{ hashFiles('./services/api/poetry.lock', './lib/py_carlos_database/**/*.py', './lib/py_edge_interface/**/*.py', './lib/py_edge_device/**/*.py', './lib/py_edge_server/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_carlos_database/**/*.sql', './lib/py_edge_interface/**/*.sql', './lib/py_edge_device/**/*.sql', './lib/py_edge_server/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_carlos_database/poetry.lock', './lib/py_edge_interface/poetry.lock', './lib/py_edge_device/poetry.lock', './lib/py_edge_server/poetry.lock', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
+# Cache your dependencies (i.e. all the stuff in your `pyproject.toml`). Note the cache
+# key: if you're using multiple Python versions, or multiple OSes, you'd need to include
+# them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
+- name: Set up - Cache services/api dependencies
+  id: cache-deps
+  uses: actions/cache@v4
+  with:
+    path: ./services/api/.venv
+    key: api-${{ hashFiles('./services/api/poetry.lock', './lib/py_carlos_database/**/*.py', './lib/py_edge_interface/**/*.py', './lib/py_edge_device/**/*.py', './lib/py_edge_server/**/*.py', './lib/py_dev_dependencies/**/*.py', './lib/py_carlos_database/**/*.sql', './lib/py_edge_interface/**/*.sql', './lib/py_edge_device/**/*.sql', './lib/py_edge_server/**/*.sql', './lib/py_dev_dependencies/**/*.sql', './lib/py_carlos_database/poetry.lock', './lib/py_edge_interface/poetry.lock', './lib/py_edge_device/poetry.lock', './lib/py_edge_server/poetry.lock', './lib/py_dev_dependencies/poetry.lock')}}-3.11-1.7.1
 
-      # Install dependencies. `--no-root` means "install all dependencies but not the project
-      # itself", which is what you want to avoid caching _your_ code. The `if` statement
-      # ensures this only runs on a cache miss.
-      - name: Install services/api dependencies
-        run: poetry install --no-interaction --no-root --all-extras
+# Install dependencies. `--no-root` means "install all dependencies but not the project
+# itself", which is what you want to avoid caching _your_ code. The `if` statement
+# ensures this only runs on a cache miss.
+- name: Set up - Install services/api dependencies
+  run: poetry install --no-interaction --no-root --all-extras
+  working-directory: ./services/api
+
+      # installing the repository is required to register any pytest plugins
+      # that are defined by the repository
+      - name: Set up - Install project
+        run: poetry install --no-interaction --all-extras
         working-directory: ./services/api
 
+      
 
-      - name: format
+      - name: Auto - format
         run: make format
         working-directory: ./services/api
 
+      - name: Lint - ruff
+        if: ${{ !cancelled() }}
+        run: make ruff
+        working-directory: ./services/api
+      
+
+      - name: Type checking - mypy
+        if: ${{ !cancelled() }}
+        run: make mypy
+        working-directory: ./services/api
+      
+
+      - name: Test - pytest
+        if: ${{ !cancelled() }}
+        run: make pytest
+        working-directory: ./services/api
+
+      - name: Test - coverage
+        if: ${{ !cancelled() }}
+        run: make coverage
+        working-directory: ./services/api
+
+      -   if: ${{ !cancelled() }}
+          name: Set up - Install node
+          uses: actions/setup-node@v4
+          with:
+              node-version: 18
+      -   if: ${{ !cancelled() }}
+          name: Set up - Install yarn
+          run: corepack enable && yarn set version classic
+      -   if: ${{ !cancelled() }}
+          name: Set up - Cache dependencies
+          uses: actions/cache@v4
+          with:
+              key: backend-codegen-lock-${{ hashFiles('./yarn.lock') }}
+              path: ./**/node_modules/*
+      -   if: ${{ !cancelled() }}
+          name: Set up - Install codegen dependencies
+          run: yarn install --immutable
+      -   if: ${{ !cancelled() }}
+          name: Generate - backend openapi spec and client code
+          run: make api-openapi
+      -   if: ${{ !cancelled() }}
+
       - uses: actions-js/push@master
+        if: ${{ !cancelled() }}
         name: Push changes
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
+          message: "update services/api"
           coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
           coauthor_name: ${{ github.event.pull_request.user.login }}
-          message: "format services/api"      # formatting first is beneficial because it may solve some linting errors
-
-      - name: format
-        run: make format
-        working-directory: ./services/api
-
-      - name: linting
-        run: make ruff
-        working-directory: ./services/api
-
-      - name: type checking
-        run: make mypy
-        working-directory: ./services/api
-
-      # installing the repository is required to register any pytest plugins
-      # that are defined by the repository
-      - name: install project
-        run: poetry install --no-interaction --all-extras
-        working-directory: ./services/api
-
-      - name: run tests
-        run: make pytest
-        working-directory: ./services/api
-
-      - name: ensure test coverage
-        run: make coverage
-        working-directory: ./services/api
