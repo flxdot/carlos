@@ -13,6 +13,7 @@ import inspect
 from abc import ABC, abstractmethod
 from asyncio import sleep
 from typing import Protocol, runtime_checkable
+from uuid import UUID
 
 from loguru import logger
 
@@ -83,13 +84,14 @@ class MessageHandler(Protocol):
 class EdgeCommunicationHandler:
     """Handles the communication between the server and the device."""
 
-    def __init__(self, protocol: EdgeProtocol):
+    def __init__(self, protocol: EdgeProtocol, device_id: UUID):
         """Initializes the communication handler. The default implementation contains
         handlers for the ping and pong messages.
 
         :param protocol: The protocol to use for communication.
         """
         self.protocol = protocol
+        self.device_id = device_id
 
         self._handlers: dict[MessageType, MessageHandler] = {}
         self._stopped = False

@@ -9,11 +9,12 @@ from uuid import UUID
 from carlos.database.context import RequestContext
 from carlos.database.device import ensure_device_exists, set_device_seen
 from carlos.database.exceptions import NotFound
-from carlos.edge.interface import EdgeCommunicationHandler, EdgeConnectionDisconnected
+from carlos.edge.interface import EdgeConnectionDisconnected
 from carlos.edge.interface.endpoint import (
     get_websocket_endpoint,
     get_websocket_token_endpoint,
 )
+from carlos.edge.server.device_handler import ServerDeviceCommunicationHandler
 from carlos.edge.server.token import issue_token, verify_token
 from fastapi import APIRouter, Depends, Query, Request, Security, WebSocket
 from jwt import InvalidTokenError
@@ -65,7 +66,7 @@ async def get_device_server_websocket_token(
     await ensure_device_exists(context=context, device_id=device_id)
 
     return issue_token(
-        device_id=device_id.hex, hostname=extract_client_hostname(request)
+        device_id=device_id, hostname=extract_client_hostname(request)
     )
 
 
@@ -89,7 +90,7 @@ async def device_server_websocket(
     try:
         verify_token(
             token=token,
-            device_id=device_id.hex,
+            device_id=device_id,
             hostname=extract_client_hostname(websocket),
         )
     except InvalidTokenError:
@@ -101,10 +102,10 @@ async def device_server_websocket(
     protocol = WebsocketProtocol(websocket)
     await protocol.connect()  # accepts the connection
     await DEVICE_CONNECTION_MANAGER.add_device(
-        device_id=device_id.hex, protocol=protocol
+        device_id=device_id, protocol=protocol
     )
 
     try:
-        await EdgeCommunicationHandler(protocol=protocol).listen()
+        await ServerDeviceCommunicationHandler(protocol=protocol, device_id=device_id).listen()
     except EdgeConnectionDisconnected:
         DEVICE_CONNECTION_MANAGER.remove(device_id.hex)

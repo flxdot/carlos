@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from carlos.edge.interface.plugin_pytest import EdgeProtocolTestingConnection
 
 from carlos.edge.device.communication import DeviceCommunicationHandler
@@ -17,4 +19,6 @@ class TestDeviceCommunicationHandler:
         it makes no sense to rest more already tested functionality.
         """
 
-        assert DeviceCommunicationHandler(protocol=edge_testing_protocol[0])
+        assert DeviceCommunicationHandler(
+            protocol=edge_testing_protocol[0], device_id=uuid4()
+        )

@@ -8,18 +8,18 @@ __all__ = [
 
 import secrets
 from datetime import UTC, datetime, timedelta
+from uuid import UUID
 
 import jwt
 
 TOKEN_BITS = 2048
 
-# todo: replace with config
 KEY = secrets.token_urlsafe(32)
 # todo: replace with actual URL of API
 ISSUER = __package__
 
 
-def issue_token(device_id: str, hostname: str):
+def issue_token(device_id: UUID, hostname: str):
     """Issues a new token.
 
     :param device_id: Used as the subject of the token. It is to prevent that other
@@ -36,7 +36,7 @@ def issue_token(device_id: str, hostname: str):
             "iat": now,
             "iss": ISSUER,
             "exp": now + timedelta(minutes=1),
-            "sub": device_id,
+            "sub": str(device_id),
             "aud": hostname,
         },
         key=KEY,
@@ -44,7 +44,7 @@ def issue_token(device_id: str, hostname: str):
     )
 
 
-def verify_token(token: str, device_id: str, hostname: str):
+def verify_token(token: str, device_id: UUID, hostname: str):
     """Verifies a token.
 
     :param token: The token to verify.
@@ -65,7 +65,7 @@ def verify_token(token: str, device_id: str, hostname: str):
         },
     )
 
-    if decoded["sub"] != device_id:
+    if decoded["sub"] != str(device_id):
         raise jwt.InvalidTokenError("The device ID does not match the token.")
 
     return decoded
