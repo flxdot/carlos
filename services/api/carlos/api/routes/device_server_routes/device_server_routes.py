@@ -5,13 +5,14 @@ __all__ = ["device_server_router"]
 
 import warnings
 
+from carlos.database.context import RequestContext
 from carlos.edge.interface import EdgeCommunicationHandler, EdgeConnectionDisconnected
 from carlos.edge.interface.endpoint import (
     get_websocket_endpoint,
     get_websocket_token_endpoint,
 )
 from carlos.edge.server.token import issue_token, verify_token
-from fastapi import APIRouter, Path, Query, Request, Security, WebSocket
+from fastapi import APIRouter, Path, Query, Request, Security, WebSocket, Depends
 from jwt import InvalidTokenError
 from pydantic.alias_generators import to_camel
 from starlette.responses import PlainTextResponse
@@ -20,6 +21,7 @@ from carlos.api.depends.authentication import verify_token as auth_verify_token
 
 from .protocol import WebsocketProtocol
 from .state import DEVICE_CONNECTION_MANAGER
+from ...depends.context import request_context
 
 device_server_router = APIRouter()
 
@@ -51,7 +53,8 @@ def extract_client_hostname(connection: Request | WebSocket) -> str:
     tags=["devices"],
 )
 async def get_device_server_websocket_token(
-    request: Request, device_id: str = DEVICE_ID_PATH
+    request: Request, device_id: str = DEVICE_ID_PATH,
+    context: RequestContext = Depends(request_context),
 ):
     """Returns a token that can be used to authenticate the edge device to the API."""
 

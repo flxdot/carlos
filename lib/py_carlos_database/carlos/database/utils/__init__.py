@@ -5,6 +5,7 @@ __all__ = [
     "alembic_upgrade",
     "build_alembic_config",
     "utcnow",
+    "does_exist",
 ]
 
 
@@ -16,3 +17,4 @@ from .alembic_helper import (
     build_alembic_config,
 )
 from .datetime_helper import utcnow
+from .query_helper import does_exist

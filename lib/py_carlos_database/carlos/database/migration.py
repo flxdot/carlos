@@ -9,6 +9,9 @@ __all__ = [
 
 import asyncio
 
+from carlos.database.connection import get_async_carlos_database_engine
+from carlos.database.testing.test_data import insert_carlos_database_test_data
+
 from ._migrations import ALEMBIC_DIRECTORY
 from .config import DatabaseConnectionSettings
 from .utils import alembic_downgrade, alembic_upgrade, build_alembic_config
@@ -61,6 +64,14 @@ async def setup_quality_test_db(connection_settings: DatabaseConnectionSettings)
     This function assumes that the carlos schema as well as the
     quality schema are already migrated to the latest
     revision."""
+
+    engine = get_async_carlos_database_engine(
+        connection_settings=connection_settings, client_name="carlos.database pytest"
+    )
+    async with engine.connect() as connection:
+        await insert_carlos_database_test_data(connection)
+
+    await engine.dispose()
 
 
 if __name__ == "__main__":  # pragma: no cover
