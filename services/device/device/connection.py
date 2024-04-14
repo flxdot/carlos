@@ -8,6 +8,27 @@ from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings
 
 
+class Auth0Settings(BaseSettings):
+    """A selection of settings required to authenticate with Auth0."""
+
+    domain: str = Field(
+        ...,
+        description="The domain of the Auth0 account.",
+        examples=["my-domain.eu.auth0.com"],
+    )
+
+    client_id: str = Field(..., description="The client ID of the Auth0 account.")
+    client_secret: str = Field(
+        ...,
+        description="The client secret of the Auth0 account.",
+    )
+
+    audience: str = Field(
+        ...,
+        description="The audience of the Auth0 account.",
+    )
+
+
 class ConnectionSettings(BaseSettings):
     """A selection of settings required to make the connection to the server."""
 
@@ -15,6 +36,11 @@ class ConnectionSettings(BaseSettings):
         ...,
         description="Please provide the URL to the Carlos server.",
         examples=["https://carlos.my-domain.com"],
+    )
+
+    auth0: Auth0Settings = Field(
+        ...,
+        description="The settings required to authenticate with Auth0.",
     )
 
     def get_websocket_uri(self, device_id: str, token: str | None = None) -> str:

@@ -4,7 +4,6 @@ __all__ = [
     "DeviceWebsocketClient",
 ]
 
-
 import websockets
 from carlos.edge.device.retry import BackOff
 from carlos.edge.interface import CarlosMessage, EdgeProtocol, DeviceId
@@ -52,8 +51,22 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         """Internal method to perform the connection to the websocket."""
 
         async with AsyncClient() as client:
+            auth0_response = await client.post(
+                f"https://{self._settings.auth0.domain}/oauth/token",
+                json={
+                    "audience": self._settings.auth0.audience,
+                    "client_id": self._settings.auth0.client_id,
+                    "client_secret": self._settings.auth0.client_secret,
+                    "grant_type": "client_credentials",
+                },
+            )
+            if not auth0_response.is_success:
+                raise ConnectionError("Failed to authenticate with Auth0.")
+            auth0_response_json = auth0_response.json()
+
             response = await client.get(
-                self._settings.get_websocket_token_uri(device_id=self._device_id)
+                self._settings.get_websocket_token_uri(device_id=self._device_id),
+                headers={"Authorization": f"{auth0_response_json['token_type']} {auth0_response_json['access_token']}"},
             )
             if not response.is_success:
                 raise ConnectionError("Failed to get the token.")
