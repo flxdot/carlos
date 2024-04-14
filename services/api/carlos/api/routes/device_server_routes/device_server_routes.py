@@ -7,7 +7,7 @@ import warnings
 from uuid import UUID
 
 from carlos.database.context import RequestContext
-from carlos.database.device import ensure_device_exists
+from carlos.database.device import ensure_device_exists, set_device_seen
 from carlos.database.exceptions import NotFound
 from carlos.edge.interface import EdgeCommunicationHandler, EdgeConnectionDisconnected
 from carlos.edge.interface.endpoint import (
@@ -78,10 +78,10 @@ async def device_server_websocket(
 ):
     """Handles the connection of the edge server to the API."""
 
+    context = RequestContext(connection=connection)
+
     try:
-        await ensure_device_exists(
-            context=RequestContext(connection=connection), device_id=device_id
-        )
+        await ensure_device_exists(context=context, device_id=device_id)
     except NotFound:
         await websocket.close(code=4004, reason="Unknown device.")
         return
@@ -95,6 +95,8 @@ async def device_server_websocket(
     except InvalidTokenError:
         await websocket.close(code=4003, reason="Invalid token.")
         return
+
+    await set_device_seen(context=context, device_id=device_id)
 
     protocol = WebsocketProtocol(websocket)
     await protocol.connect()  # accepts the connection
