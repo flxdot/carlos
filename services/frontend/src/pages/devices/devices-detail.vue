@@ -1,5 +1,5 @@
 <template>
-  <div class="container-group mt-4">
+  <div class="container-group">
     <router-link
       v-slot="{ href, navigate }"
       :to="{
@@ -67,6 +67,10 @@ getDeviceDetail(
 <style scoped lang="scss">
 
 @media only screen and (width <= 769px) {
+  .container-group {
+    margin-top: 1rem;
+  }
+
   .device-card {
     border-radius: 0;
     border: none;
