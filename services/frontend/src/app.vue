@@ -56,7 +56,7 @@ watch([
 @use '@/styles/font.scss';
 
 .app {
-  width: 100dvw;
+  width: 100%;
   min-height: 100dvh;
   padding: calc(1.5rem + env(safe-area-inset-top)) calc(1.5rem + env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom)) calc(1.5rem + env(safe-area-inset-left));
   display: grid;
