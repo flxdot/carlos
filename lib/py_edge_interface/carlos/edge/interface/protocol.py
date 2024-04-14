@@ -7,6 +7,8 @@ __all__ = [
     "EdgeConnectionFailed",
     "EdgeProtocol",
     "MessageHandler",
+    "PING",
+    "PONG",
 ]
 
 import inspect
@@ -177,3 +179,7 @@ async def handle_ping(protocol: EdgeProtocol, message: CarlosMessage):
 async def handle_pong(protocol: EdgeProtocol, message: CarlosMessage):
     """Handles the incoming pong message."""
     logger.debug("Received pong message.")
+
+
+PING = CarlosMessage(message_type=MessageType.PING, payload=None)
+PONG = CarlosMessage(message_type=MessageType.PONG, payload=None)
