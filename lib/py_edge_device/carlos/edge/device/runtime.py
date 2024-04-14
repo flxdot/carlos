@@ -50,6 +50,8 @@ class DeviceRuntime:  # pragma: no cover
                     await self.protocol.connect()
 
 
-async def send_ping(communication_handler: DeviceCommunicationHandler):
+async def send_ping(
+    communication_handler: DeviceCommunicationHandler,
+):  # pragma: no cover
     """Sends a ping to the server."""
     await communication_handler.send(PING)
