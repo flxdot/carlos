@@ -180,12 +180,17 @@ const menuItems = ref<MenuItem[]>([]);
 authStore.$subscribe(() => {
   if (authStore.isAuthenticated) {
     devicesStore.fetchDevicesList().then((devices) => {
-      menuItems.value = devices.map((device) => {
+      const devicesMenu = devices.map((device) => {
         return {
           label: device.displayName,
-          icon: 'pi pi-sitemap',
         };
       });
+      menuItems.value = [
+        {
+          label: i18n.global.t('navigation.devices'),
+          items: devicesMenu,
+        },
+      ];
     });
   }
 });
