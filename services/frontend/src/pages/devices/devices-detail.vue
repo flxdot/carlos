@@ -1,5 +1,30 @@
 <template>
-  <pre>{{ deviceDetails }}</pre>
+  <div class="container-group mt-4">
+    <router-link
+      v-slot="{ href, navigate }"
+      :to="{
+        name: ERouteName.DEVICES_OVERVIEW,
+      }"
+    >
+      <a
+        :href="href"
+        title="Carlos"
+        class="input-group subnav-link"
+        @click="navigate"
+      >
+        <i class="pi pi-arrow-left" />
+        <span>{{ i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`) }}</span>
+      </a>
+    </router-link>
+    <card class="device-card">
+      <template #title>
+        <span>{{ deviceDetails?.displayName }}</span>
+      </template>
+      <template #content>
+        <pre>{{ deviceDetails }}</pre>
+      </template>
+    </card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -9,9 +34,14 @@ import {
 import {
   useRoute,
 } from 'vue-router';
+import Card from 'primevue/card';
 import {
   getDeviceDetail, TGetDeviceDetailResponse,
 } from '@/api/devices.ts';
+import {
+  ERouteName,
+} from '@/router/route-name.ts';
+import i18n from '@/plugins/i18n';
 
 const route = useRoute();
 
@@ -29,4 +59,14 @@ getDeviceDetail(
 
 <style scoped lang="scss">
 
+@media only screen and (width <= 769px) {
+  .device-card {
+    border-radius: 0;
+    border: none;
+  }
+
+  .subnav-link {
+    margin-left: 1rem;
+  }
+}
 </style>

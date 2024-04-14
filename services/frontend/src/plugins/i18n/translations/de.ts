@@ -17,12 +17,12 @@ const error = {
   goBack: 'Zurück',
 };
 
-const pages = {
-  [ERouteName.DEVICES_OVERVIEW]: 'Geräte Übersicht',
-};
-
 const navbar = {
   devices: 'Geräte',
+};
+
+const pages = {
+  [ERouteName.DEVICES_OVERVIEW]: 'Geräte Übersicht',
 };
 
 export default {
