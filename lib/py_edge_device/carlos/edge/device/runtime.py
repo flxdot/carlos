@@ -22,7 +22,9 @@ class DeviceRuntime:  # pragma: no cover
     async def run(self):
         """Runs the device runtime."""
 
-        communication_handler = DeviceCommunicationHandler(protocol=self.protocol)
+        communication_handler = DeviceCommunicationHandler(
+            protocol=self.protocol, device_id=self.config.device_id
+        )
 
         while True:
             if not self.protocol.is_connected:

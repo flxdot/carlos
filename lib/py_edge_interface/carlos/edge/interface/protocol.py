@@ -13,11 +13,11 @@ import inspect
 from abc import ABC, abstractmethod
 from asyncio import sleep
 from typing import Protocol, runtime_checkable
-from uuid import UUID
 
 from loguru import logger
 
 from .messages import CarlosMessage, MessageType
+from .types import DeviceId
 
 
 class EdgeConnectionDisconnected(Exception):
@@ -84,7 +84,7 @@ class MessageHandler(Protocol):
 class EdgeCommunicationHandler:
     """Handles the communication between the server and the device."""
 
-    def __init__(self, protocol: EdgeProtocol, device_id: UUID):
+    def __init__(self, protocol: EdgeProtocol, device_id: DeviceId):
         """Initializes the communication handler. The default implementation contains
         handlers for the ping and pong messages.
 

@@ -1,4 +1,5 @@
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 
@@ -13,7 +14,7 @@ def test_config_file_io(tmp_path: Path):
     with pytest.raises(FileNotFoundError):
         read_config_file(cfg_path, DeviceConfig)
 
-    config = DeviceConfig(device_id="test")
+    config = DeviceConfig(device_id=uuid4())
 
     write_config_file(cfg_path, config)
 

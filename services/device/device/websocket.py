@@ -7,7 +7,7 @@ __all__ = [
 
 import websockets
 from carlos.edge.device.retry import BackOff
-from carlos.edge.interface import CarlosMessage, EdgeProtocol
+from carlos.edge.interface import CarlosMessage, EdgeProtocol, DeviceId
 from carlos.edge.interface.protocol import EdgeConnectionDisconnected
 from httpx import AsyncClient
 from loguru import logger
@@ -18,7 +18,7 @@ from .connection import ConnectionSettings
 # can only be tested in integration tests
 class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
 
-    def __init__(self, settings: ConnectionSettings, device_id: str):
+    def __init__(self, settings: ConnectionSettings, device_id: DeviceId):
         """Initializes the websocket client.
 
         :param settings: The settings of the websocket connection.

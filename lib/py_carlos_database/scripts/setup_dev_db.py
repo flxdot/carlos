@@ -1,15 +1,16 @@
 """This script can be used to insert the test data into a local test database."""
+
 from functools import partial
 from time import sleep
 
 from devtools.converter import to_environment
+from devtools.docker import ContainerHandler, ContainerManager, PostgresContainer
+from devtools.testing import setup_test_environment
 
 from carlos.database.config import DatabaseConnectionSettings
 from carlos.database.migration import setup_test_db_data
-from devtools.docker import ContainerHandler, PostgresContainer, ContainerManager
-from devtools.testing import setup_test_environment
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     connection_settings = DatabaseConnectionSettings()
 
@@ -29,9 +30,8 @@ if __name__ == '__main__':
     environment = to_environment(connection_settings)
 
     with setup_test_environment(
-            container_manager=container_manager,
-            environment=environment,
+        container_manager=container_manager,
+        environment=environment,
     ):
         while True:
             sleep(1)
-

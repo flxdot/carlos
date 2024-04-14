@@ -20,8 +20,7 @@ fastapi = "^0.110.1"
 
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
-
-
+"carlos.edge.interface" = {path = "../py_edge_interface"}
 
 [tool.poetry.plugins.pytest11]
 carlos_database = "carlos.database.plugin_pytest"

@@ -1,9 +1,8 @@
 """This module defines the communication handlers for the device."""
 
-from uuid import UUID
-
 from carlos.edge.interface import (
     CarlosMessage,
+    DeviceId,
     EdgeCommunicationHandler,
     EdgeProtocol,
     EdgeVersionPayload,
@@ -19,7 +18,7 @@ from .update import update_device
 class DeviceCommunicationHandler(EdgeCommunicationHandler):
     """Handles and registers all handlers for the device communication."""
 
-    def __init__(self, protocol: EdgeProtocol, device_id: UUID):
+    def __init__(self, protocol: EdgeProtocol, device_id: DeviceId):
         """Initializes the communication handler. The default implementation contains
         handlers for the ping and pong messages.
 

@@ -4,12 +4,11 @@ the API."""
 __all__ = ["device_server_router"]
 
 import warnings
-from uuid import UUID
 
 from carlos.database.context import RequestContext
 from carlos.database.device import ensure_device_exists, set_device_seen
 from carlos.database.exceptions import NotFound
-from carlos.edge.interface import EdgeConnectionDisconnected
+from carlos.edge.interface import EdgeConnectionDisconnected, DeviceId
 from carlos.edge.interface.endpoint import (
     get_websocket_endpoint,
     get_websocket_token_endpoint,
@@ -58,7 +57,7 @@ def extract_client_hostname(connection: Request | WebSocket) -> str:
 )
 async def get_device_server_websocket_token(
     request: Request,
-    device_id: UUID = DEVICE_ID_PATH,
+    device_id: DeviceId = DEVICE_ID_PATH,
     context: RequestContext = Depends(request_context),
 ):
     """Returns a token that can be used to authenticate the edge device to the API."""
@@ -73,7 +72,7 @@ async def get_device_server_websocket_token(
 @device_server_router.websocket(get_websocket_endpoint(device_id_param))
 async def device_server_websocket(
     websocket: WebSocket,
-    device_id: UUID = DEVICE_ID_PATH,
+    device_id: DeviceId = DEVICE_ID_PATH,
     token: str = Query(..., description="The token to authenticate the device."),
     connection: AsyncConnection = Depends(carlos_db_connection),
 ):
