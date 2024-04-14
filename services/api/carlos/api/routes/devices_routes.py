@@ -1,7 +1,5 @@
 __all__ = ["devices_router"]
 
-from uuid import UUID
-
 from carlos.database.context import RequestContext
 from carlos.database.device import (
     CarlosDevice,
@@ -12,6 +10,7 @@ from carlos.database.device import (
     list_devices,
     update_device,
 )
+from carlos.edge.interface import DeviceId
 from fastapi import APIRouter, Depends, Path
 
 from carlos.api.depends.context import request_context
@@ -36,7 +35,7 @@ async def register_device_route(
     return await create_device(context=context, device=device)
 
 
-DEVICE_ID_PATH: UUID = Path(
+DEVICE_ID_PATH: DeviceId = Path(
     ...,
     alias="deviceId",
     description="The unique identifier of the device.",
@@ -47,7 +46,7 @@ DEVICE_ID_PATH: UUID = Path(
     "/{deviceId}", summary="Get a device by its ID.", response_model=CarlosDevice
 )
 async def get_device_route(
-    device_id: UUID = DEVICE_ID_PATH,
+    device_id: DeviceId = DEVICE_ID_PATH,
     context: RequestContext = Depends(request_context),
 ):
     """Get a device by its ID."""
@@ -59,7 +58,7 @@ async def get_device_route(
 )
 async def update_device_route(
     device: CarlosDeviceUpdate,
-    device_id: UUID = DEVICE_ID_PATH,
+    device_id: DeviceId = DEVICE_ID_PATH,
     context: RequestContext = Depends(request_context),
 ):
     """Update a device by its ID."""

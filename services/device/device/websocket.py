@@ -4,10 +4,9 @@ __all__ = [
     "DeviceWebsocketClient",
 ]
 
-
 import websockets
 from carlos.edge.device.retry import BackOff
-from carlos.edge.interface import CarlosMessage, EdgeProtocol
+from carlos.edge.interface import CarlosMessage, DeviceId, EdgeProtocol
 from carlos.edge.interface.protocol import EdgeConnectionDisconnected
 from httpx import AsyncClient
 from loguru import logger
@@ -18,7 +17,7 @@ from .connection import ConnectionSettings
 # can only be tested in integration tests
 class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
 
-    def __init__(self, settings: ConnectionSettings, device_id: str):
+    def __init__(self, settings: ConnectionSettings, device_id: DeviceId):
         """Initializes the websocket client.
 
         :param settings: The settings of the websocket connection.
@@ -52,18 +51,57 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         """Internal method to perform the connection to the websocket."""
 
         async with AsyncClient() as client:
-            response = await client.get(
-                self._settings.get_websocket_token_uri(device_id=self._device_id)
+            auth0_token = await self._get_auth0_token(client=client)
+            token = await self.get_websocket_token(
+                client=client, auth0_token=auth0_token
             )
-            if not response.is_success:
-                raise ConnectionError("Failed to get the token.")
-            token = response.text
 
         websocket_uri = self._settings.get_websocket_uri(
             device_id=self._device_id, token=token
         )
 
         return await websockets.connect(websocket_uri)
+
+    async def get_websocket_token(self, client: AsyncClient, auth0_token: str) -> str:
+        """Fetches a new websocket token from the API.
+
+        The auth0 token is required to authenticate with the API.
+
+        :param client: The HTTP client to use.
+        :param auth0_token: The Auth0 token to use.
+        :return: The websocket token.
+        :raises ConnectionError: If the token could not be fetched.
+        """
+
+        response = await client.get(
+            self._settings.get_websocket_token_uri(device_id=self._device_id),
+            headers={"Authorization": f"Bearer {auth0_token}"},
+        )
+        if not response.is_success:
+            raise ConnectionError("Failed to get the token.")
+        token = response.text
+        return token
+
+    async def _get_auth0_token(self, client: AsyncClient) -> str:
+        """Fetches an Auth0 token.
+
+        :param client: The HTTP client to use.
+        :return: The Auth0 token to be used to authenticate with the Carlos API.
+        :raises ConnectionError: If the token could not be fetched.
+        """
+
+        auth0_response = await client.post(
+            f"https://{self._settings.auth0.domain}/oauth/token",
+            json={
+                "audience": self._settings.auth0.audience,
+                "client_id": self._settings.auth0.client_id,
+                "client_secret": self._settings.auth0.client_secret,
+                "grant_type": "client_credentials",
+            },
+        )
+        if not auth0_response.is_success:
+            raise ConnectionError("Failed to authenticate with Auth0.")
+        return auth0_response.json()["access_token"]
 
     async def disconnect(self):
         """Called when the connection is disconnected."""

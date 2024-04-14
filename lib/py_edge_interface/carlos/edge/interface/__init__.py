@@ -1,5 +1,6 @@
 __all__ = [
     "CarlosMessage",
+    "DeviceId",
     "EdgeCommunicationHandler",
     "EdgeConnectionDisconnected",
     "EdgeConnectionFailed",
@@ -28,3 +29,4 @@ from .protocol import (
     EdgeProtocol,
     MessageHandler,
 )
+from .types import DeviceId

@@ -12,8 +12,8 @@ __all__ = [
 ]
 
 from datetime import timedelta
-from uuid import UUID
 
+from carlos.edge.interface import DeviceId
 from pydantic import Field, computed_field
 from sqlalchemy import insert, select, update
 from sqlalchemy.exc import NoResultFound
@@ -47,7 +47,7 @@ class CarlosDeviceUpdate(CarlosDeviceCreate):
 class CarlosDevice(CarlosDeviceCreate):
     """Represents an existing device."""
 
-    device_id: UUID = Field(..., description="The unique identifier of the device.")
+    device_id: DeviceId = Field(..., description="The unique identifier of the device.")
 
     registered_at: DateTimeWithTimeZone = Field(
         ..., description="The date and time when the device was registered."
@@ -68,7 +68,7 @@ class CarlosDevice(CarlosDeviceCreate):
 
 async def set_device_seen(
     context: RequestContext,
-    device_id: UUID,
+    device_id: DeviceId,
 ) -> None:
     """Updates the last seen timestamp of a device."""
 
@@ -103,7 +103,7 @@ async def create_device(
 
 async def update_device(
     context: RequestContext,
-    device_id: UUID,
+    device_id: DeviceId,
     device: CarlosDeviceUpdate,
 ) -> CarlosDevice:
     """Updates the information of a device."""
@@ -129,7 +129,7 @@ async def update_device(
 
 async def get_device(
     context: RequestContext,
-    device_id: UUID,
+    device_id: DeviceId,
 ) -> CarlosDevice:
     """Retrieves a device by its ID."""
 
@@ -148,14 +148,14 @@ async def list_devices(
 ) -> list[CarlosDevice]:
     """List all devices."""
 
-    query = select(CarlosDeviceOrm)
+    query = select(CarlosDeviceOrm).order_by(CarlosDeviceOrm.display_name)
     devices = (await context.connection.execute(query)).all()
     return [CarlosDevice.model_validate(device) for device in devices]
 
 
 async def does_device_exist(
     context: RequestContext,
-    device_id: UUID,
+    device_id: DeviceId,
 ) -> bool:
     """Checks if a device exists.
 
@@ -169,7 +169,7 @@ async def does_device_exist(
 
 async def ensure_device_exists(
     context: RequestContext,
-    device_id: UUID,
+    device_id: DeviceId,
 ) -> None:
     """Checks if the device with the given `device_id` exists.
     If it does not, raises a `NotFound` exception.

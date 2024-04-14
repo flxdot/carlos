@@ -7,16 +7,18 @@ __all__ = [
 from urllib import parse as urlparse
 from urllib.parse import urlencode
 
+from .types import DeviceId
+
 _DEVICE_ENDPOINT = "/devices/{device_id}/ws"
 
 
-def get_websocket_endpoint(device_id: str) -> str:  # pragma: no cover
+def get_websocket_endpoint(device_id: DeviceId | str) -> str:  # pragma: no cover
     """Returns the websocket endpoint for the edge device."""
 
     return _DEVICE_ENDPOINT.format(device_id=device_id)
 
 
-def get_websocket_token_endpoint(device_id: str) -> str:  # pragma: no cover
+def get_websocket_token_endpoint(device_id: DeviceId | str) -> str:  # pragma: no cover
     """Returns the websocket token endpoint for the edge device."""
 
     return _DEVICE_ENDPOINT.format(device_id=device_id) + "/token"

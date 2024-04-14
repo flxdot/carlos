@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import TypeVar
 
 import yaml
+from carlos.edge.interface import DeviceId
 from pydantic import BaseModel, Field
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME
@@ -21,7 +22,7 @@ from carlos.edge.device.constants import CONFIG_FILE_NAME
 class DeviceConfig(BaseModel):
     """Configures the pure device settings."""
 
-    device_id: str = Field(..., description="The unique identifier of the device.")
+    device_id: DeviceId = Field(..., description="The unique identifier of the device.")
 
 
 Config = TypeVar("Config", bound=BaseModel)

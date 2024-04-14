@@ -22,7 +22,7 @@ Model = TypeVar("Model", bound=BaseModel)
 
 
 def ask_pydantic_model(model: type[Model]) -> Model:
-    """Asks the user to fill the values of a pydantic model."""
+    """Asks the user to fill the values with a pydantic model."""
 
     answers = {}
     for name, field in model.model_fields.items():
@@ -30,9 +30,13 @@ def ask_pydantic_model(model: type[Model]) -> Model:
         if not isinstance(field.default, PydanticUndefinedType):
             prompt_kwargs["default"] = field.default  # pragma: no cover
 
-        answer = typer.prompt(
-            text=field.description or name, type=field.annotation, **prompt_kwargs
-        )
+        question = (field.description or name).strip().rstrip(".")
+
+        if field.annotation is not None and issubclass(field.annotation, BaseModel):
+            print(f"\n[bold]{question}[/bold]:")
+            answer = ask_pydantic_model(field.annotation)
+        else:
+            answer = typer.prompt(text=question, type=field.annotation, **prompt_kwargs)
 
         answers[name] = answer
 

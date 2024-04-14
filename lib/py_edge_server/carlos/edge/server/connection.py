@@ -2,6 +2,7 @@ from importlib import metadata
 
 from carlos.edge.interface import (
     CarlosMessage,
+    DeviceId,
     EdgeProtocol,
     EdgeVersionPayload,
     MessageType,
@@ -12,15 +13,15 @@ class DeviceConnectionManager:
     """This class manages all active connections to any connected devices."""
 
     def __init__(self):
-        self._active_connections: dict[str, EdgeProtocol] = {}
+        self._active_connections: dict[DeviceId, EdgeProtocol] = {}
 
     @property
-    def connected_devices(self) -> list[str]:
+    def connected_devices(self) -> list[DeviceId]:
         """Returns a list of all connected devices."""
 
         return list(self._active_connections.keys())
 
-    async def add_device(self, device_id: str, protocol: EdgeProtocol):
+    async def add_device(self, device_id: DeviceId, protocol: EdgeProtocol):
         """Adds the given protocol to the active connections and sends
         the handshake messages.
 
@@ -43,7 +44,7 @@ class DeviceConnectionManager:
             )
         )
 
-    def remove(self, device_id: str):
+    def remove(self, device_id: DeviceId):
         """Removes the given protocol from the active connections."""
 
         self._active_connections.pop(device_id, None)

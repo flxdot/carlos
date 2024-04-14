@@ -8,9 +8,9 @@ __all__ = [
 
 import secrets
 from datetime import UTC, datetime, timedelta
-from uuid import UUID
 
 import jwt
+from carlos.edge.interface import DeviceId
 
 TOKEN_BITS = 2048
 
@@ -19,7 +19,7 @@ KEY = secrets.token_urlsafe(32)
 ISSUER = __package__
 
 
-def issue_token(device_id: UUID, hostname: str):
+def issue_token(device_id: DeviceId, hostname: str):
     """Issues a new token.
 
     :param device_id: Used as the subject of the token. It is to prevent that other
@@ -44,7 +44,7 @@ def issue_token(device_id: UUID, hostname: str):
     )
 
 
-def verify_token(token: str, device_id: UUID, hostname: str):
+def verify_token(token: str, device_id: DeviceId, hostname: str):
     """Verifies a token.
 
     :param token: The token to verify.

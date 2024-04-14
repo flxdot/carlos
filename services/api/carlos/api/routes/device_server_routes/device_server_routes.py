@@ -4,12 +4,11 @@ the API."""
 __all__ = ["device_server_router"]
 
 import warnings
-from uuid import UUID
 
 from carlos.database.context import RequestContext
 from carlos.database.device import ensure_device_exists, set_device_seen
 from carlos.database.exceptions import NotFound
-from carlos.edge.interface import EdgeConnectionDisconnected
+from carlos.edge.interface import DeviceId, EdgeConnectionDisconnected
 from carlos.edge.interface.endpoint import (
     get_websocket_endpoint,
     get_websocket_token_endpoint,
@@ -58,22 +57,20 @@ def extract_client_hostname(connection: Request | WebSocket) -> str:
 )
 async def get_device_server_websocket_token(
     request: Request,
-    device_id: UUID = DEVICE_ID_PATH,
+    device_id: DeviceId = DEVICE_ID_PATH,
     context: RequestContext = Depends(request_context),
 ):
     """Returns a token that can be used to authenticate the edge device to the API."""
 
     await ensure_device_exists(context=context, device_id=device_id)
 
-    return issue_token(
-        device_id=device_id, hostname=extract_client_hostname(request)
-    )
+    return issue_token(device_id=device_id, hostname=extract_client_hostname(request))
 
 
 @device_server_router.websocket(get_websocket_endpoint(device_id_param))
 async def device_server_websocket(
     websocket: WebSocket,
-    device_id: UUID = DEVICE_ID_PATH,
+    device_id: DeviceId = DEVICE_ID_PATH,
     token: str = Query(..., description="The token to authenticate the device."),
     connection: AsyncConnection = Depends(carlos_db_connection),
 ):
@@ -101,11 +98,11 @@ async def device_server_websocket(
 
     protocol = WebsocketProtocol(websocket)
     await protocol.connect()  # accepts the connection
-    await DEVICE_CONNECTION_MANAGER.add_device(
-        device_id=device_id, protocol=protocol
-    )
+    await DEVICE_CONNECTION_MANAGER.add_device(device_id=device_id, protocol=protocol)
 
     try:
-        await ServerDeviceCommunicationHandler(protocol=protocol, device_id=device_id).listen()
+        await ServerDeviceCommunicationHandler(
+            protocol=protocol, device_id=device_id
+        ).listen()
     except EdgeConnectionDisconnected:
-        DEVICE_CONNECTION_MANAGER.remove(device_id.hex)
+        DEVICE_CONNECTION_MANAGER.remove(device_id)
