@@ -2,9 +2,10 @@ from importlib import metadata
 
 from carlos.edge.interface import (
     CarlosMessage,
+    DeviceId,
     EdgeProtocol,
     EdgeVersionPayload,
-    MessageType, DeviceId,
+    MessageType,
 )
 
 
