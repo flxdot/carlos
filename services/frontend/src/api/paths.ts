@@ -8,5 +8,5 @@ export enum EOpenapiPath {
 }
 
 export const pathFactory = {
-  [EOpenapiPath.DEVICES_GET_PUT_POST_DELETE]: (path: TGetDeviceDetailPathParams) => `/devices/${path.device_id}`,
+  [EOpenapiPath.DEVICES_GET_PUT_POST_DELETE]: (path: TGetDeviceDetailPathParams) => `/devices/${path.deviceId}`,
 };

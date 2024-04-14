@@ -192,7 +192,7 @@ authStore.$subscribe(() => {
             router.push({
               name: ERouteName.DEVICES_DETAIL,
               params: {
-                id: device.deviceId,
+                deviceId: device.deviceId,
               },
             });
           },

@@ -1,25 +1,29 @@
 <template>
-  <div>
-    <!-- The current route is accessible as $route in the template -->
-    User {{ route.params.deviceId }}
-  </div>
+  <pre>{{ deviceDetails }}</pre>
 </template>
 
 <script setup lang="ts">
 import {
+  ref,
+} from 'vue';
+import {
   useRoute,
 } from 'vue-router';
 import {
-  getDeviceDetail,
+  getDeviceDetail, TGetDeviceDetailResponse,
 } from '@/api/devices.ts';
 
 const route = useRoute();
 
-const deviceDetails = getDeviceDetail(
+const deviceDetails = ref<TGetDeviceDetailResponse | undefined>(undefined);
+
+getDeviceDetail(
   {
-    deviceId: route.params.deviceId,
+    deviceId: route.params.deviceId as string,
   },
-);
+).then((response) => {
+  deviceDetails.value = response.data;
+});
 
 </script>
 

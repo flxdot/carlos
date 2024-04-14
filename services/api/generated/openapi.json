@@ -96,14 +96,14 @@
         ],
         "parameters": [
           {
-            "name": "device_id",
+            "name": "deviceId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid",
-              "title": "Device ID",
-              "description": "The unique identifier of the device."
+              "description": "The unique identifier of the device.",
+              "title": "Deviceid"
             },
             "description": "The unique identifier of the device."
           }
@@ -145,14 +145,14 @@
         ],
         "parameters": [
           {
-            "name": "device_id",
+            "name": "deviceId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid",
-              "title": "Device ID",
-              "description": "The unique identifier of the device."
+              "description": "The unique identifier of the device.",
+              "title": "Deviceid"
             },
             "description": "The unique identifier of the device."
           }

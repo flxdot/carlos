@@ -3,44 +3,45 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
-  '/devices': {
+  "/devices": {
     /**
      * Get all devices.
      * @description List all devices.
      */
-    get: operations['listDevicesRoute'];
+    get: operations["listDevicesRoute"];
     /**
      * Register a new device
      * @description Register a new device.
      */
-    post: operations['registerDeviceRoute'];
+    post: operations["registerDeviceRoute"];
   };
-  '/devices/{deviceId}': {
+  "/devices/{deviceId}": {
     /**
      * Get a device by its ID.
      * @description Get a device by its ID.
      */
-    get: operations['getDeviceRoute'];
+    get: operations["getDeviceRoute"];
     /**
      * Update a device by its ID.
      * @description Update a device by its ID.
      */
-    put: operations['updateDeviceRoute'];
+    put: operations["updateDeviceRoute"];
   };
-  '/health': {
+  "/health": {
     /**
      * Health
      * @description Endpoint to determine the health of the API.
      */
-    get: operations['health'];
+    get: operations["health"];
   };
-  '/devices/{deviceId}/ws/token': {
+  "/devices/{deviceId}/ws/token": {
     /**
      * Get a token to be used to connect to the websocket.
      * @description Returns a token that can be used to authenticate the edge device to the API.
      */
-    get: operations['getDeviceServerWebsocketToken'];
+    get: operations["getDeviceServerWebsocketToken"];
   };
 }
 
@@ -121,14 +122,14 @@ export interface components {
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
-      detail?: components['schemas']['ValidationError'][];
+      detail?: components["schemas"]["ValidationError"][];
     };
     /**
      * HealthResponse
      * @description Defines the status of the API.
      */
     HealthResponse: {
-      status: components['schemas']['HealthStatus'];
+      status: components["schemas"]["HealthStatus"];
       /**
        * Message
        * @description A message about the status of the API.
@@ -140,7 +141,7 @@ export interface components {
      * @description The status of the API.
      * @enum {string}
      */
-    HealthStatus: 'ok' | 'no_db_connection' | 'error';
+    HealthStatus: "ok" | "no_db_connection" | "error";
     /** ValidationError */
     ValidationError: {
       /** Location */
@@ -173,7 +174,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          'application/json': components['schemas']['CarlosDevice'][];
+          "application/json": components["schemas"]["CarlosDevice"][];
         };
       };
     };
@@ -185,20 +186,20 @@ export interface operations {
   registerDeviceRoute: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['CarlosDeviceCreate'];
+        "application/json": components["schemas"]["CarlosDeviceCreate"];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          'application/json': components['schemas']['CarlosDevice'];
+          "application/json": components["schemas"]["CarlosDevice"];
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          'application/json': components['schemas']['HTTPValidationError'];
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -211,20 +212,20 @@ export interface operations {
     parameters: {
       path: {
         /** @description The unique identifier of the device. */
-        device_id: string;
+        deviceId: string;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          'application/json': components['schemas']['CarlosDevice'];
+          "application/json": components["schemas"]["CarlosDevice"];
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          'application/json': components['schemas']['HTTPValidationError'];
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -237,25 +238,25 @@ export interface operations {
     parameters: {
       path: {
         /** @description The unique identifier of the device. */
-        device_id: string;
+        deviceId: string;
       };
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['CarlosDeviceUpdate'];
+        "application/json": components["schemas"]["CarlosDeviceUpdate"];
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          'application/json': components['schemas']['CarlosDevice'];
+          "application/json": components["schemas"]["CarlosDevice"];
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          'application/json': components['schemas']['HTTPValidationError'];
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -269,7 +270,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          'application/json': components['schemas']['HealthResponse'];
+          "application/json": components["schemas"]["HealthResponse"];
         };
       };
     };
@@ -289,13 +290,13 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          'text/plain': string;
+          "text/plain": string;
         };
       };
       /** @description Validation Error */
       422: {
         content: {
-          'application/json': components['schemas']['HTTPValidationError'];
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
