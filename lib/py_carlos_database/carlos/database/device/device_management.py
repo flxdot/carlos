@@ -78,6 +78,7 @@ async def set_device_seen(
         .values(last_seen_at=utcnow())
     )
     await context.connection.execute(query)
+    await context.connection.commit()
 
 
 async def create_device(
@@ -96,6 +97,7 @@ async def create_device(
         .returning(CarlosDeviceOrm)
     )
     created = (await context.connection.execute(query)).one()
+    await context.connection.commit()
     return CarlosDevice.model_validate(created)
 
 
@@ -118,6 +120,7 @@ async def update_device(
 
     try:
         updated = (await context.connection.execute(query)).one()
+        await context.connection.commit()
     except NoResultFound:
         raise NotFound(f"No device registered with {device_id=}.")
 

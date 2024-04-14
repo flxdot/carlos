@@ -54,5 +54,5 @@ async def test_handle_message(
     )
 
     assert (
-        device_a_after.last_seen_at > device_a_after_second.last_seen_at
+        device_a_after_second.last_seen_at > device_a_after.last_seen_at
     ), "Last seen did not increase."

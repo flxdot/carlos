@@ -5,6 +5,7 @@ from collections import defaultdict
 from threading import Thread
 from time import sleep
 from typing import Any
+from uuid import uuid4
 
 import pytest
 
@@ -31,7 +32,7 @@ def prepare_handler(
 ) -> tuple[EdgeCommunicationHandler, Thread, defaultdict[Any, int]]:
     """Prepares a communication handler for testing."""
     connection.connect()
-    handler = EdgeCommunicationHandler(connection)
+    handler = EdgeCommunicationHandler(protocol=connection, device_id=uuid4())
 
     invocations = defaultdict(int)
 
@@ -124,7 +125,8 @@ class TestEdgeCommunicationHandler:
         handler = EdgeCommunicationHandler(
             protocol=EdgeProtocolTestingConnection(
                 receive_queue=Queue(), send_queue=Queue()
-            )
+            ),
+            device_id=uuid4(),
         )
 
         def no_args():
