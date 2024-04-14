@@ -10,7 +10,7 @@ from carlos.database.device.device_management import (
     create_device,
     get_device,
     list_devices,
-    update_device, CarlosDeviceCreate,
+    update_device,
 )
 from fastapi import APIRouter, Depends, Path
 

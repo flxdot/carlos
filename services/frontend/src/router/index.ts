@@ -19,7 +19,7 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/devices/devices-overview.vue'),
   },
   {
-    path: '/devices/:id',
+    path: '/devices/:deviceId',
     name: ERouteName.DEVICES_DETAIL,
     component: () => import('@/pages/devices/devices-detail.vue'),
   },

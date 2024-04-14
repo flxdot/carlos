@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- The current route is accessible as $route in the template -->
-    User {{ route.params.id }}
+    User {{ route.params.deviceId }}
   </div>
 </template>
 
@@ -17,7 +17,7 @@ const route = useRoute();
 
 const deviceDetails = getDeviceDetail(
   {
-    deviceId: route.params.id,
+    deviceId: route.params.deviceId,
   },
 );
 
