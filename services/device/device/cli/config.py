@@ -32,7 +32,7 @@ def ask_pydantic_model(model: type[Model]) -> Model:
 
         question = (field.description or name).strip().rstrip(".")
 
-        if issubclass(field.annotation, BaseModel):
+        if field.annotation is not None and issubclass(field.annotation, BaseModel):
             print(f"\n[bold]{question}[/bold]:")
             answer = ask_pydantic_model(field.annotation)
         else:

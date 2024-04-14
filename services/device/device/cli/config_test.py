@@ -24,13 +24,13 @@ def test_create_show(tmp_path):
             ["config", "create"],
             input="\n".join(
                 [
-                    str(device_id),
-                    server_url,
-                    "my-domain.eu.auth0.com",
-                    "client_id",
-                    "client_secret",
-                    "audience",
-                    "",
+                    str(device_id),  # DeviceConfig.device_id
+                    server_url,  # ConnectionSettings.server_url
+                    "my-domain.eu.auth0.com",  # ConnectionSettings.auth0.domain
+                    "client_id",  # ConnectionSettings.auth0.client_id
+                    "client_secret",  # ConnectionSettings.auth0.client_secret
+                    "audience",  # ConnectionSettings.auth0.audience
+                    "",  # empty string required to finish the input
                 ]
             ),
         )
