@@ -54,10 +54,10 @@ def setup_test_db_data(
     # migrate the carlos drivers schema
     migrate_carlos_schema(connection_settings=connection_settings)
 
-    asyncio.run(setup_quality_test_db(connection_settings=connection_settings))
+    asyncio.run(setup_carlos_test_db(connection_settings=connection_settings))
 
 
-async def setup_quality_test_db(connection_settings: DatabaseConnectionSettings):
+async def setup_carlos_test_db(connection_settings: DatabaseConnectionSettings):
     """Inserts the test data required by the quality
     into the carlos database.
 
