@@ -35,6 +35,7 @@ services:
       - VITE_APP_API_URL=https://api.${DOMAIN}
       - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
       - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID}
+      - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE}
     depends_on:
       - api
     healthcheck:
