@@ -55,72 +55,72 @@ jobs:
     steps:
     {% include "ci.install.yml.jinja2" %}
 
-      # installing the repository is required to register any pytest plugins
-      # that are defined by the repository
-      - name: Set up - Install project
-        run: poetry install --no-interaction --all-extras
-        working-directory: ./{{ project.path_from_root }}
+    # installing the repository is required to register any pytest plugins
+    # that are defined by the repository
+    - name: Set up - Install project
+      run: poetry install --no-interaction --all-extras
+      working-directory: ./{{ project.path_from_root }}
 
-      {% if project.custom_ci_steps.post_install_steps %}{{ project.custom_ci_steps.post_install_steps | to_nice_yaml | indent(6) }}{% endif %}
+    {% if project.custom_ci_steps.post_install_steps %}{{ project.custom_ci_steps.post_install_steps | to_nice_yaml | indent(6) }}{% endif %}
 
-      - name: Auto - format
-        run: make format
-        working-directory: ./{{ project.path_from_root }}
+    - name: Auto - format
+      run: make format
+      working-directory: ./{{ project.path_from_root }}
 
-      {%- if project.ruff.enabled %}
+    {%- if project.ruff.enabled %}
 
-      - name: Lint - ruff
-        if: {% raw %}${{ !cancelled() }}{% endraw %}
-        run: make ruff
-        working-directory: ./{{ project.path_from_root }}
+    - name: Lint - ruff
+      if: {% raw %}${{ !cancelled() }}{% endraw %}
+      run: make ruff
+      working-directory: ./{{ project.path_from_root }}
 
-      {%- endif %}
-      {% if project.custom_ci_steps.post_lint_steps %}{{ project.custom_ci_steps.post_lint_steps | to_nice_yaml | indent(6) }}{% endif %}
+    {%- endif %}
+    {% if project.custom_ci_steps.post_lint_steps %}{{ project.custom_ci_steps.post_lint_steps | to_nice_yaml | indent(6) }}{% endif %}
 
-      {%- if project.mypy.enabled %}
+    {%- if project.mypy.enabled %}
 
-      - name: Type checking - mypy
-        if: {% raw %}${{ !cancelled() }}{% endraw %}
-        run: make mypy
-        working-directory: ./{{ project.path_from_root }}
+    - name: Type checking - mypy
+      if: {% raw %}${{ !cancelled() }}{% endraw %}
+      run: make mypy
+      working-directory: ./{{ project.path_from_root }}
 
-      {%- endif %}
-      {% if project.custom_ci_steps.post_type_checking_steps %}{{ project.custom_ci_steps.post_type_checking_steps | to_nice_yaml | indent(6) }}{% endif %}
+    {%- endif %}
+    {% if project.custom_ci_steps.post_type_checking_steps %}{{ project.custom_ci_steps.post_type_checking_steps | to_nice_yaml | indent(6) }}{% endif %}
 
-      - name: Test - pytest
-        if: {% raw %}${{ !cancelled() }}{% endraw %}
-        run: make pytest
-        working-directory: ./{{ project.path_from_root }}
+    - name: Test - pytest
+      if: {% raw %}${{ !cancelled() }}{% endraw %}
+      run: make pytest
+      working-directory: ./{{ project.path_from_root }}
 
-      {%- if project.coverage.enabled %}
+    {%- if project.coverage.enabled %}
 
-      - name: Test - coverage
-        if: {% raw %}${{ !cancelled() }}{% endraw %}
-        run: make coverage
-        working-directory: ./{{ project.path_from_root }}
-      {%- endif %}
+    - name: Test - coverage
+      if: {% raw %}${{ !cancelled() }}{% endraw %}
+      run: make coverage
+      working-directory: ./{{ project.path_from_root }}
+    {%- endif %}
 
-      {% if project.custom_ci_steps.post_test_steps %}{{ project.custom_ci_steps.post_test_steps | to_nice_yaml | indent(6) }}{% endif %}
+    {% if project.custom_ci_steps.post_test_steps %}{{ project.custom_ci_steps.post_test_steps | to_nice_yaml | indent(6) }}{% endif %}
 
-      {%- if project.deptry.enabled %}
+    {%- if project.deptry.enabled %}
 
-      - name: Test - dependencies
-        if: {% raw %}${{ !cancelled() }}{% endraw %}
-        run: poetry run deptry . -v
-        working-directory: ./{{ project.path_from_root }}
-      {%- endif %}
+    - name: Test - dependencies
+      if: {% raw %}${{ !cancelled() }}{% endraw %}
+      run: poetry run deptry . -v
+      working-directory: ./{{ project.path_from_root }}
+    {%- endif %}
 
-      {%- raw  %}
-      - uses: actions-js/push@master
-        if: ${{ !cancelled() }}
-        name: Push changes
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
-      {%- endraw %}
-          message: "update {{ project.path_from_root }}"
-      {%- raw  %}
-          coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
-          coauthor_name: ${{ github.event.pull_request.user.login }}
-      {%- endraw %}
+    {%- raw  %}
+    - uses: actions-js/push@master
+      if: ${{ !cancelled() }}
+      name: Push changes
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.head_ref }}
+    {%- endraw %}
+        message: "update {{ project.path_from_root }}"
+    {%- raw  %}
+        coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
+        coauthor_name: ${{ github.event.pull_request.user.login }}
+    {%- endraw %}
 {% endif %}

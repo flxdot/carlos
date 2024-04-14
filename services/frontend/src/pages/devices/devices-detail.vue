@@ -17,7 +17,7 @@ const route = useRoute();
 
 const deviceDetails = getDeviceDetail(
   {
-    device_id: route.params.id,
+    deviceId: route.params.id,
   },
 );
 
