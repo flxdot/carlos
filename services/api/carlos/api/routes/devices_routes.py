@@ -22,7 +22,7 @@ devices_router = APIRouter()
 @devices_router.get("", summary="Get all devices.", response_model=list[CarlosDevice])
 async def list_devices_route(
     context: RequestContext = Depends(request_context),
-):  # pragma: no cover
+):
     """List all devices."""
     return await list_devices(context=context)
 
@@ -31,14 +31,14 @@ async def list_devices_route(
 async def register_device_route(
     device: CarlosDeviceCreate,
     context: RequestContext = Depends(request_context),
-):  # pragma: no cover
+):
     """Register a new device."""
     return await create_device(context=context, device=device)
 
 
 DEVICE_ID_PATH: UUID = Path(
     ...,
-    title="Device ID",
+    alias="deviceId",
     description="The unique identifier of the device.",
 )
 
@@ -49,7 +49,7 @@ DEVICE_ID_PATH: UUID = Path(
 async def get_device_route(
     device_id: UUID = DEVICE_ID_PATH,
     context: RequestContext = Depends(request_context),
-):  # pragma: no cover
+):
     """Get a device by its ID."""
     return await get_device(context=context, device_id=device_id)
 
@@ -61,6 +61,6 @@ async def update_device_route(
     device: CarlosDeviceUpdate,
     device_id: UUID = DEVICE_ID_PATH,
     context: RequestContext = Depends(request_context),
-):  # pragma: no cover
+):
     """Update a device by its ID."""
     return await update_device(context=context, device_id=device_id, device=device)
