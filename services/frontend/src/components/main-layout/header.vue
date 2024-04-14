@@ -153,6 +153,9 @@ import {
   useAuth0,
 } from '@auth0/auth0-vue';
 import {
+  useRouter,
+} from 'vue-router';
+import {
   ERouteName,
 } from '@/router/route-name.ts';
 import packageInfo from '@/../package.json';
@@ -172,6 +175,8 @@ const {
   isLoading,
 } = useAuth0();
 
+const router = useRouter();
+
 const devicesStore = useDevicesStore();
 const authStore = useAuthStore();
 
@@ -183,12 +188,34 @@ authStore.$subscribe(() => {
       const devicesMenu = devices.map((device) => {
         return {
           label: device.displayName,
+          command() {
+            router.push({
+              name: ERouteName.DEVICES_DETAIL,
+              params: {
+                id: device.deviceId,
+              },
+            });
+          },
         };
       });
       menuItems.value = [
         {
-          label: i18n.global.t('navigation.devices'),
-          items: devicesMenu,
+          label: i18n.global.t('navbar.devices'),
+          items: [
+            {
+              label: i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`),
+              icon: 'pi pi-th-large',
+              command() {
+                router.push({
+                  name: ERouteName.DEVICES_OVERVIEW,
+                });
+              },
+            },
+            {
+              separator: true,
+            },
+            ...devicesMenu,
+          ],
         },
       ];
     });

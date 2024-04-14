@@ -14,6 +14,16 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/home/home.vue'),
   },
   {
+    path: '/devices',
+    name: ERouteName.DEVICES_OVERVIEW,
+    component: () => import('@/pages/devices/devices-overview.vue'),
+  },
+  {
+    path: '/devices/:id',
+    name: ERouteName.DEVICES_DETAIL,
+    component: () => import('@/pages/devices/devices-detail.vue'),
+  },
+  {
     path: '/accept-login',
     name: ERouteName.ACCEPT_LOGIN,
     component: () => import('@/pages/auth/accept-login.vue'),

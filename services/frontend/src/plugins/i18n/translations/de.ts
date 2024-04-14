@@ -1,3 +1,7 @@
+import {
+  ERouteName,
+} from '@/router/route-name.ts';
+
 const authentication = {
   login: 'Anmelden',
   logout: 'Abmelden',
@@ -13,7 +17,17 @@ const error = {
   goBack: 'Zurück',
 };
 
+const pages = {
+  [ERouteName.DEVICES_OVERVIEW]: 'Geräte Übersicht',
+};
+
+const navbar = {
+  devices: 'Geräte',
+};
+
 export default {
   authentication,
+  pages,
   error,
+  navbar,
 };
