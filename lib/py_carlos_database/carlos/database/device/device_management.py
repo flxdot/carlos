@@ -148,7 +148,7 @@ async def list_devices(
 ) -> list[CarlosDevice]:
     """List all devices."""
 
-    query = select(CarlosDeviceOrm)
+    query = select(CarlosDeviceOrm).order_by(CarlosDeviceOrm.display_name)
     devices = (await context.connection.execute(query)).all()
     return [CarlosDevice.model_validate(device) for device in devices]
 
