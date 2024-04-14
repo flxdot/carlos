@@ -1,6 +1,18 @@
+import {
+  ERouteName,
+} from '@/router/route-name.ts';
+
 const authentication = {
   login: 'Anmelden',
   logout: 'Abmelden',
+};
+
+const device = {
+  status: {
+    online: 'Online',
+    offline: 'Offline',
+    disconnected: 'Getrennt',
+  },
 };
 
 const error = {
@@ -13,7 +25,18 @@ const error = {
   goBack: 'Zurück',
 };
 
+const navbar = {
+  devices: 'Geräte',
+};
+
+const pages = {
+  [ERouteName.DEVICES_OVERVIEW]: 'Geräte Übersicht',
+};
+
 export default {
   authentication,
+  device,
   error,
+  navbar,
+  pages,
 };

@@ -19,7 +19,36 @@
 </template>
 
 <script setup lang="ts">
+import {
+  useRouter,
+} from 'vue-router';
 import FancyPanel from '@/components/containers/fancy-panel.vue';
+import {
+  useDevicesStore,
+} from '@/store/devices.ts';
+import {
+  ERouteName,
+} from '@/router/route-name.ts';
+
+const router = useRouter();
+const devicesStore = useDevicesStore();
+
+devicesStore.$subscribe(() => {
+  if (devicesStore.devicesList) {
+    if (devicesStore.devicesList.length === 1) {
+      router.push({
+        name: ERouteName.DEVICES_DETAIL,
+        params: {
+          deviceId: devicesStore.devicesList[0].deviceId,
+        },
+      });
+    } else {
+      router.push({
+        name: ERouteName.DEVICES_OVERVIEW,
+      });
+    }
+  }
+});
 
 </script>
 
@@ -48,11 +77,6 @@ import FancyPanel from '@/components/containers/fancy-panel.vue';
 }
 
 @media only screen and (width <= 769px) {
-  .home-container {
-    border-radius: 0;
-    border: none;
-  }
-
   .welcome {
     margin: 0;
     align-items: flex-end;

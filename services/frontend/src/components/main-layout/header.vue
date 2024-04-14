@@ -153,10 +153,19 @@ import {
   useAuth0,
 } from '@auth0/auth0-vue';
 import {
+  useRouter,
+} from 'vue-router';
+import {
   ERouteName,
 } from '@/router/route-name.ts';
 import packageInfo from '@/../package.json';
 import i18n from '@/plugins/i18n';
+import {
+  useDevicesStore,
+} from '@/store/devices.ts';
+import {
+  useAuthStore,
+} from '@/store/auth.ts';
 
 const {
   loginWithRedirect,
@@ -166,9 +175,54 @@ const {
   isLoading,
 } = useAuth0();
 
-const userMenu = ref<InstanceType<typeof PrmMenu> | null>(null);
+const router = useRouter();
+
+const devicesStore = useDevicesStore();
+const authStore = useAuthStore();
 
 const menuItems = ref<MenuItem[]>([]);
+
+authStore.$subscribe(() => {
+  if (authStore.isAuthenticated) {
+    devicesStore.fetchDevicesList().then((devices) => {
+      const devicesMenu = devices.map((device) => {
+        return {
+          label: device.displayName,
+          command() {
+            router.push({
+              name: ERouteName.DEVICES_DETAIL,
+              params: {
+                deviceId: device.deviceId,
+              },
+            });
+          },
+        };
+      });
+      menuItems.value = [
+        {
+          label: i18n.global.t('navbar.devices'),
+          items: [
+            {
+              label: i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`),
+              icon: 'pi pi-th-large',
+              command() {
+                router.push({
+                  name: ERouteName.DEVICES_OVERVIEW,
+                });
+              },
+            },
+            {
+              separator: true,
+            },
+            ...devicesMenu,
+          ],
+        },
+      ];
+    });
+  }
+});
+
+const userMenu = ref<InstanceType<typeof PrmMenu> | null>(null);
 
 const avatarMenuItems = ref([
   {

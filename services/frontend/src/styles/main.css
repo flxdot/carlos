@@ -19,6 +19,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+code, pre {
+  font-family: GeistMono, monospace;
+}
+
 #app {
   width: 100dvw;
 }
@@ -72,7 +76,18 @@ button,[role=button] {
     cursor: pointer
 }
 
+.input-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
 
+.container-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
 /*@media (prefers-color-scheme: light) {*/
 /*  :root {*/

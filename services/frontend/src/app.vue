@@ -10,10 +10,45 @@
 
 <script setup lang="ts">
 import {
+  watch,
+} from 'vue';
+import {
   RouterView,
 } from 'vue-router';
+import {
+  useAuth0,
+} from '@auth0/auth0-vue';
 import PageHeader from './components/main-layout/header.vue';
 import PageFooter from './components/main-layout/footer.vue';
+import {
+  useAuthStore,
+} from '@/store/auth.ts';
+import {
+  setToken,
+} from '@/api/axios.ts';
+
+const authStore = useAuthStore();
+
+const {
+  isAuthenticated,
+  isLoading,
+  getAccessTokenSilently,
+} = useAuth0();
+
+watch([
+  isAuthenticated,
+  isLoading,
+], async ([
+  newIsAuthenticate,
+  newIsLoading,
+]) => {
+  if (newIsAuthenticate && !newIsLoading) {
+    authStore.setToken(await getAccessTokenSilently());
+  } else {
+    authStore.clearToken();
+  }
+  setToken(authStore.token);
+});
 
 </script>
 

@@ -21,4 +21,12 @@ applyAuthTokenInterceptor(carlosApi, {
   requestRefresh: refreshToken,
 });
 
+export function setToken(token: string | undefined) {
+  if (token) {
+    carlosApi.defaults.headers.common.Authorization = `Bearer ${token}`;
+    return;
+  }
+  delete carlosApi.defaults.headers.common.Authorization;
+}
+
 export default carlosApi;

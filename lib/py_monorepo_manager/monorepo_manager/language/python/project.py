@@ -3,7 +3,7 @@ __all__ = ["PythonProject"]
 import tomllib
 from inspect import getdoc
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from poetry.core.constraints.version import parse_constraint
 from pydantic import BaseModel, Field, PrivateAttr, field_validator
@@ -58,6 +58,26 @@ class Deptry(BaseModel):
     )
 
 
+CiStep = dict[str, Any]
+
+
+class CustomCiSteps(BaseModel):
+    """Allows the user to define additional CI steps."""
+
+    post_install_steps: list[CiStep] = Field(
+        default_factory=list, description="Steps to run after the install step."
+    )
+    post_lint_steps: list[CiStep] = Field(
+        default_factory=list, description="Steps to run after the lint step."
+    )
+    post_type_checking_steps: list[CiStep] = Field(
+        default_factory=list, description="Steps to run after the mypy step."
+    )
+    post_test_steps: list[CiStep] = Field(
+        default_factory=list, description="Steps to run after the test step."
+    )
+
+
 POETRY_VERSION = "1.7.1"
 
 
@@ -106,6 +126,11 @@ class PythonProject(Project):
             if isinstance(command, str):  # pragma: no cover
                 v[target] = [c.strip() for c in command.splitlines()]
         return v
+
+    custom_ci_steps: CustomCiSteps = Field(
+        default_factory=CustomCiSteps,
+        description=getdoc(CustomCiSteps),
+    )
 
     _pyproject_toml: dict = PrivateAttr()
 

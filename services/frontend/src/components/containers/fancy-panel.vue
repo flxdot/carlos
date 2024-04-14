@@ -20,4 +20,11 @@
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+@media only screen and (width <= 769px) {
+  .fancy-panel {
+    border-radius: 0;
+    border: none;
+  }
+}
 </style>

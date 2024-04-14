@@ -4,6 +4,9 @@ import {
   RouteRecordRaw,
 } from 'vue-router';
 import {
+  authGuard,
+} from '@auth0/auth0-vue';
+import {
   ERouteName,
 } from '@/router/route-name.ts';
 
@@ -12,6 +15,18 @@ export const routes: RouteRecordRaw[] = [
     path: '/',
     name: ERouteName.HOME,
     component: () => import('@/pages/home/home.vue'),
+  },
+  {
+    path: '/devices',
+    name: ERouteName.DEVICES_OVERVIEW,
+    component: () => import('@/pages/devices/devices-overview.vue'),
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/devices/:deviceId',
+    name: ERouteName.DEVICES_DETAIL,
+    component: () => import('@/pages/devices/devices-detail.vue'),
+    beforeEnter: authGuard,
   },
   {
     path: '/accept-login',

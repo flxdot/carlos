@@ -59,12 +59,15 @@ jobs:
         run: yarn install --immutable
 
       - name: Run security audit
+        if: ${{ !cancelled() }}
         run: yarn audit --groups dependencies
 
       - name: Lint services/frontend
+        if: ${{ !cancelled() }}
         working-directory: services/frontend
         run: yarn lint
 
       - name: build workspace
+        if: ${{ !cancelled() }}
         working-directory: .
         run: yarn build

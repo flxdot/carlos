@@ -10,4 +10,5 @@ def build_environment(template_path: Path) -> Environment:
         loader=FileSystemLoader(template_path),
         autoescape=select_autoescape(),
         keep_trailing_newline=True,
+        extensions=["jinja2_ansible_filters.AnsibleCoreFiltersExtension"],
     )

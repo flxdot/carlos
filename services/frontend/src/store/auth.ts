@@ -5,8 +5,19 @@ import {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: null as string | null,
+    token: undefined as string | undefined,
   }),
+  getters: {
+    isAuthenticated: (state) => state.token !== undefined,
+  },
+  actions: {
+    setToken(token: string) {
+      this.token = token;
+    },
+    clearToken() {
+      this.token = undefined;
+    },
+  },
 });
 
 if (import.meta.hot) {
