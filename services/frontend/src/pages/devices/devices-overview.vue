@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div v-for="device in deviceStore.devicesList">
+    <div
+      v-for="device in deviceStore.devicesList"
+      :key="device.deviceId"
+    >
       <h1>{{ device.displayName }}</h1>
       <pre>{{ device }}</pre>
     </div>
