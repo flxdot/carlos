@@ -3,7 +3,7 @@ __all__ = ["devices_router"]
 from uuid import UUID
 
 from carlos.database.context import RequestContext
-from carlos.database.device.device_management import (
+from carlos.database.device import (
     CarlosDevice,
     CarlosDeviceCreate,
     CarlosDeviceUpdate,

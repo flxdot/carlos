@@ -3,6 +3,8 @@ __all__ = [
     "CarlosDeviceCreate",
     "CarlosDeviceUpdate",
     "create_device",
+    "does_device_exist",
+    "ensure_device_exists",
     "get_device",
     "list_devices",
     "set_device_seen",
@@ -20,7 +22,7 @@ from carlos.database.context import RequestContext
 from carlos.database.exceptions import NotFound
 from carlos.database.orm import CarlosDeviceOrm
 from carlos.database.schema import CarlosSchema, DateTimeWithTimeZone
-from carlos.database.utils import utcnow
+from carlos.database.utils import does_exist, utcnow
 
 DEVICE_ONLINE_THRESHOLD = timedelta(minutes=5)
 
@@ -76,6 +78,7 @@ async def set_device_seen(
         .values(last_seen_at=utcnow())
     )
     await context.connection.execute(query)
+    await context.connection.commit()
 
 
 async def create_device(
@@ -94,6 +97,7 @@ async def create_device(
         .returning(CarlosDeviceOrm)
     )
     created = (await context.connection.execute(query)).one()
+    await context.connection.commit()
     return CarlosDevice.model_validate(created)
 
 
@@ -116,6 +120,7 @@ async def update_device(
 
     try:
         updated = (await context.connection.execute(query)).one()
+        await context.connection.commit()
     except NoResultFound:
         raise NotFound(f"No device registered with {device_id=}.")
 
@@ -146,3 +151,33 @@ async def list_devices(
     query = select(CarlosDeviceOrm)
     devices = (await context.connection.execute(query)).all()
     return [CarlosDevice.model_validate(device) for device in devices]
+
+
+async def does_device_exist(
+    context: RequestContext,
+    device_id: UUID,
+) -> bool:
+    """Checks if a device exists.
+
+    :param context: The request context.
+    :param device_id: The identifier of the device.
+    :return: True if the device exists, False otherwise.
+    """
+
+    return await does_exist(context, [CarlosDeviceOrm.device_id == device_id])
+
+
+async def ensure_device_exists(
+    context: RequestContext,
+    device_id: UUID,
+) -> None:
+    """Checks if the device with the given `device_id` exists.
+    If it does not, raises a `NotFound` exception.
+
+    :param context: The request context.
+    :param device_id: The identifier of the device.
+    :raises NotFound: If no device is registered with the given `device_id`.
+    """
+
+    if not await does_device_exist(context=context, device_id=device_id):
+        raise NotFound(f"No device registered with {device_id=}.")
