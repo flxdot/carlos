@@ -9,7 +9,7 @@ from carlos.edge.device.config import write_config_file
 from carlos.edge.interface import DeviceId
 from devtools.context_manager import TemporaryWorkingDirectory
 
-from .connection import ConnectionSettings, read_connection_settings
+from .connection import Auth0Settings, ConnectionSettings, read_connection_settings
 
 
 def rand_printable_letters(length: int) -> str:
@@ -36,7 +36,15 @@ class TestConnectionSettings:
     def settings(self, domain: str) -> ConnectionSettings:
         """Returns a bunch of connection settings."""
 
-        return ConnectionSettings(server_url=f"http://{domain}")
+        return ConnectionSettings(
+            server_url=f"http://{domain}",
+            auth0=Auth0Settings(
+                domain="my-domain.eu.auth0.com",
+                client_id="client_id",
+                client_secret="client_secret",
+                audience="audience",
+            ),
+        )
 
     @pytest.fixture()
     def random_device_id(self) -> DeviceId:
@@ -86,7 +94,15 @@ class TestConnectionSettings:
 def test_read_connection_settings(tmp_path: Path):
     """This function ensures that the connection settings can be read."""
 
-    settings = ConnectionSettings(server_url="http://example.com")
+    settings = ConnectionSettings(
+        server_url="http://example.com",
+        auth0=Auth0Settings(
+            domain="my-domain.eu.auth0.com",
+            client_id="client_id",
+            client_secret="client_secret",
+            audience="audience",
+        ),
+    )
 
     write_config_file(path=tmp_path / "device_connection", config=settings)
 
