@@ -2,7 +2,7 @@ import pytest
 from devtools.context_manager import EnvironmentContext
 from starlette.testclient import TestClient
 
-from carlos.api.depends.authentication import TESTING_TOKEN, Auth0Region
+from carlos.api.depends.authentication import TESTING_TOKEN
 
 
 def build_environment() -> dict[str, str]:
@@ -12,8 +12,7 @@ def build_environment() -> dict[str, str]:
         "API_DOCS_ENABLED": "1",
         "API_DEACTIVATE_USER_AUTH": "1",
         # Auth0 Config - Does not matter for testing
-        "AUTH0_TENANT_ID": "auth0-tenant-id",
-        "AUTH0_REGION": Auth0Region.EUROPE.value,
+        "AUTH0_DOMAIN": "auth0-tenant-id.eu.auth0.com",
         "AUTH0_AUDIENCE": "auth0-audience",
         # special undocumented environment variables to deactivate special
         # testing features

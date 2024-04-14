@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import pytest
 from carlos.edge.interface import CarlosMessage, MessageType
 from carlos.edge.interface.plugin_pytest import EdgeProtocolTestingConnection
@@ -19,11 +21,14 @@ async def test_device_connection_manager(
 
     connection_manager = DeviceConnectionManager()
 
+    device_a_id = uuid4()
+    device_b_id = uuid4()
+
     # connect the clients
     assert len(connection_manager.connected_devices) == 0
-    await connection_manager.add_device(device_id="device_a", protocol=client_a)
-    await connection_manager.add_device(device_id="device_b", protocol=client_b)
-    assert connection_manager.connected_devices == ["device_a", "device_b"]
+    await connection_manager.add_device(device_id=device_a_id, protocol=client_a)
+    await connection_manager.add_device(device_id=device_b_id, protocol=client_b)
+    assert connection_manager.connected_devices == [device_a_id, device_b_id]
 
     # we need to ignore the handshake messages
     for _ in range(1):
@@ -48,5 +53,5 @@ async def test_device_connection_manager(
     assert message_a.message_type == MessageType.PING
 
     # disconnect client_a
-    connection_manager.remove("device_a")
+    connection_manager.remove(device_a_id)
     assert len(connection_manager.connected_devices) == 1

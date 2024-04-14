@@ -10,10 +10,10 @@ from carlos.database.device import (
     list_devices,
     update_device,
 )
+from carlos.edge.interface import DeviceId
 from fastapi import APIRouter, Depends, Path
 
 from carlos.api.depends.context import request_context
-from carlos.edge.interface import DeviceId
 
 devices_router = APIRouter()
 

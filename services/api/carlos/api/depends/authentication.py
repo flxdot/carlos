@@ -33,15 +33,6 @@ class UnauthenticatedException(HTTPException):
         )
 
 
-class Auth0Region(str, Enum):
-    """A list of available regions for Auth0."""
-
-    US = "us"
-    EUROPE = "eu"
-    AUSTRALIA = "au"
-    JAPAN = "jp"
-
-
 class Auth0Algorithm(str, Enum):
     """A list of available algorithms for Auth0."""
 
@@ -56,21 +47,13 @@ class Auth0Settings(BaseSettings):
         env_file=".env", env_prefix="AUTH0_", extra="ignore"
     )
 
-    tenant_id: str = Field(..., description="The identifier of the Auth0 tenant.")
-    region: Auth0Region = Field(
-        Auth0Region.EUROPE, description="The region where the Auth0 tenant is located."
-    )
+    domain: str = Field(..., description="The domain of the Auth0 tenant.")
     audience: str = Field(..., description="The audience of the Auth0 API.")
     algorithm: Auth0Algorithm = Field(
         Auth0Algorithm.RS256,
         description="Algorithm to sign the tokens with. When selecting RS256 the token "
         "will be signed with Auth0's private key.",
     )
-
-    @property
-    def domain(self) -> str:  # pragma: no cover
-        """Returns the Auth0 domain based on the region."""
-        return f"{self.tenant_id}.{self.region.value}.auth0.com"
 
     @property
     def issuer(self) -> str:  # pragma: no cover
