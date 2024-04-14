@@ -7,6 +7,14 @@ const authentication = {
   logout: 'Logout',
 };
 
+const device = {
+  status: {
+    online: 'Online',
+    offline: 'Offline',
+    disconnected: 'Disconnected',
+  },
+};
+
 const error = {
   oops: 'Oops!',
   errorMessageTemplate: 'Error {code} - {message}',
@@ -27,7 +35,8 @@ const pages = {
 
 export default {
   authentication,
-  pages,
+  device,
   error,
   navbar,
+  pages,
 };

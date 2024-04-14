@@ -18,7 +18,13 @@
     </router-link>
     <card class="device-card">
       <template #title>
-        <span>{{ deviceDetails?.displayName }}</span>
+        <div class="input-group">
+          <device-status-badge
+            v-if="deviceDetails !== undefined"
+            :device="deviceDetails"
+          />
+          <span>{{ deviceDetails?.displayName }}</span>
+        </div>
       </template>
       <template #content>
         <pre>{{ deviceDetails }}</pre>
@@ -42,6 +48,7 @@ import {
   ERouteName,
 } from '@/router/route-name.ts';
 import i18n from '@/plugins/i18n';
+import DeviceStatusBadge from '@/components/device/device-status-badge.vue';
 
 const route = useRoute();
 
