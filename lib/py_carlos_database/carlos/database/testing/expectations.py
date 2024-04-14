@@ -14,7 +14,7 @@ class DeviceId(Enum):
     DISCONNECTED = UUID("33333333-3333-3333-3333-333333333333")
     """Used to test devices that have never been connected."""
 
-    DEVICE_A = UUID('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')
+    DEVICE_A = UUID("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
     """Used to test interaction with a device."""
 
     UNKNOWN = UUID("ffffffff-ffff-ffff-ffff-ffffffffffff")
