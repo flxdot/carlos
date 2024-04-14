@@ -1,8 +1,11 @@
 from pathlib import Path
 
 from carlos.edge.device.config import read_config_file, write_config_file
-from carlos.edge.interface import get_websocket_endpoint, get_websocket_token_endpoint, \
-    DeviceId
+from carlos.edge.interface import (
+    DeviceId,
+    get_websocket_endpoint,
+    get_websocket_token_endpoint,
+)
 from carlos.edge.interface.endpoint import append_token_query
 from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings
@@ -43,7 +46,7 @@ class ConnectionSettings(BaseSettings):
         description="The settings required to authenticate with Auth0.",
     )
 
-    def get_websocket_uri(self, device_id: str, token: str | None = None) -> str:
+    def get_websocket_uri(self, device_id: DeviceId, token: str | None = None) -> str:
         """Returns the URI of the websocket.
 
         :param device_id: The ID of the device.

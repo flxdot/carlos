@@ -2,9 +2,11 @@ import random
 import secrets
 from pathlib import Path
 from string import ascii_lowercase, digits
+from uuid import uuid4
 
 import pytest
 from carlos.edge.device.config import write_config_file
+from carlos.edge.interface import DeviceId
 from devtools.context_manager import TemporaryWorkingDirectory
 
 from .connection import ConnectionSettings, read_connection_settings
@@ -37,13 +39,13 @@ class TestConnectionSettings:
         return ConnectionSettings(server_url=f"http://{domain}")
 
     @pytest.fixture()
-    def random_device_id(self) -> str:
+    def random_device_id(self) -> DeviceId:
         """Returns a random device ID."""
 
-        return rand_printable_letters(8)
+        return uuid4()
 
     def test_get_websocket_uri(
-        self, settings: ConnectionSettings, domain: str, random_device_id: str
+        self, settings: ConnectionSettings, domain: str, random_device_id: DeviceId
     ):
         """This function ensures that the websocket URI can be read."""
 
@@ -53,7 +55,7 @@ class TestConnectionSettings:
             "wss://"
         ), "The URI schema was not correct."
         assert domain in uri, "Domain was not in the URI."
-        assert random_device_id in uri, "Device ID was not in the URI."
+        assert str(random_device_id) in uri, "Device ID was not in the URI."
         assert "token=" not in uri, "URI contained the token although it should not."
 
         token = secrets.token_urlsafe(16)
@@ -64,11 +66,11 @@ class TestConnectionSettings:
             "wss://"
         ), "The URI schema was not correct."
         assert domain in uri_with_token, "Domain was not in the URI."
-        assert random_device_id in uri_with_token, "Device ID was not in the URI."
+        assert str(random_device_id) in uri_with_token, "Device ID was not in the URI."
         assert f"token={token}" in uri_with_token, "URI did not contain the token."
 
     def test_get_websocket_token_uri(
-        self, settings: ConnectionSettings, domain: str, random_device_id: str
+        self, settings: ConnectionSettings, domain: str, random_device_id: DeviceId
     ):
         """This function ensures that the websocket token URI can be read."""
 
@@ -78,7 +80,7 @@ class TestConnectionSettings:
             "https://"
         ), "The URI schema was not correct."
         assert domain in uri, "Domain was not in the URI."
-        assert random_device_id in uri, "Device ID was not in the URI."
+        assert str(random_device_id) in uri, "Device ID was not in the URI."
 
 
 def test_read_connection_settings(tmp_path: Path):
