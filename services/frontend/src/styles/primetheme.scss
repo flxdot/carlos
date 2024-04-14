@@ -261,3 +261,9 @@
   }
 
 }
+
+@media only screen and (width <= 769px) {
+    .carlos-nav.p-menubar {
+      border: none;
+    }
+  }
