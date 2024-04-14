@@ -3,7 +3,7 @@ __all__ = ["PythonProject"]
 import tomllib
 from inspect import getdoc
 from pathlib import Path
-from typing import Literal, Any
+from typing import Any, Literal
 
 from poetry.core.constraints.version import parse_constraint
 from pydantic import BaseModel, Field, PrivateAttr, field_validator
@@ -57,6 +57,7 @@ class Deptry(BaseModel):
         description="Whether deptry checks are enabled for the project.",
     )
 
+
 CiStep = dict[str, Any]
 
 
@@ -75,6 +76,7 @@ class CustomCiSteps(BaseModel):
     post_test_steps: list[CiStep] = Field(
         default_factory=list, description="Steps to run after the test step."
     )
+
 
 POETRY_VERSION = "1.7.1"
 
