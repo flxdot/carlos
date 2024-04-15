@@ -10,8 +10,7 @@ services:
     environment:
       - API_CORS_ORIGINS=${API_CORS_ORIGINS}
       # Auth0
-      - AUTH0_TENANT_ID=${AUTH0_TENANT_ID}
-      - AUTH0_REGION=${AUTH0_REGION}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
       - AUTH0_AUDIENCE=${AUTH0_AUDIENCE}
       # Database
       - DATABASE_HOST=db
