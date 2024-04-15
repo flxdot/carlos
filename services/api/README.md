@@ -14,11 +14,10 @@ Any entry without a default value is mandatory.
 
 ### Security
 
-| Environment Variable |   Type   | Default | Description                     |
-|:---------------------|:--------:|:-------:|---------------------------------|
-| AUTH0_TENANT_ID      | `string` |         | The Auth0 tenant ID.            |
-| AUTH0_REGION         | `string` |         | The Auth0 region.               |
-| AUTH0_AUDIENCE       | `string` |         | The Auth0 audience.             |
+| Environment Variable |   Type   | Default | Description              |
+|:---------------------|:--------:|:-------:|--------------------------|
+| AUTH0_DOMAIN         | `string` |         | The Auth0 tenant domain. |
+| AUTH0_AUDIENCE       | `string` |         | The Auth0 audience.      |
 
 | Environment Variable |        Type        | Default | Description                                                                                   |
 |:---------------------|:------------------:|:-------:|-----------------------------------------------------------------------------------------------|
