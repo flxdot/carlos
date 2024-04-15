@@ -36,6 +36,8 @@
 <script setup lang="ts">
 import {
   ref,
+  onMounted,
+  onBeforeUnmount,
 } from 'vue';
 import {
   useRoute,
@@ -50,16 +52,30 @@ import {
 import i18n from '@/plugins/i18n';
 import DeviceStatusBadge from '@/components/device/device-status-badge.vue';
 
+const UPDATE_INTERVAL = 1000 * 60; // 1 minute
+let intervalId: ReturnType<typeof setInterval>;
+
 const route = useRoute();
 
 const deviceDetails = ref<TGetDeviceDetailResponse | undefined>(undefined);
 
-getDeviceDetail(
-  {
-    deviceId: route.params.deviceId as string,
-  },
-).then((response) => {
-  deviceDetails.value = response.data;
+function updateDevice() {
+  getDeviceDetail(
+    {
+      deviceId: route.params.deviceId as string,
+    },
+  ).then((response) => {
+    deviceDetails.value = response.data;
+  });
+}
+
+onMounted(() => {
+  updateDevice();
+  intervalId = setInterval(updateDevice, UPDATE_INTERVAL);
+});
+
+onBeforeUnmount(() => {
+  clearInterval(intervalId);
 });
 
 </script>
