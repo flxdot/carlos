@@ -11,7 +11,12 @@ type MessageSchema = typeof en;
 
 const messages = {
   en,
+  'en-US': en,
+  'en-GB': en,
   de,
+  'de-DE': de,
+  'de-CH': de,
+  'de-AT': de,
 };
 
 const definedLocales = Object.keys(messages) as Array<keyof typeof messages>;

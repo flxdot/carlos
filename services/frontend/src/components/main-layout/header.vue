@@ -73,7 +73,6 @@
               custom
             >
               <a
-                v-ripple
                 :href="href"
                 v-bind="props.action"
                 class="menu-item"
@@ -86,7 +85,6 @@
             </router-link>
             <button
               v-else-if="item.command"
-              v-ripple
               v-bind="props.action"
               :style="item.style"
               type="button"
@@ -120,7 +118,6 @@
                 custom
               >
                 <a
-                  v-ripple
                   :href="href"
                   class="menu-item"
                   @click="navigate"
