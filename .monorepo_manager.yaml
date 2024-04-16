@@ -41,8 +41,12 @@ services/api:
 services/device:
   language: python
   makefile:
+    config:
+    - poetry run python -m device.cli config create
+    config-show:
+    - poetry run python -m device.cli config show
     run:
-    - poetry run -m device.cli
+    - poetry run python -m device.cli run
 services/frontend:
   language: javascript
 services/nginx:
