@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=carlos
-WorkingDirectory=/home/carlos/services/device
-ExecStart=/home/carlos/services/device/.venv/bin/python -m device.cli run
+WorkingDirectory=/home/carlos/carlos/services/device
+ExecStart=/home/carlos/carlos/services/device/.venv/bin/python -m device.cli run
 Restart=always
 
 [Install]
