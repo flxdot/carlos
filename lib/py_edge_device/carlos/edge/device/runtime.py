@@ -1,5 +1,6 @@
 """The runtime module contains the device runtime that is used as the main entry point
 of the application."""
+
 from datetime import timedelta
 from pathlib import Path
 
