@@ -47,32 +47,31 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      {% macro include_runtime_install() %}{% include "ci.install_workflow.yml.jinja2" %}{% endmacro %}
-      {{ include_runtime_install()|indent(6) }}
+    {% include "ci.install_workflow.yml.jinja2" %}
 
-      - name: generate files
-        # always run poetry install to ensure the entrypoint is up to date
-        run: poetry install && poetry run monorepo_manager all
-        working-directory: ./{{ project.path_from_root }}
+    - name: generate files
+      # always run poetry install to ensure the entrypoint is up to date
+      run: poetry install && poetry run monorepo_manager all
+      working-directory: ./{{ project.path_from_root }}
 
-      - name: Add add new workflow files
-        run: git add ./.github/workflows/*
+    - name: Add add new workflow files
+      run: git add ./.github/workflows/*
 
-      - name: Add add new library files
-        run: git add ./lib/*
+    - name: Add add new library files
+      run: git add ./lib/*
 
-      - name: Add add new service files
-        run: git add ./services/*
+    - name: Add add new service files
+      run: git add ./services/*
 
-      - name: Add add new script files
-        run: git add ./scripts/*
+    - name: Add add new script files
+      run: git add ./scripts/*
 
     {%- raw  %}
 
-      - uses: actions-js/push@master
-        name: Push changes
-        with:
-          github_token: ${{ secrets.WORKFLOW_TOKEN }}
-          branch: ${{ github.head_ref }}
-          message: "Update monorepo boilerplate"
+    - uses: actions-js/push@master
+      name: Push changes
+      with:
+        github_token: ${{ secrets.WORKFLOW_TOKEN }}
+        branch: ${{ github.head_ref }}
+        message: "Update monorepo boilerplate"
     {%- endraw %}
