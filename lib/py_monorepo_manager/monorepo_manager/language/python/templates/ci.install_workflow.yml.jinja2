@@ -1,4 +1,4 @@
 {% extends "ci.install.yml.jinja2" %}
 {%- block checkout_with %}
-token: {% raw %}${{ secrets.WORKFLOW_TOKEN }}{% endraw %}
+    token: {% raw %}${{ secrets.WORKFLOW_TOKEN }}{% endraw %}
 {%- endblock %}

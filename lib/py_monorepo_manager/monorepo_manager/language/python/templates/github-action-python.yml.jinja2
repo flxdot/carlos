@@ -123,4 +123,21 @@ jobs:
         coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
         coauthor_name: ${{ github.event.pull_request.user.login }}
     {%- endraw %}
+
+    - name: Set up - Get changed files for CHANGELOG.md
+      if: {% raw %}${{ !cancelled() }}{% endraw %}
+      id: detect-changed-files
+      uses: tj-actions/changed-files@v42
+      with:
+        files_yaml: |
+          pyproject_toml:
+            - {{ project.path_from_root }}/pyproject.toml
+          python_files:
+            - {{ project.path_from_root }}/{{ project.root_package_name }}/**/*.py
+    - name: Test - Version bump
+      # This step will fail if there are python files changed but the version in pyproject.toml is not updated
+      if: (steps.detect-changed-files.outputs.python_files_any_changed == 'true') && (steps.detect-changed-files.outputs.pyproject_toml_any_changed == 'false') && !cancelled()
+      run: |
+        echo "No changes in pyproject.toml but there are changes in python files. Please update the version in pyproject.toml if the code changes. Otherwise the automatic update of the carlos device may fail."
+        exit 1
 {% endif %}

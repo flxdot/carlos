@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "device"
-version = "0.1.0"
+version = "0.1.1"
 description = "The device runtime for the Carlos Edge Computing Platform"
 authors = ["Felix Fanghänel"]
 readme = "README.md"

@@ -50,3 +50,11 @@ ci-check:
 	make mypy
 	make pytest
 	make coverage
+
+
+config:
+	poetry run python -m device.cli config create
+config-show:
+	poetry run python -m device.cli config show
+run:
+	poetry run python -m device.cli run

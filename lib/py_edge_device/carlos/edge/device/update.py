@@ -40,7 +40,7 @@ def update_device():  # pragma: no cover
         logger.debug(process.stdout.decode("utf-8").strip())
 
     # Restart the running process
-    logger.debug("Restarting the running process...")
+    logger.info("Restarting the running process...")
     os.execv(sys.executable, [sys.executable] + sys.argv)
 
 
