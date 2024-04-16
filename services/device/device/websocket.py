@@ -6,7 +6,7 @@ __all__ = [
 
 import websockets
 from carlos.edge.device.retry import BackOff
-from carlos.edge.interface import CarlosMessage, DeviceId, EdgeProtocol
+from carlos.edge.interface import CarlosMessage, EdgeProtocol
 from carlos.edge.interface.protocol import EdgeConnectionDisconnected
 from httpx import AsyncClient
 from loguru import logger
@@ -17,13 +17,12 @@ from .connection import ConnectionSettings
 # can only be tested in integration tests
 class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
 
-    def __init__(self, settings: ConnectionSettings, device_id: DeviceId):
+    def __init__(self, settings: ConnectionSettings):
         """Initializes the websocket client.
 
         :param settings: The settings of the websocket connection.
         """
         self._settings = settings
-        self._device_id = device_id
 
         self._connection: websockets.WebSocketClientProtocol | None = None
 
@@ -57,7 +56,7 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
             )
 
         websocket_uri = self._settings.get_websocket_uri(
-            device_id=self._device_id, token=token
+            device_id=self._settings.device_id, token=token
         )
 
         return await websockets.connect(websocket_uri)
@@ -74,7 +73,7 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         """
 
         response = await client.get(
-            self._settings.get_websocket_token_uri(device_id=self._device_id),
+            self._settings.get_websocket_token_uri(device_id=self._settings.device_id),
             headers={"Authorization": f"Bearer {auth0_token}"},
         )
         if not response.is_success:

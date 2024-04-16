@@ -26,9 +26,7 @@ async def main():  # pragma: no cover
 
     device_config = read_config()
     device_connection = read_connection_settings()
-    protocol = DeviceWebsocketClient(
-        settings=device_connection, device_id=device_config.device_id
-    )
+    protocol = DeviceWebsocketClient(settings=device_connection)
 
     runtime = DeviceRuntime(
         config=device_config,
