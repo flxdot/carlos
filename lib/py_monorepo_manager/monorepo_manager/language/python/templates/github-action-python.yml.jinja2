@@ -125,7 +125,7 @@ jobs:
     {%- endraw %}
 
     - name: Set up - Get changed files for CHANGELOG.md
-      if: ${{ !cancelled() }}
+      if: {% raw %}${{ !cancelled() }}{% endraw %}
       id: detect-changed-files
       uses: tj-actions/changed-files@v42
       with:
