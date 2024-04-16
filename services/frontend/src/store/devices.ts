@@ -21,7 +21,7 @@ export const useDevicesStore = defineStore('devices', {
     isDevicesListLoading: (state) => state.devicesListPromise !== undefined,
   },
   actions: {
-    async fetchDevicesList() {
+    async fetchDevicesList(force: boolean = false) {
       return asyncRequestActionList({
         callback: () => getDevicesList(),
         list: this.devicesList,
@@ -32,6 +32,7 @@ export const useDevicesStore = defineStore('devices', {
         setPromise: (promise) => {
           this.devicesListPromise = promise;
         },
+        force,
       });
     },
   },
