@@ -156,12 +156,12 @@ jobs:
       with:
         files_yaml: |
           pyproject_toml:
-            - lib/py_edge_device/CHANGELOG.md
+            - lib/py_edge_device/pyproject.toml
           python_files:
             - lib/py_edge_device/carlos/**/*.py
     - name: Test - Version bump
       # This step will fail if there are python files changed but the version in pyproject.toml is not updated
-      if: (steps.detect-changed-files.outputs.python_files == 'true') && (steps.detect-changed-files.outputs.pyproject_toml == 'false') && !cancelled()
+      if: (steps.detect-changed-files.outputs.python_files_any_changed == 'true') && (steps.detect-changed-files.outputs.pyproject_toml_any_changed == 'false') && !cancelled()
       run: |
         echo "No changes in pyproject.toml but there are changes in python files. Please update the version in pyproject.toml if the code changes. Otherwise the automatic update of the carlos device may fail."
         exit 1
