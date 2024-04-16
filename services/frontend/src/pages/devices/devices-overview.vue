@@ -9,11 +9,30 @@
 
 <script setup lang="ts">
 import {
+  onBeforeUnmount, onMounted,
+} from 'vue';
+import {
   useDevicesStore,
 } from '@/store/devices.ts';
 import DeviceOverview from '@/components/device/device-overview.vue';
 
 const deviceStore = useDevicesStore();
+
+const UPDATE_INTERVAL = 1000 * 60; // 1 minute
+let intervalId: ReturnType<typeof setInterval>;
+
+function updateDevicesList() {
+  deviceStore.fetchDevicesList(true);
+}
+
+onMounted(() => {
+  updateDevicesList();
+  intervalId = setInterval(updateDevicesList, UPDATE_INTERVAL);
+});
+
+onBeforeUnmount(() => {
+  clearInterval(intervalId);
+});
 
 </script>
 
