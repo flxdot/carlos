@@ -40,6 +40,9 @@ services/api:
   language: python
 services/device:
   language: python
+  makefile:
+    run:
+    - poetry run -m device.cli
 services/frontend:
   language: javascript
 services/nginx:

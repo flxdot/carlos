@@ -1,0 +1,13 @@
+[Unit]
+Description=Carlos Device
+After=network.target
+
+[Service]
+Type=simple
+User=carlos
+WorkingDirectory=~/carlos/services/device
+ExecStart=~/carlos/services/device/.venv/bin/python -m device.cli run
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
