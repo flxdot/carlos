@@ -1,7 +1,6 @@
 import secrets
 from uuid import uuid4
 
-from carlos.edge.device.constants import CONFIG_FILE_NAME
 from devtools.context_manager import TemporaryWorkingDirectory
 from typer.testing import CliRunner
 
@@ -24,7 +23,7 @@ def test_create_show(tmp_path):
             ["config", "create"],
             input="\n".join(
                 [
-                    str(device_id),  # DeviceConfig.device_id
+                    str(device_id),  # ConnectionSettings.device_id
                     server_url,  # ConnectionSettings.server_url
                     "my-domain.eu.auth0.com",  # ConnectionSettings.auth0.domain
                     "client_id",  # ConnectionSettings.auth0.client_id
@@ -35,9 +34,6 @@ def test_create_show(tmp_path):
             ),
         )
 
-        assert tmp_path.joinpath(
-            CONFIG_FILE_NAME
-        ).exists(), "The device configuration file was not created."
         assert tmp_path.joinpath(
             DEVICE_CONNECTION_FILE_NAME
         ).exists(), "The connection settings file was not created."

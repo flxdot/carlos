@@ -35,6 +35,8 @@ class Auth0Settings(BaseSettings):
 class ConnectionSettings(BaseSettings):
     """A selection of settings required to make the connection to the server."""
 
+    device_id: DeviceId = Field(..., description="The unique identifier of the device.")
+
     server_url: AnyHttpUrl = Field(
         ...,
         description="Please provide the URL to the Carlos server.",

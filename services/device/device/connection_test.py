@@ -37,6 +37,7 @@ class TestConnectionSettings:
         """Returns a bunch of connection settings."""
 
         return ConnectionSettings(
+            device_id=uuid4(),
             server_url=f"http://{domain}",
             auth0=Auth0Settings(
                 domain="my-domain.eu.auth0.com",
@@ -95,6 +96,7 @@ def test_read_connection_settings(tmp_path: Path):
     """This function ensures that the connection settings can be read."""
 
     settings = ConnectionSettings(
+        device_id=uuid4(),
         server_url="http://example.com",
         auth0=Auth0Settings(
             domain="my-domain.eu.auth0.com",

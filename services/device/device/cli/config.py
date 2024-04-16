@@ -3,8 +3,6 @@ from __future__ import print_function, unicode_literals
 from typing import TypeVar
 
 import typer
-from carlos.edge.device import DeviceConfig
-from carlos.edge.device.config import read_config, write_config
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 from rich import print, print_json
@@ -47,15 +45,12 @@ def ask_pydantic_model(model: type[Model]) -> Model:
 def create():
     """Creates a new configuration file."""
 
-    write_config(ask_pydantic_model(DeviceConfig))
     write_connection_settings(ask_pydantic_model(ConnectionSettings))
 
 
 @config_cli.command()
 def show():
     """Prints the current configuration."""
-    print("\n[bold]Device[/bold] configuration:")
-    print_json(read_config().model_dump_json())
 
     print("\n[bold]Connection[/bold] configuration:")
     print_json(read_connection_settings().model_dump_json())
