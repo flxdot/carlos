@@ -1,4 +1,7 @@
 from enum import StrEnum
+from time import sleep
+
+from carlos.edge.device.protocol import GPIO
 
 
 class DHTType(StrEnum):
@@ -25,129 +28,85 @@ class DHT:
         """
 
         # store the pin and type
-        self.pin = pin
-        self.dht_type = dht_type
+        self._pin = pin
+        self._dht_type = dht_type
 
         # setup the GPIO mode
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
-        GPIO.setup(self.pin, GPIO.OUT)
+        GPIO.setup(self._pin, GPIO.OUT)
 
-    @property
-    def dht_type(self):
-        return self._dht_type
-
-    def _read(self):
+    def read(self) -> tuple[int | float, int | float]:
         """Internal read method.
+
+        http://www.ocfreaks.com/basics-interfacing-dht11-dht22-humidity-temperature-sensor-mcu/
 
         :returns (humidity in %, temperature in °C)"""
 
         # Send Falling signal to trigger sensor output data
         # Wait for 20ms to collect 42 bytes data
-        GPIO.setup(self.pin, GPIO.OUT)
-        set_max_priority()
-
-        GPIO.output(self.pin, GPIO.HIGH)
+        GPIO.setup(self._pin, GPIO.OUT)
+        GPIO.output(self._pin, GPIO.HIGH)
         sleep(0.2)
-
-        GPIO.output(self.pin, GPIO.LOW)
+        GPIO.output(self._pin, GPIO.LOW)
         sleep(0.018)
 
-        GPIO.setup(self.pin, GPIO.IN)
+        GPIO.setup(self._pin, GPIO.IN)
 
         # a short delay needed
-        for i in range(10):
+        for _ in range(10):
             pass
 
         # pullup by host 20-40 us
         count = 0
-        while GPIO.input(self.pin):
+        while GPIO.input(self._pin):
             count += 1
             if count > self.MAX_CNT:
-                # print("pullup by host 20-40us failed")
-                set_default_priority()
-                return None, "pullup by host 20-40us failed"
+                raise RuntimeError("pullup by host 20-40us failed")
 
         pulse_cnt = [0] * (2 * self.PULSES_CNT)
-        fix_crc = False
-        for i in range(0, self.PULSES_CNT * 2, 2):
-            while not GPIO.input(self.pin):
-                pulse_cnt[i] += 1
-                if pulse_cnt[i] > self.MAX_CNT:
-                    # print("pulldown by DHT timeout %d" % i))
-                    set_default_priority()
-                    return None, "pulldown by DHT timeout {}".format(i)
+        for pulse in range(0, self.PULSES_CNT * 2, 2):
+            while not GPIO.input(self._pin):
+                pulse_cnt[pulse] += 1
+                if pulse_cnt[pulse] > self.MAX_CNT:
+                    raise RuntimeError(f"pulldown by DHT timeout: {pulse}")
 
-            while GPIO.input(self.pin):
-                pulse_cnt[i + 1] += 1
-                if pulse_cnt[i + 1] > self.MAX_CNT:
-                    # print("pullup by DHT timeout {}".format((i + 1)))
-                    if i == (self.PULSES_CNT - 1) * 2:
-                        # fix_crc = True
-                        # break
+            while GPIO.input(self._pin):
+                pulse_cnt[pulse + 1] += 1
+                if pulse_cnt[pulse + 1] > self.MAX_CNT:
+                    if pulse == (self.PULSES_CNT - 1) * 2:
                         pass
-                    set_default_priority()
-                    return None, "pullup by DHT timeout {}".format(i)
-
-        # back to normal priority
-        set_default_priority()
+                    raise RuntimeError(f"pullup by DHT timeout: {pulse}")
 
         total_cnt = 0
-        for i in range(2, 2 * self.PULSES_CNT, 2):
-            total_cnt += pulse_cnt[i]
+        for pulse in range(2, 2 * self.PULSES_CNT, 2):
+            total_cnt += pulse_cnt[pulse]
 
-        # Low level ( 50 us) average counter
+        # Low level (50 us) average counter
         average_cnt = total_cnt / (self.PULSES_CNT - 1)
-        # print("low level average loop = {}".format(average_cnt))
 
         data = ""
-        for i in range(3, 2 * self.PULSES_CNT, 2):
-            if pulse_cnt[i] > average_cnt:
+        for pulse in range(3, 2 * self.PULSES_CNT, 2):
+            if pulse_cnt[pulse] > average_cnt:
                 data += "1"
             else:
                 data += "0"
 
-        data0 = int(data[0:8], 2)
-        data1 = int(data[8:16], 2)
-        data2 = int(data[16:24], 2)
-        data3 = int(data[24:32], 2)
-        data4 = int(data[32:40], 2)
+        byte0 = int(data[0:8], 2)
+        byte1 = int(data[8:16], 2)
+        byte2 = int(data[16:24], 2)
+        byte3 = int(data[24:32], 2)
+        crc_byte = int(data[32:40], 2)
 
-        if fix_crc and data4 != ((data0 + data1 + data2 + data3) & 0xFF):
-            data4 = data4 ^ 0x01
-            data = data[0 : self.PULSES_CNT - 2] + ("1" if data4 & 0x01 else "0")
+        data_checksum = ((byte0 + byte1 + byte2 + byte3) & 0xFF)
+        if crc_byte != data_checksum:
+            raise RuntimeError("checksum error!")
 
-        if data4 == ((data0 + data1 + data2 + data3) & 0xFF):
-            if self._dht_type == DHTtype.DHT11:
-                humi = int(data0)
-                temp = int(data2)
-            elif self._dht_type == DHTtype.DHT22:
-                humi = float(int(data[0:16], 2) * 0.1)
-                temp = float(int(data[17:32], 2) * 0.2 * (0.5 - int(data[16], 2)))
+        if self._dht_type == DHTType.DHT11:
+            humidity = byte0
+            temperature = byte2
         else:
-            # print("checksum error!")
-            return None, "checksum error!"
+            humidity = float(int(data[0:16], 2) * 0.1)
+            temperature = float(int(data[17:32], 2) * 0.2 * (0.5 - int(data[16], 2)))
 
-        return humi, temp
-
-    def read(self, retries=15):
-        for i in range(retries):
-            humi, temp = self._read()
-            if humi is not None:
-                break
-        if humi is None:
-            return self._last_humi, self._last_temp
-        self._last_humi, self._last_temp = humi, temp
-        return humi, temp
-
-    def measure(self):
-        """Performs a measurement and returns all available values in a dictionary.
-        The keys() are the names of the measurement and the values the corresponding values.
-
-        :return: dict
-        """
-
-        humi, temp = self.read()
-        if humi == 0 and temp == 0:
-            return {"humidity": None, "temperature": None}
-        return {"humidity": float(humi), "temperature": float(temp)}
+        return humidity, temperature

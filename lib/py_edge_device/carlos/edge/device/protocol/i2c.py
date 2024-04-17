@@ -1,22 +1,10 @@
-#!/usr/bin/python
-
 import re
 from threading import RLock
 from typing import Sequence
 
 import smbus2
 
-
-class i2cLock:
-    """Use this i2c lock to prevent simultaneous access of the i2c bus by different
-    threads."""
-
-    instance = None
-
-    def __new__(cls):
-        if not i2cLock.instance:
-            i2cLock.instance = RLock()
-        return i2cLock.instance
+I2C_LOCK = RLock()
 
 
 class I2C:
@@ -37,6 +25,11 @@ class I2C:
         self.bus = smbus2.SMBus(
             bus=bus if bus is not None else I2C.get_pi_i2v_bus_number()
         )
+
+    @property
+    def lock(self) -> RLock:
+        """Returns the i2c lock"""
+        return I2C_LOCK
 
     def write8(self, register: int, value: int):
         """Writes an 8-bit value to the specified register/address"""
