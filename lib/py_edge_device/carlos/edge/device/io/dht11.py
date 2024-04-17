@@ -30,6 +30,4 @@ class DHT11(AnalogInput):
         raise RuntimeError("Could not read DHT11 sensor.")
 
 
-
-
 peripheral_registry.register(ptype=__name__, config=GPIOConfig, factory=DHT11)

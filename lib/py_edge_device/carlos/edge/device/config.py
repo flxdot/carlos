@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import TypeVar
 
 import yaml
+from carlos.edge.interface.device import DeviceConfig
 from pydantic import BaseModel
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME

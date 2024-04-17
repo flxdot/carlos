@@ -1,3 +1,5 @@
+__all__ = ["I2cLock", "I2C"]
+
 import re
 from threading import RLock
 from typing import Sequence
@@ -5,6 +7,11 @@ from typing import Sequence
 import smbus2
 
 I2C_LOCK = RLock()
+
+
+class I2cLock:
+    def __new__(cls):
+        return I2C_LOCK
 
 
 class I2C:
@@ -84,7 +91,7 @@ class I2C:
                 f"Error accessing 0x{self.address:0x}: Check your I2C address."
             )
 
-    def read_uint8(self, register: int):
+    def read_uint8(self, register: int) -> int:
         """Read an unsigned byte from the I2C device"""
         try:
             return self.bus.read_byte_data(i2c_addr=self.address, register=register)
@@ -142,7 +149,7 @@ class I2C:
                 # Couldn't find the revision, assume revision 0 like older code for
                 # compatibility.
                 return 0
-        except:
+        except Exception:
             return 0
 
     @staticmethod

@@ -98,7 +98,7 @@ class DHT:
         byte3 = int(data[24:32], 2)
         crc_byte = int(data[32:40], 2)
 
-        data_checksum = ((byte0 + byte1 + byte2 + byte3) & 0xFF)
+        data_checksum = (byte0 + byte1 + byte2 + byte3) & 0xFF
         if crc_byte != data_checksum:
             raise RuntimeError("checksum error!")
 
