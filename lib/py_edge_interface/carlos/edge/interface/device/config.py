@@ -15,8 +15,9 @@ class IOConfig(BaseModel):
     """Common base class for all IO configurations."""
 
     identifier: str = Field(
-        ..., description="A unique identifier for the IO configuration. "
-                         "It is used to allow chaning addresses, pins if required later."
+        ...,
+        description="A unique identifier for the IO configuration. "
+        "It is used to allow changing addresses, pins if required later.",
     )
 
     protocol: ProtocolConfig = Field(
@@ -27,7 +28,11 @@ class IOConfig(BaseModel):
     type: str = Field(
         ...,
         description="A string that uniquely identifies the type of IO. Usually the "
-                    "name of the sensor or actuator in lower case letters.",
+        "name of the sensor or actuator in lower case letters.",
+    )
+
+    direction: Literal["input", "output"] = Field(
+        ..., description="The direction of the IO."
     )
 
 
