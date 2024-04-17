@@ -1,5 +1,6 @@
 import psutil
 from carlos.edge.interface.device import AnalogInput, IOConfig, peripheral_registry
+from gpiozero import CPUTemperature
 
 
 class DeviceMetrics(AnalogInput):
@@ -23,8 +24,7 @@ class DeviceMetrics(AnalogInput):
     def _read_cpu_temp() -> float:
         """Reads the CPU temperature."""
         try:
-            with open("/sys/class/thermal/thermal_zone0/temp") as f:
-                return float(f.read().strip()) / 1000
+            return CPUTemperature().temperature
         except FileNotFoundError:
             return 0.0
 
