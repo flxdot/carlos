@@ -2,7 +2,6 @@
 configuration of the application."""
 
 __all__ = [
-    "DeviceConfig",
     "read_config",
     "read_config_file",
     "write_config",
@@ -13,16 +12,9 @@ from pathlib import Path
 from typing import TypeVar
 
 import yaml
-from carlos.edge.interface import DeviceId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME
-
-
-class DeviceConfig(BaseModel):
-    """Configures the pure device settings."""
-
-    device_id: DeviceId = Field(..., description="The unique identifier of the device.")
 
 
 Config = TypeVar("Config", bound=BaseModel)

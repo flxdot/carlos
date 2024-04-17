@@ -11,7 +11,7 @@ from carlos.edge.interface.protocol import PING
 from loguru import logger
 
 from .communication import DeviceCommunicationHandler
-from .config import DeviceConfig
+from carlos.edge.interface.device import DeviceConfig
 
 
 # We don't cover this in the unit tests. This needs to be tested in an integration test.

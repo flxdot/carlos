@@ -3,6 +3,8 @@ from __future__ import print_function, unicode_literals
 from typing import TypeVar
 
 import typer
+from carlos.edge.interface.device import DeviceConfig
+from carlos.edge.device.config import read_config, write_config
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 from rich import print, print_json

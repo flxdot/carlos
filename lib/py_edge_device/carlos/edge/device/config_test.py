@@ -3,7 +3,8 @@ from uuid import uuid4
 
 import pytest
 
-from carlos.edge.device.config import DeviceConfig, read_config_file, write_config_file
+from carlos.edge.device.config import read_config_file, write_config_file
+from carlos.edge.interface.device import DeviceConfig
 
 
 def test_config_file_io(tmp_path: Path):
