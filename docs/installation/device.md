@@ -83,3 +83,17 @@ poetry install --without dev
 ```
 
 We are now done with the installation of the device.
+
+Register the device as a service:
+
+```shell
+sh install-service.sh
+```
+
+## Configuration
+
+Configure the device by invoking the following command:
+
+```shell
+make config
+```
