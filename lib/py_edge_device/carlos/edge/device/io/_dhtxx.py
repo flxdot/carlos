@@ -31,9 +31,6 @@ class DHT:
         self._pin = pin
         self._dht_type = dht_type
 
-        # setup the GPIO mode
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
         GPIO.setup(self._pin, GPIO.OUT)
 
     def read(self) -> tuple[int | float, int | float]:
