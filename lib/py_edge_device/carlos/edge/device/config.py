@@ -16,7 +16,6 @@ from pydantic import BaseModel
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME
 
-
 Config = TypeVar("Config", bound=BaseModel)
 
 

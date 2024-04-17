@@ -1,5 +1,6 @@
-__all__ = ["DeviceConfig"]
+__all__ = ["DeviceConfig", "GPIOConfig", "I2CConfig", "PeripheralConfig"]
 
+from abc import ABC
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -8,10 +9,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 #   5V, 5V, GND,  14, 15, 18, GND, 23,   24, GND, 25,  8,   7, ID EEPROM, GND, 12, GND, 16, 20,  21 # Outer pins # noqa
 # 3.3V,  2,  3,   4, GND, 17,  27, 22, 3.3V,  10,  9, 11, GND, ID EEPROM,   5,  6,  13, 19, 26, GND # Inner pins # noqa
 
-ProtocolConfig = Literal["i2c", "gpio"]
 
-
-class IOConfig(BaseModel):
+class IOConfig(BaseModel, ABC):
     """Common base class for all IO configurations."""
 
     identifier: str = Field(
@@ -20,12 +19,7 @@ class IOConfig(BaseModel):
         "It is used to allow changing addresses, pins if required later.",
     )
 
-    protocol: ProtocolConfig = Field(
-        ...,
-        description="The communication protocol to be used for the IO.",
-    )
-
-    type: str = Field(
+    ptype: str = Field(
         ...,
         description="A string that uniquely identifies the type of IO. Usually the "
         "name of the sensor or actuator in lower case letters.",
@@ -117,10 +111,13 @@ class I2CConfig(BaseModel):
         return hex(value)
 
 
+PeripheralConfig = GPIOConfig | I2CConfig | IOConfig
+
+
 class DeviceConfig(BaseModel):
     """Configures the pure device settings."""
 
-    io: list[GPIOConfig | I2CConfig] = Field(
+    io: list[PeripheralConfig] = Field(
         default_factory=list, description="A list of IO configurations."
     )
 

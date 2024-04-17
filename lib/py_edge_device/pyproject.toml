@@ -16,6 +16,7 @@ apscheduler = "^4.0.0a4"
 pydantic = "^2.6.4"
 pyyaml = "^6.0.1"
 "carlos.edge.interface" = {path = "../py_edge_interface"}
+psutil = "^5.9.8"
 
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
