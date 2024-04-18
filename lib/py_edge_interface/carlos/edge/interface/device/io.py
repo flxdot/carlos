@@ -9,9 +9,9 @@ import asyncio
 import concurrent.futures
 from abc import ABC, abstractmethod
 from collections import namedtuple
-from typing import Callable, Generic, Iterable, TypeVar
+from typing import Any, Callable, Generic, Iterable, TypeVar
 
-from .config import GpioConfig, I2cConfig, IoConfig, IoPtypeDict
+from .config import GpioConfig, I2cConfig, IoConfig
 
 IoConfigTypeVar = TypeVar("IoConfigTypeVar", bound=IoConfig)
 
@@ -21,6 +21,15 @@ class CarlosPeripheral(ABC, Generic[IoConfigTypeVar]):
 
     def __init__(self, config: IoConfigTypeVar):
         self.config: IoConfigTypeVar = config
+
+    def __str__(self):
+        return f"{self.config.identifier} ({self.config.module})"
+
+    @abstractmethod
+    def setup(self):
+        """Sets up the peripheral. This is required for testing. As the test runner
+        is not able to run the setup method of the peripheral outside the device."""
+        pass
 
 
 class AnalogInput(CarlosPeripheral, ABC):
@@ -59,12 +68,12 @@ class IoFactory:
     """A singleton factory for io peripherals."""
 
     _instance = None
-    _ptype_to_io: dict[str, FactoryItem] = {}
+    _module_to_io: dict[str, FactoryItem] = {}
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(IoFactory, cls).__new__(cls)
-            cls._instance._ptype_to_io = {}
+            cls._instance._module_to_io = {}
 
         return cls._instance
 
@@ -81,20 +90,36 @@ class IoFactory:
         :param factory: The peripheral factory function.
         """
 
-        if ptype in self._ptype_to_io:
+        if not issubclass(config, IoConfig):
+            raise ValueError(
+                "The config must be a subclass of IoConfig. "
+                "Please ensure that the config class is a subclass of IoConfig."
+            )
+
+        if ptype in self._module_to_io:
             raise RuntimeError(f"The peripheral {ptype} is already registered.")
 
-        self._ptype_to_io[ptype] = FactoryItem(config, factory)
+        self._module_to_io[ptype] = FactoryItem(config, factory)
 
-    def build(self, config: IoPtypeDict) -> CarlosIO:
-        """Builds a IO object from its configuration."""
+    def build(self, config: dict[str, Any]) -> CarlosIO:
+        """Builds a IO object from its configuration.
 
-        ptype = config["ptype"]
+        :param config: The raw configuration. The schema must adhere to the
+            IoConfig model. But we require the full config as the ios may require
+            additional parameters.
+        :returns: The IO object.
+        """
 
-        if type not in self._ptype_to_io:
-            raise ValueError(f"The peripheral {ptype} is not registered.")
+        io_config = IoConfig.model_validate(config)
 
-        entry = self._ptype_to_io[ptype]
+        if io_config.module not in self._module_to_io:
+            raise RuntimeError(
+                f"The peripheral {io_config.module} is not registered."
+                f"Make sure to register `IoFactory().register(...)` "
+                f"the peripheral before building it."
+            )
+
+        entry = self._module_to_io[io_config.module]
 
         return entry.factory(entry.config.model_validate(config))
 

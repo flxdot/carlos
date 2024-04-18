@@ -9,15 +9,23 @@ class SI1145(AnalogInput):
 
     def __init__(self, config: I2cConfig):
 
-        if config.address != SDL_Pi_SI1145.ADDR:
-            raise ValueError("The address of the SI1145 sensor must be 0x60.")
+        if config.address_int != SDL_Pi_SI1145.ADDR:
+            raise ValueError(
+                f"The address of the SI1145 sensor must be 0x60. Got {config.address} instead"
+            )
 
         super().__init__(config=config)
+
+        self._si1145: SDL_Pi_SI1145 | None = None
+
+    def setup(self):
 
         self._si1145 = SDL_Pi_SI1145()
 
     def read(self) -> dict[str, float]:
         """Reads various light levels from the sensor."""
+
+        assert self._si1145 is not None, "The sensor has not been set up."
 
         vis_raw = self._si1145.read_visible()
         vis_lux = self._si1145.convert_visible_to_lux(vis_raw)

@@ -9,6 +9,7 @@ class Relay(DigitalOutput):
     def __init__(self, config: GpioConfig):
         super().__init__(config=config)
 
+    def setup(self):
         GPIO.setup(self.config.pin, GPIO.OUT)
 
     def set(self, value: bool):

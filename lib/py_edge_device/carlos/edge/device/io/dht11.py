@@ -10,10 +10,17 @@ class DHT11(AnalogInput):
 
         super().__init__(config=config)
 
-        self._dht = DHT(dht_type=DHTType.DHT11, pin=config.pin)
+        self._dht: DHT | None = None
+
+    def setup(self):
+        """Sets up the DHT11 sensor."""
+
+        self._dht = DHT(dht_type=DHTType.DHT11, pin=self.config.pin)
 
     def read(self) -> dict[str, float]:
         """Reads the temperature and humidity."""
+
+        assert self._dht is not None, "The DHT sensor has not been initialized."
 
         # Reading the DHT sensor is quite unreliable, as the device is not a real-time
         # device. Thus, we just try it a couple of times and fail if it does not work.

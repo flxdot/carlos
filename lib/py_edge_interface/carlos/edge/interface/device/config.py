@@ -1,7 +1,7 @@
-__all__ = ["GpioConfig", "I2cConfig", "IoConfig", "IoPtypeDict"]
+__all__ = ["GpioConfig", "I2cConfig", "IoConfig"]
 
-from abc import ABC
-from typing import Literal, TypedDict
+import importlib
+from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -10,11 +10,7 @@ from pydantic import BaseModel, Field, field_validator
 # 3.3V,  2,  3,   4, GND, 17,  27, 22, 3.3V,  10,  9, 11, GND, ID EEPROM,   5,  6,  13, 19, 26, GND # Inner pins # noqa
 
 
-class IoPtypeDict(TypedDict):
-    ptype: str
-
-
-class IoConfig(BaseModel, ABC):
+class IoConfig(BaseModel):
     """Common base class for all IO configurations."""
 
     identifier: str = Field(
@@ -23,18 +19,40 @@ class IoConfig(BaseModel, ABC):
         "It is used to allow changing addresses, pins if required later.",
     )
 
-    ptype: str = Field(
+    module: str = Field(
         ...,
-        description="A string that uniquely identifies the type of IO. Usually the "
-        "name of the sensor or actuator in lower case letters.",
+        description="The module name that will be imported and registers itself in "
+        "the IoFactory. If the module does not contain `.` it is assumed "
+        "to be a built-in module.",
     )
 
+    @field_validator("module", mode="after")
+    def _validate_module(cls, value):
+        """Converts a module name to a full module path."""
+
+        # check if the given module exists in the current working directory.
+        try:
+            importlib.import_module(value)
+        except ModuleNotFoundError:
+            abs_module = "carlos.edge.device.io" + "." + value
+            try:
+                importlib.import_module(abs_module)
+            except ModuleNotFoundError:  # pragma: no cover
+                raise ValueError(
+                    f"The module {value} ({abs_module}) does not exist."
+                )
+            value = abs_module
+
+        return value
+
+
+class DirectionMixin(BaseModel):
     direction: Literal["input", "output"] = Field(
         ..., description="The direction of the IO."
     )
 
 
-class GpioConfig(IoConfig):
+class GpioConfig(IoConfig, DirectionMixin):
     """Defines a single input configuration."""
 
     protocol: Literal["gpio"] = Field(
@@ -72,15 +90,7 @@ class GpioConfig(IoConfig):
     ] = Field(..., description="The GPIO pin number.")
 
 
-class DigitalGpioOutputConfig(GpioConfig):
-    """Defines a single digital output configuration."""
-
-    direction: Literal["output"] = Field(
-        ..., description="The direction of the GPIO pin."
-    )
-
-
-class I2cConfig(IoConfig):
+class I2cConfig(IoConfig, DirectionMixin):
     """Defines a single input configuration."""
 
     protocol: Literal["i2c"] = Field(
@@ -109,3 +119,8 @@ class I2cConfig(IoConfig):
             raise ValueError("The valid I2C address range is 0x03 to 0x77.")
 
         return hex(value)
+
+    @property
+    def address_int(self):
+        """Returns the I2C address as an integer."""
+        return int(self.address, 16)

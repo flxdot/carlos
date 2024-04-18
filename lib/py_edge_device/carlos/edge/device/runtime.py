@@ -63,6 +63,14 @@ class DeviceRuntime:  # pragma: no cover
                 except EdgeConnectionDisconnected:
                     await self.protocol.connect()
 
+    def _setup_io(self):
+        """Sets up the I/O peripherals."""
+        for io in self.ios:
+            logger.debug(
+                f"Setting up I/O peripheral {io.config.identifier} ({io.config.module})."
+            )
+            io.setup()
+
 
 async def send_ping(
     communication_handler: DeviceCommunicationHandler,

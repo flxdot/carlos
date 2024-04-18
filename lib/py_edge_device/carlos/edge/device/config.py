@@ -12,11 +12,10 @@ from typing import TypeVar
 
 import yaml
 from carlos.edge.interface.device import CarlosIO, IoFactory
+from loguru import logger
 from pydantic import BaseModel
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME
-
-from .io import load_supported_io
 
 Config = TypeVar("Config", bound=BaseModel)
 
@@ -43,14 +42,17 @@ def write_config_file(path: Path, config: Config):
         )
 
 
-def load_io() -> list[CarlosIO]:  # pragma: no cover
+def load_io(config_dir: Path | None = None) -> list[CarlosIO]:
     """Reads the configuration from the default location."""
+    config_dir = config_dir or Path.cwd()
 
-    load_supported_io()
-
-    with open(Path.cwd() / CONFIG_FILE_NAME, "r") as file:
+    with open(config_dir / CONFIG_FILE_NAME, "r") as file:
         raw_config = yaml.safe_load(file)
 
     io_factory = IoFactory()
 
-    return [io_factory.build(config) for config in raw_config.get("io", [])]
+    ios = [io_factory.build(config) for config in raw_config.get("io", [])]
+
+    logger.info(f"Loaded {len(ios)} IOs: {', '.join(str(io) for io in ios)}")
+
+    return ios

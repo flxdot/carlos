@@ -9,6 +9,9 @@ class DeviceMetrics(AnalogInput):
 
         super().__init__(config=config)
 
+    def setup(self):
+        pass
+
     def read(self) -> dict[str, float]:
         """Reads the device metrics."""
 
