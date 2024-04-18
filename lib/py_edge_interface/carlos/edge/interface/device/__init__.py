@@ -1,15 +1,12 @@
 __all__ = [
     "AnalogInput",
     "CarlosIO",
-    "DeviceConfig",
     "DigitalOutput",
-    "GPIOConfig",
-    "I2CConfig",
-    "IOConfig",
-    "PeripheralConfig",
-    "peripheral_registry",
+    "GpioConfig",
+    "I2cConfig",
+    "IoConfig",
+    "IoFactory",
 ]
 
-from .config import DeviceConfig, GPIOConfig, I2CConfig, IOConfig, PeripheralConfig
-from .io import peripheral_registry
-from .peripheral import AnalogInput, CarlosIO, DigitalOutput
+from .config import GpioConfig, I2cConfig, IoConfig
+from .io import AnalogInput, CarlosIO, DigitalOutput, IoFactory

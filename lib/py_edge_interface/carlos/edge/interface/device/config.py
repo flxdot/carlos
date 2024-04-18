@@ -1,16 +1,20 @@
-__all__ = ["DeviceConfig", "GPIOConfig", "I2CConfig", "PeripheralConfig"]
+__all__ = ["GpioConfig", "I2cConfig", "IoConfig", "IoPtypeDict"]
 
 from abc import ABC
-from typing import Literal
+from typing import Literal, TypedDict
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 # Pin layout
 #   5V, 5V, GND,  14, 15, 18, GND, 23,   24, GND, 25,  8,   7, ID EEPROM, GND, 12, GND, 16, 20,  21 # Outer pins # noqa
 # 3.3V,  2,  3,   4, GND, 17,  27, 22, 3.3V,  10,  9, 11, GND, ID EEPROM,   5,  6,  13, 19, 26, GND # Inner pins # noqa
 
 
-class IOConfig(BaseModel, ABC):
+class IoPtypeDict(TypedDict):
+    ptype: str
+
+
+class IoConfig(BaseModel, ABC):
     """Common base class for all IO configurations."""
 
     identifier: str = Field(
@@ -30,7 +34,7 @@ class IOConfig(BaseModel, ABC):
     )
 
 
-class GPIOConfig(IOConfig):
+class GpioConfig(IoConfig):
     """Defines a single input configuration."""
 
     protocol: Literal["gpio"] = Field(
@@ -68,7 +72,7 @@ class GPIOConfig(IOConfig):
     ] = Field(..., description="The GPIO pin number.")
 
 
-class DigitalGPIOOutputConfig(GPIOConfig):
+class DigitalGpioOutputConfig(GpioConfig):
     """Defines a single digital output configuration."""
 
     direction: Literal["output"] = Field(
@@ -76,11 +80,7 @@ class DigitalGPIOOutputConfig(GPIOConfig):
     )
 
 
-I2C_PINS = [2, 3]
-"""The Pin numbers designated for I2C communication."""
-
-
-class I2CConfig(BaseModel):
+class I2cConfig(BaseModel):
     """Defines a single input configuration."""
 
     protocol: Literal["i2c"] = Field(
@@ -109,66 +109,3 @@ class I2CConfig(BaseModel):
             raise ValueError("The valid I2C address range is 0x03 to 0x77.")
 
         return hex(value)
-
-
-PeripheralConfig = GPIOConfig | I2CConfig | IOConfig
-
-
-class DeviceConfig(BaseModel):
-    """Configures the pure device settings."""
-
-    io: list[PeripheralConfig] = Field(
-        default_factory=list, description="A list of IO configurations."
-    )
-
-    @model_validator(mode="after")
-    def _validate_address_or_pin_overlap(self):
-        """This function ensures that the configured pins and addresses are unique."""
-        gpio_configs = [io for io in self.io if isinstance(io, GPIOConfig)]
-
-        # Ensure GPIO pins are unique
-        seen_pins = set()
-        duplicate_gpio_pins = [
-            gpio.pin
-            for gpio in gpio_configs
-            if gpio.pin in seen_pins or seen_pins.add(gpio.pin)
-        ]
-        if duplicate_gpio_pins:
-            raise ValueError(
-                f"The GPIO pins {duplicate_gpio_pins} are configured more than once."
-                f"Please ensure that each GPIO pin is configured only once."
-            )
-
-        i2c_configs = [io for io in self.io if isinstance(io, I2CConfig)]
-        if i2c_configs:
-            if any(gpio.pin in I2C_PINS for gpio in gpio_configs):
-                raise ValueError(
-                    "The GPIO pins 2 and 3 are reserved for I2C communication."
-                    "Please use other pins for GPIO configuration."
-                )
-
-        # Ensure I2C addresses are unique
-        seen_addresses = set()
-        duplicate_i2c_addresses = [
-            i2c.address
-            for i2c in i2c_configs
-            if i2c.address in i2c_configs or seen_addresses.add(i2c.address)
-        ]
-        if duplicate_i2c_addresses:
-            raise ValueError(
-                f"The I2C addresses {duplicate_i2c_addresses} are configured more than "
-                f"once. Please ensure that each I2C address is configured only once."
-            )
-
-        # Ensure all identifiers are unique
-        seen_identifiers = set()
-        duplicate_identifiers = [
-            io.identifier
-            for io in self.io
-            if io.identifier in seen_identifiers or seen_identifiers.add(io.identifier)
-        ]
-        if duplicate_identifiers:
-            raise ValueError(
-                f"The identifiers {duplicate_identifiers} are configured more than "
-                f"once. Please ensure that each identifier is configured only once."
-            )

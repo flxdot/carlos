@@ -1,25 +1,79 @@
-__all__ = ["peripheral_registry"]
-
+__all__ = [
+    "AnalogInput",
+    "DigitalOutput",
+    "CarlosIO",
+    "IoFactory",
+    "validate_device_address_space",
+]
+import asyncio
+import concurrent.futures
+from abc import ABC, abstractmethod
 from collections import namedtuple
-from typing import Callable, TypedDict, TypeVar
+from typing import Callable, Generic, Iterable, TypeVar
 
-from .config import PeripheralConfig
-from .peripheral import CarlosIO
+from .config import GpioConfig, I2cConfig, IoConfig, IoPtypeDict
 
-C = TypeVar("C", bound=PeripheralConfig)
-
-RegistryItem = namedtuple("RegistryItem", ["config", "factory"])
+IoConfigTypeVar = TypeVar("IoConfigTypeVar", bound=IoConfig)
 
 
-class ConfigDict(TypedDict):
-    ptype: str
+class CarlosPeripheral(ABC, Generic[IoConfigTypeVar]):
+    """Common base class for all peripherals."""
+
+    def __init__(self, config: IoConfigTypeVar):
+        self.config: IoConfigTypeVar = config
 
 
-class PeripheralRegistry:
-    def __init__(self):
-        self._peripherals: dict[str, RegistryItem] = {}
+class AnalogInput(CarlosPeripheral, ABC):
+    """Common base class for all analog input peripherals."""
 
-    def register(self, ptype: str, config: type[C], factory: Callable[[C], CarlosIO]):
+    @abstractmethod
+    def read(self) -> dict[str, float]:
+        """Reads the value of the analog input. The return value is a dictionary
+        containing the value of the analog input."""
+        pass
+
+    async def read_async(self) -> dict[str, float]:
+        """Reads the value of the analog input asynchronously. The return value is a dictionary
+        containing the value of the analog input."""
+
+        loop = asyncio.get_running_loop()
+
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            return await loop.run_in_executor(executor=pool, func=self.read)
+
+
+class DigitalOutput(CarlosPeripheral, ABC):
+    """Common base class for all digital output peripherals."""
+
+    @abstractmethod
+    def set(self, value: bool):
+        pass
+
+
+CarlosIO = AnalogInput | DigitalOutput
+
+FactoryItem = namedtuple("FactoryItem", ["config", "factory"])
+
+
+class IoFactory:
+    """A singleton factory for io peripherals."""
+
+    _instance = None
+    _ptype_to_io: dict[str, FactoryItem] = {}
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(IoFactory, cls).__new__(cls)
+            cls._instance._ptype_to_io = {}
+
+        return cls._instance
+
+    def register(
+        self,
+        ptype: str,
+        config: type[IoConfigTypeVar],
+        factory: Callable[[IoConfigTypeVar], CarlosIO],
+    ):
         """Registers a peripheral with the peripheral registry.
 
         :param ptype: The peripheral type.
@@ -27,22 +81,83 @@ class PeripheralRegistry:
         :param factory: The peripheral factory function.
         """
 
-        if ptype in self._peripherals:
-            raise ValueError(f"The peripheral {ptype} is already registered.")
+        if ptype in self._ptype_to_io:
+            raise RuntimeError(f"The peripheral {ptype} is already registered.")
 
-        self._peripherals[ptype] = RegistryItem(config, factory)
+        self._ptype_to_io[ptype] = FactoryItem(config, factory)
 
-    def build(self, config: ConfigDict) -> CarlosIO:
-        """Builds a peripheral from the peripheral registry."""
+    def build(self, config: IoPtypeDict) -> CarlosIO:
+        """Builds a IO object from its configuration."""
 
         ptype = config["ptype"]
 
-        if type not in self._peripherals:
+        if type not in self._ptype_to_io:
             raise ValueError(f"The peripheral {ptype} is not registered.")
 
-        entry = self._peripherals[ptype]
+        entry = self._ptype_to_io[ptype]
 
         return entry.factory(entry.config.model_validate(config))
 
 
-peripheral_registry = PeripheralRegistry()
+I2C_PINS = [2, 3]
+"""The Pin numbers designated for I2C communication."""
+
+
+def validate_device_address_space(configs: Iterable[IoConfig]):
+    """This function ensures that the configured pins and addresses are unique.
+
+    :param configs: The list of IO configurations.
+    :raises ValueError: If any of the pins or addresses are configured more than once.
+        If the GPIO pins 2 and 3 are when I2C communication is configured.
+        If any of the identifiers are configured more than once.
+    """
+    gpio_configs: list[GpioConfig] = [
+        io for io in configs if isinstance(io, GpioConfig)
+    ]
+
+    # Ensure GPIO pins are unique
+    seen_pins = set()
+    duplicate_gpio_pins = [
+        gpio.pin
+        for gpio in gpio_configs
+        if gpio.pin in seen_pins or seen_pins.add(gpio.pin)  # type: ignore[func-returns-value] # noqa: E501
+    ]
+    if duplicate_gpio_pins:
+        raise ValueError(
+            f"The GPIO pins {duplicate_gpio_pins} are configured more than once."
+            f"Please ensure that each GPIO pin is configured only once."
+        )
+
+    i2c_configs: list[I2cConfig] = [io for io in configs if isinstance(io, I2cConfig)]  # type: ignore[misc] # noqa: E501
+    if i2c_configs:
+        if any(gpio.pin in I2C_PINS for gpio in gpio_configs):
+            raise ValueError(
+                "The GPIO pins 2 and 3 are reserved for I2C communication."
+                "Please use other pins for GPIO configuration."
+            )
+
+    # Ensure I2C addresses are unique
+    seen_addresses = set()
+    duplicate_i2c_addresses = [
+        i2c.address
+        for i2c in i2c_configs
+        if i2c.address in i2c_configs or seen_addresses.add(i2c.address)  # type: ignore[func-returns-value] # noqa: E501
+    ]
+    if duplicate_i2c_addresses:
+        raise ValueError(
+            f"The I2C addresses {duplicate_i2c_addresses} are configured more than "
+            f"once. Please ensure that each I2C address is configured only once."
+        )
+
+    # Ensure all identifiers are unique
+    seen_identifiers = set()
+    duplicate_identifiers = [
+        io.identifier
+        for io in configs
+        if io.identifier in seen_identifiers or seen_identifiers.add(io.identifier)  # type: ignore[func-returns-value] # noqa: E501
+    ]
+    if duplicate_identifiers:
+        raise ValueError(
+            f"The identifiers {duplicate_identifiers} are configured more than "
+            f"once. Please ensure that each identifier is configured only once."
+        )
