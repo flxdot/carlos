@@ -2,7 +2,7 @@ __all__ = ["AnalogInput", "DigitalOutput", "CarlosIO"]
 import asyncio
 import concurrent.futures
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
+from typing import Generic, TypeVar
 
 from carlos.edge.interface.device.config import GPIOConfig, I2CConfig, IOConfig
 
