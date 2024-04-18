@@ -373,7 +373,7 @@ class SDL_Pi_SI1145:
     def read_visible_lux(self) -> float:
         """returns visible + IR light levels in lux"""
 
-        self.convert_visible_to_lux(self.read_visible())
+        return self.convert_visible_to_lux(self.read_visible())
 
     def read_ir(self) -> int:
         """returns IR light levels"""
@@ -404,11 +404,10 @@ class SDL_Pi_SI1145:
 
         return self.read_uv() / 100
 
-    @staticmethod
-    def convert_ir_to_lux(ir: int) -> float:
+    def convert_ir_to_lux(self, ir: int) -> float:
         """Converts IR levels to lux."""
 
-        return SDL_Pi_SI1145._convert_raw_to_lux(
+        return self._convert_raw_to_lux(
             raw=ir,
             dark_offset=SDL_Pi_SI1145.DARK_OFFSE_TIR,
             calibration_factor=50,  # calibration factor to sunlight applied
@@ -422,12 +421,11 @@ class SDL_Pi_SI1145:
 
         return uv / 100
 
-    @staticmethod
-    def convert_visible_to_lux(vis: int) -> float:
+    def convert_visible_to_lux(self, vis: int) -> float:
         """Converts the visible light level to lux."""
 
         # Param 1: ALS_VIS_ADC_MISC
-        return SDL_Pi_SI1145._convert_raw_to_lux(
+        return self._convert_raw_to_lux(
             raw=vis,
             dark_offset=SDL_Pi_SI1145.DARK_OFFSET_VIS,
             calibration_factor=100,  # calibration to bright sunlight added

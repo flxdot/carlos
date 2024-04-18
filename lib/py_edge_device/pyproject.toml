@@ -24,6 +24,7 @@ smbus2 = "^0.4.3"
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
 types-pyyaml = "^6.0.12.20240311"
+types-psutil = "^5.9.5.20240316"
 
 
 [build-system]

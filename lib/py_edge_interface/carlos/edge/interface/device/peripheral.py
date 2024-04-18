@@ -2,15 +2,18 @@ __all__ = ["AnalogInput", "DigitalOutput", "CarlosIO"]
 import asyncio
 import concurrent.futures
 from abc import ABC, abstractmethod
+from typing import TypeVar, Generic
 
-from carlos.edge.interface.device.config import PeripheralConfig
+from carlos.edge.interface.device.config import GPIOConfig, I2CConfig, IOConfig
+
+Config = TypeVar("Config", I2CConfig, GPIOConfig, IOConfig)
 
 
-class CarlosPeripheral(ABC):
+class CarlosPeripheral(ABC, Generic[Config]):
     """Common base class for all peripherals."""
 
-    def __init__(self, config: PeripheralConfig):
-        self.config = config
+    def __init__(self, config: Config):
+        self.config: Config = config
 
 
 class AnalogInput(CarlosPeripheral, ABC):

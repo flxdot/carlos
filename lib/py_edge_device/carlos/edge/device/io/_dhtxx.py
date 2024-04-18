@@ -33,7 +33,7 @@ class DHT:
 
         GPIO.setup(self._pin, GPIO.OUT)
 
-    def read(self) -> tuple[int | float, int | float]:
+    def read(self) -> tuple[float, float]:
         """Internal read method.
 
         http://www.ocfreaks.com/basics-interfacing-dht11-dht22-humidity-temperature-sensor-mcu/
@@ -100,8 +100,8 @@ class DHT:
             raise RuntimeError("checksum error!")
 
         if self._dht_type == DHTType.DHT11:
-            humidity = byte0
-            temperature = byte2
+            humidity = float(byte0)
+            temperature = float(byte2)
         else:
             humidity = float(int(data[0:16], 2) * 0.1)
             temperature = float(int(data[17:32], 2) * 0.2 * (0.5 - int(data[16], 2)))

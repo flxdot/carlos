@@ -1,9 +1,9 @@
 __all__ = ["GPIO"]
 
 try:
-    from RPi import GPIO
+    from RPi import GPIO  # type: ignore
 except ImportError:
-    from RPiSim.GPIO import GPIO
+    from RPiSim.GPIO import GPIO  # type: ignore
 
 # Choose the GPIO mode globally
 GPIO.setmode(GPIO.BCM)
