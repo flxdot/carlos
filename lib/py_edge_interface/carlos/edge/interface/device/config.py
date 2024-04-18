@@ -38,9 +38,7 @@ class IoConfig(BaseModel):
             try:
                 importlib.import_module(abs_module)
             except ModuleNotFoundError:  # pragma: no cover
-                raise ValueError(
-                    f"The module {value} ({abs_module}) does not exist."
-                )
+                raise ValueError(f"The module {value} ({abs_module}) does not exist.")
             value = abs_module
 
         return value
