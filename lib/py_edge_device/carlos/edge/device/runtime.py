@@ -28,8 +28,6 @@ class DeviceRuntime:  # pragma: no cover
         self.device_id = device_id
         self.protocol = protocol
 
-        self.ios = load_io()
-
     async def run(self):
         """Runs the device runtime."""
 
@@ -68,17 +66,29 @@ class DeviceRuntime:  # pragma: no cover
             retention=timedelta(days=60),
         )
 
+
+class IoManager:  # pragma: no cover
+
+    def __init__(self):
+
+        self.ios = load_io()
         validate_device_address_space(self.ios)
 
-        self._setup_io()
-
-    def _setup_io(self):
+    def setup(self):
         """Sets up the I/O peripherals."""
         for io in self.ios:
             logger.debug(
                 f"Setting up I/O peripheral {io.config.identifier} ({io.config.module})."
             )
             io.setup()
+
+    def test(self):
+        """Tests the I/O peripherals."""
+        for io in self.ios:
+            logger.debug(
+                f"Testing I/O peripheral {io.config.identifier} ({io.config.module})."
+            )
+            io.test()
 
 
 async def send_ping(

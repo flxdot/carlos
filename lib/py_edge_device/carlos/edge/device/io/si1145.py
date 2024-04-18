@@ -1,13 +1,22 @@
 import time
+from typing import Literal
 
 from carlos.edge.interface.device import AnalogInput, I2cConfig, IoFactory
+from pydantic import Field
 
 from carlos.edge.device.protocol import I2C
 
 
+class Si1145Config(I2cConfig):
+
+    direction: Literal["input"] = Field("input")
+
+    address: Literal["0x60"] = Field("0x60")
+
+
 class SI1145(AnalogInput):
 
-    def __init__(self, config: I2cConfig):
+    def __init__(self, config: Si1145Config):
 
         if config.address_int != SDL_Pi_SI1145.ADDR:
             raise ValueError(
@@ -42,7 +51,7 @@ class SI1145(AnalogInput):
         }
 
 
-IoFactory().register(ptype=__name__, config=I2cConfig, factory=SI1145)
+IoFactory().register(ptype=__name__, config=Si1145Config, factory=SI1145)
 
 
 class SDL_Pi_SI1145:

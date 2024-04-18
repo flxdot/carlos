@@ -1,12 +1,20 @@
+from typing import Literal
+
 from carlos.edge.interface.device import DigitalOutput, GpioConfig, IoFactory
+from pydantic import Field
 
 from carlos.edge.device.protocol import GPIO
+
+
+class RelayConfig(GpioConfig):
+
+    direction: Literal["output"] = Field("output")
 
 
 class Relay(DigitalOutput):
     """Relay."""
 
-    def __init__(self, config: GpioConfig):
+    def __init__(self, config: RelayConfig):
         super().__init__(config=config)
 
     def setup(self):
@@ -17,4 +25,4 @@ class Relay(DigitalOutput):
         GPIO.output(self.config.pin, value)
 
 
-IoFactory().register(ptype=__name__, config=GpioConfig, factory=Relay)
+IoFactory().register(ptype=__name__, config=RelayConfig, factory=Relay)

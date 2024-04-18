@@ -8,8 +8,11 @@ __all__ = [
 import asyncio
 import concurrent.futures
 from abc import ABC, abstractmethod
+from asyncio import sleep
 from collections import namedtuple
 from typing import Any, Callable, Generic, Iterable, TypeVar
+
+from loguru import logger
 
 from .config import GpioConfig, I2cConfig, IoConfig
 
@@ -31,6 +34,11 @@ class CarlosPeripheral(ABC, Generic[IoConfigTypeVar]):
         is not able to run the setup method of the peripheral outside the device."""
         pass
 
+    @abstractmethod
+    def test(self):
+        """Tests the peripheral. This is used to validate a config by a human."""
+        pass
+
 
 class AnalogInput(CarlosPeripheral, ABC):
     """Common base class for all analog input peripherals."""
@@ -41,9 +49,16 @@ class AnalogInput(CarlosPeripheral, ABC):
         containing the value of the analog input."""
         pass
 
+    def test(self):
+        """Tests the analog input by reading the value."""
+
+        logger.info(f"Testing {self}")
+        data = self.read()
+        logger.info(f"Read data: {data}")
+
     async def read_async(self) -> dict[str, float]:
-        """Reads the value of the analog input asynchronously. The return value is a dictionary
-        containing the value of the analog input."""
+        """Reads the value of the analog input asynchronously. The return value is a
+        dictionary containing the value of the analog input."""
 
         loop = asyncio.get_running_loop()
 
@@ -57,6 +72,18 @@ class DigitalOutput(CarlosPeripheral, ABC):
     @abstractmethod
     def set(self, value: bool):
         pass
+
+    def test(self):
+        """Tests the digital output by setting the value to False, then True for 1 second,
+        and then back to False."""
+
+        logger.info(f"Testing {self}")
+        self.set(False)
+        self.set(True)
+        logger.info(f"Set value to True.")
+        sleep(1)
+        self.set(False)
+        logger.info(f"Set value to False.")
 
 
 CarlosIO = AnalogInput | DigitalOutput

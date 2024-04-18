@@ -1,5 +1,8 @@
+from abc import ABC
 from enum import StrEnum
 from time import sleep
+
+from carlos.edge.interface.device import AnalogInput, GpioConfig
 
 from carlos.edge.device.protocol import GPIO
 
@@ -107,3 +110,38 @@ class DHT:
             temperature = float(int(data[17:32], 2) * 0.2 * (0.5 - int(data[16], 2)))
 
         return humidity, temperature
+
+
+class DHTXX(AnalogInput, ABC):
+    """DHTXX Temperature and Humidity Sensor."""
+
+    def __init__(self, config: GpioConfig):
+
+        super().__init__(config=config)
+
+        self._dht: DHT | None = None
+        self._dht_type: DHTType | None = None
+
+    def setup(self):
+        """Sets up the DHT11 sensor."""
+
+        self._dht = DHT(dht_type=self._dht_type, pin=self.config.pin)
+
+    def read(self) -> dict[str, float]:
+        """Reads the temperature and humidity."""
+
+        assert self._dht is not None, "The DHT sensor has not been initialized."
+
+        # Reading the DHT sensor is quite unreliable, as the device is not a real-time
+        # device. Thus, we just try it a couple of times and fail if it does not work.
+        for i in range(16):
+            try:
+                temperature, humidity = self._dht.read()
+                return {
+                    "temperature": temperature,
+                    "humidity": humidity,
+                }
+            except RuntimeError:
+                pass
+
+        raise RuntimeError(f"Could not read {self._dht_type} sensor.")

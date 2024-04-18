@@ -11,11 +11,12 @@ from pathlib import Path
 from typing import TypeVar
 
 import yaml
-from carlos.edge.interface.device import CarlosIO, IoFactory
+from carlos.edge.interface.device import CarlosIO, IoConfig, IoFactory
 from loguru import logger
 from pydantic import BaseModel
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME
+from carlos.edge.device.io.device_metrics import DeviceMetrics
 
 Config = TypeVar("Config", bound=BaseModel)
 
@@ -52,6 +53,17 @@ def load_io(config_dir: Path | None = None) -> list[CarlosIO]:
     io_factory = IoFactory()
 
     ios = [io_factory.build(config) for config in raw_config.get("io", [])]
+
+    # We always want to have some device metrics
+    if not any(isinstance(io, DeviceMetrics) for io in ios):
+        ios.insert(
+            0,
+            io_factory.build(
+                IoConfig(
+                    identifier="__device_metrics__", driver=DeviceMetrics.__module__
+                ).model_dump()
+            ),
+        )
 
     logger.info(f"Loaded {len(ios)} IOs: {', '.join(str(io) for io in ios)}")
 
