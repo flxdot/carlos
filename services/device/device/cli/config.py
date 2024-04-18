@@ -81,9 +81,11 @@ def test():  # pragma: no cover
     if results:
         console.print("\nThe following IO peripherals returned data:")
         for identifier, result in results.items():
-            console.print(f"{identifier}: {result}")
+            console.print(f"{identifier}:")
+            console.print(result)
 
     if exceptions:
         console.print("\nThe following IO peripherals [red]failed[/red]:")
         for identifier, exception in exceptions.items():
-            console.print(f"[red]{identifier}[/red]: {traceback.format_exception(exception)}")
+            console.print(f"[red]{identifier}[/red]:")
+            console.print(exception)
