@@ -80,10 +80,10 @@ class DigitalOutput(CarlosPeripheral, ABC):
         logger.info(f"Testing {self}")
         self.set(False)
         self.set(True)
-        logger.info(f"Set value to True.")
+        logger.info("Set value to True.")
         sleep(1)
         self.set(False)
-        logger.info(f"Set value to False.")
+        logger.info("Set value to False.")
 
 
 CarlosIO = AnalogInput | DigitalOutput
