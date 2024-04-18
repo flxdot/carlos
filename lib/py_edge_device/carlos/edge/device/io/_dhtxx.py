@@ -109,7 +109,7 @@ class DHT:
             humidity = float(int(data[0:16], 2) * 0.1)
             temperature = float(int(data[17:32], 2) * 0.2 * (0.5 - int(data[16], 2)))
 
-        return humidity, temperature
+        return temperature, humidity
 
 
 class DHTXX(AnalogInput, ABC):
