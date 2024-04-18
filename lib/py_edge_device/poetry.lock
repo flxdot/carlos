@@ -404,16 +404,6 @@ websocket-client = ">=0.32.0"
 ssh = ["paramiko (>=2.4.3)"]
 
 [[package]]
-name = "gpiosimulator"
-version = "0.1"
-description = "Raspberry Pi GPIO simulator"
-optional = false
-python-versions = "*"
-files = [
-    {file = "GPIOSimulator-0.1.tar.gz", hash = "sha256:08a221d03c9c5bd137d573b24aa0ebb9871760b12b8a1090392cbded3d06fee8"},
-]
-
-[[package]]
 name = "greenlet"
 version = "3.0.3"
 description = "Lightweight in-process concurrent programming"
@@ -1270,4 +1260,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "ec32e3ddd34a892e48827ce6d04bcde34f28a77371d3e6a53ed6ae37a03ccafc"
+content-hash = "1360c9bb3a5033c9673e55b9ddf9db48210ddf6dda4e73057645c9599f01f322"

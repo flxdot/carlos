@@ -9,12 +9,12 @@ import smbus2
 I2C_LOCK = RLock()
 
 
-class I2cLock:
+class I2cLock:  # pragma: no cover
     def __new__(cls):
         return I2C_LOCK
 
 
-class I2C:
+class I2C:  # pragma: no cover
     """This class is based on, but heavily modified from, the Adafruit_I2C class"""
 
     def __init__(self, address: int, bus: int | None = None):
