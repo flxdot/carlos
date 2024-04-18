@@ -34,17 +34,17 @@ io:
     direction: output
     protocol: gpio
     pin: 24
-  - identifier: spare-1
+  - identifier: relay-6
     driver: carlos.edge.device.io.relay
     direction: output
     protocol: gpio
     pin: 25
-  - identifier: spare-2
+  - identifier: relay-7
     driver: carlos.edge.device.io.relay
     direction: output
     protocol: gpio
     pin: 26
-  - identifier: spare-3
+  - identifier: relay-8
     driver: carlos.edge.device.io.relay
     direction: output
     protocol: gpio
