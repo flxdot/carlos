@@ -1,4 +1,4 @@
-from carlos.edge.interface.device import AnalogInput, GPIOConfig, peripheral_registry
+from carlos.edge.interface.device import AnalogInput, GpioConfig, IoFactory
 
 from ._dhtxx import DHT, DHTType
 
@@ -6,7 +6,7 @@ from ._dhtxx import DHT, DHTType
 class DHT11(AnalogInput):
     """DHT11 Temperature and Humidity Sensor."""
 
-    def __init__(self, config: GPIOConfig):
+    def __init__(self, config: GpioConfig):
 
         super().__init__(config=config)
 
@@ -30,4 +30,4 @@ class DHT11(AnalogInput):
         raise RuntimeError("Could not read DHT11 sensor.")
 
 
-peripheral_registry.register(ptype=__name__, config=GPIOConfig, factory=DHT11)
+IoFactory().register(ptype=__name__, config=GpioConfig, factory=DHT11)

@@ -1,4 +1,9 @@
-__all__ = ["DeviceRuntime", "read_config", "DeviceConfig"]
+__all__ = [
+    "DeviceRuntime",
+]
 
-from .config import DeviceConfig, read_config
+from .io import load_supported_io
 from .runtime import DeviceRuntime
+
+# Ensures that all supported IO modules are loaded and registered
+load_supported_io()

@@ -66,4 +66,6 @@ exclude_lines = [
 omit = [
     # omit all tests
     "*_test.py",
+    # depends on actual device and hardware
+    "carlos/edge/device/io/*.py"
 ]

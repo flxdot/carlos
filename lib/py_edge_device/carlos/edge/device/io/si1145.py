@@ -1,13 +1,13 @@
 import time
 
-from carlos.edge.interface.device import AnalogInput, I2CConfig, peripheral_registry
+from carlos.edge.interface.device import AnalogInput, I2cConfig, IoFactory
 
 from carlos.edge.device.protocol import I2C
 
 
 class SI1145(AnalogInput):
 
-    def __init__(self, config: I2CConfig):
+    def __init__(self, config: I2cConfig):
 
         if config.address != SDL_Pi_SI1145.ADDR:
             raise ValueError("The address of the SI1145 sensor must be 0x60.")
@@ -34,7 +34,7 @@ class SI1145(AnalogInput):
         }
 
 
-peripheral_registry.register(ptype=__name__, config=I2CConfig, factory=SI1145)
+IoFactory().register(ptype=__name__, config=I2cConfig, factory=SI1145)
 
 
 class SDL_Pi_SI1145:

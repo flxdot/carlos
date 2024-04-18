@@ -80,7 +80,7 @@ class DigitalGpioOutputConfig(GpioConfig):
     )
 
 
-class I2cConfig(BaseModel):
+class I2cConfig(IoConfig):
     """Defines a single input configuration."""
 
     protocol: Literal["i2c"] = Field(

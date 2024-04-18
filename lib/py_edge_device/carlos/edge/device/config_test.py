@@ -1,5 +1,4 @@
 from pathlib import Path
-from uuid import uuid4
 
 import pytest
 from carlos.edge.interface.device import DeviceConfig
@@ -15,7 +14,7 @@ def test_config_file_io(tmp_path: Path):
     with pytest.raises(FileNotFoundError):
         read_config_file(cfg_path, DeviceConfig)
 
-    config = DeviceConfig(device_id=uuid4())
+    config = DeviceConfig(io=[])
 
     write_config_file(cfg_path, config)
 

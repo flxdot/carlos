@@ -2,9 +2,8 @@
 configuration of the application."""
 
 __all__ = [
-    "read_config",
+    "load_io",
     "read_config_file",
-    "write_config",
     "write_config_file",
 ]
 
@@ -12,10 +11,12 @@ from pathlib import Path
 from typing import TypeVar
 
 import yaml
-from carlos.edge.interface.device import DeviceConfig
+from carlos.edge.interface.device import CarlosIO, IoFactory
 from pydantic import BaseModel
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME
+
+from .io import load_supported_io
 
 Config = TypeVar("Config", bound=BaseModel)
 
@@ -42,15 +43,14 @@ def write_config_file(path: Path, config: Config):
         )
 
 
-def read_config() -> DeviceConfig:  # pragma: no cover
+def load_io() -> list[CarlosIO]:  # pragma: no cover
     """Reads the configuration from the default location."""
 
-    return read_config_file(
-        path=Path.cwd() / CONFIG_FILE_NAME,
-        schema=DeviceConfig,
-    )
+    load_supported_io()
 
+    with open(Path.cwd() / CONFIG_FILE_NAME, "r") as file:
+        raw_config = yaml.safe_load(file)
 
-def write_config(config: DeviceConfig):  # pragma: no cover
-    """Writes the configuration to the default location."""
-    write_config_file(path=Path.cwd() / CONFIG_FILE_NAME, config=config)
+    io_factory = IoFactory()
+
+    return [io_factory.build(config) for config in raw_config.get("io", [])]

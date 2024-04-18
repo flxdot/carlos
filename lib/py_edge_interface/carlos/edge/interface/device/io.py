@@ -128,7 +128,7 @@ def validate_device_address_space(configs: Iterable[IoConfig]):
             f"Please ensure that each GPIO pin is configured only once."
         )
 
-    i2c_configs: list[I2cConfig] = [io for io in configs if isinstance(io, I2cConfig)]  # type: ignore[misc] # noqa: E501
+    i2c_configs: list[I2cConfig] = [io for io in configs if isinstance(io, I2cConfig)]
     if i2c_configs:
         if any(gpio.pin in I2C_PINS for gpio in gpio_configs):
             raise ValueError(

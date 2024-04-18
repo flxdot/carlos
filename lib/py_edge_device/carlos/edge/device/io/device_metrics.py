@@ -1,11 +1,11 @@
 import psutil
-from carlos.edge.interface.device import AnalogInput, IOConfig, peripheral_registry
+from carlos.edge.interface.device import AnalogInput, IoConfig, IoFactory
 
 
 class DeviceMetrics(AnalogInput):
     """Provides the metrics of the device."""
 
-    def __init__(self, config: IOConfig):
+    def __init__(self, config: IoConfig):
 
         super().__init__(config=config)
 
@@ -29,4 +29,4 @@ class DeviceMetrics(AnalogInput):
             return 0.0
 
 
-peripheral_registry.register(ptype=__name__, config=IOConfig, factory=DeviceMetrics)
+IoFactory().register(ptype=__name__, config=IoConfig, factory=DeviceMetrics)
