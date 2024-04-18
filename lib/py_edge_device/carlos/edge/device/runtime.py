@@ -81,9 +81,7 @@ class IoManager:  # pragma: no cover
     def setup(self) -> Self:
         """Sets up the I/O peripherals."""
         for io in self.ios:
-            logger.debug(
-                f"Setting up I/O peripheral {io.config.identifier} ({io.config.module})."
-            )
+            logger.debug(f"Setting up I/O peripheral {io}.")
             io.setup()
 
         return self
@@ -96,9 +94,7 @@ class IoManager:  # pragma: no cover
     def test(self) -> Self:
         """Tests the I/O peripherals."""
         for io in self.ios:
-            logger.debug(
-                f"Testing I/O peripheral {io.config.identifier} ({io.config.module})."
-            )
+            logger.debug(f"Testing I/O peripheral {io}.")
             io.test()
 
         return self
