@@ -8,8 +8,8 @@ __all__ = [
 import asyncio
 import concurrent.futures
 from abc import ABC, abstractmethod
-from asyncio import sleep
 from collections import namedtuple
+from time import sleep
 from typing import Any, Callable, Generic, Iterable, TypeVar
 
 from .config import GpioConfig, I2cConfig, IoConfig
