@@ -75,6 +75,7 @@ def test():  # pragma: no cover
                 results[io.identifier] = result
         except Exception as e:
             console.print("[red]failed[/red]")
+            console.print_exception()
             exceptions[io.identifier] = e
 
     if results:
