@@ -26,7 +26,7 @@ class CarlosPeripheral(ABC, Generic[IoConfigTypeVar]):
         self.config: IoConfigTypeVar = config
 
     def __str__(self):
-        return f"{self.config.identifier} ({self.config.module})"
+        return f"{self.config.identifier} ({self.config.driver})"
 
     @abstractmethod
     def setup(self):
