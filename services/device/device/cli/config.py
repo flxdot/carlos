@@ -64,6 +64,7 @@ def show():
 def test():  # pragma: no cover
     """Tests the io peripherals."""
 
+    exceptions = {}
     for io in IoManager().setup().ios:
         console.log(f"[blue]Testing {io} ... ", end="")
         try:
@@ -72,4 +73,9 @@ def test():  # pragma: no cover
             console.log(result)
         except Exception as e:
             console.log("[red]failed")
-            console.log(e)
+            exceptions[io.identifier] = e
+
+    if exceptions:
+        console.log("\n[red]The following IO peripherals failed:")
+        for identifier, exception in exceptions.items():
+            console.log(f"[red]{identifier}: {exception}")

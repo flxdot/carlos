@@ -26,6 +26,10 @@ class CarlosPeripheral(ABC, Generic[IoConfigTypeVar]):
     def __str__(self):
         return f"{self.config.identifier} ({self.config.driver})"
 
+    @property
+    def identifier(self):
+        return self.config.identifier
+
     @abstractmethod
     def setup(self):
         """Sets up the peripheral. This is required for testing. As the test runner
