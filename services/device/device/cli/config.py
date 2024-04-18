@@ -1,5 +1,6 @@
 from __future__ import print_function, unicode_literals
 
+import traceback
 from typing import TypeVar
 
 import typer
@@ -67,22 +68,22 @@ def test():  # pragma: no cover
     exceptions = {}
     results = {}
     for io in IoManager().setup().ios:
-        console.print(f"[cyan]Testing {io} ... ", end="")
+        console.print(f"[cyan]Testing {io} ... [/cyan]", end="")
         try:
             result = io.test()
-            console.print("[green]passed")
+            console.print("[green]passed[/green]")
             if result:
                 results[io.identifier] = result
         except Exception as e:
-            console.print("[red]failed")
+            console.print("[red]failed[/red]")
             exceptions[io.identifier] = e
 
     if results:
-        console.print("\n[cyan]The following IO peripherals returned data:")
+        console.print("\nThe following IO peripherals returned data:")
         for identifier, result in results.items():
-            console.print(f"[cyan]{identifier}: {result}")
+            console.print(f"{identifier}: {result}")
 
     if exceptions:
-        console.print("\n[red]The following IO peripherals failed:")
+        console.print("\nThe following IO peripherals [red]failed[/red]:")
         for identifier, exception in exceptions.items():
-            console.print(f"[red]{identifier}: {exception}")
+            console.print(f"[red]{identifier}: {traceback.format_exception(exception)}")
