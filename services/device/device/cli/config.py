@@ -86,4 +86,4 @@ def test():  # pragma: no cover
     if exceptions:
         console.print("\nThe following IO peripherals [red]failed[/red]:")
         for identifier, exception in exceptions.items():
-            console.print(f"[red]{identifier}: {traceback.format_exception(exception)}")
+            console.print(f"[red]{identifier}[/red]: {traceback.format_exception(exception)}")
