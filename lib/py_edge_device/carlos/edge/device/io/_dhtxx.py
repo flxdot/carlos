@@ -134,6 +134,7 @@ class DHTXX(AnalogInput, ABC):
 
         # Reading the DHT sensor is quite unreliable, as the device is not a real-time
         # device. Thus, we just try it a couple of times and fail if it does not work.
+        last_error = None
         for i in range(16):
             try:
                 temperature, humidity = self._dht.read()
@@ -141,7 +142,7 @@ class DHTXX(AnalogInput, ABC):
                     "temperature": temperature,
                     "humidity": humidity,
                 }
-            except RuntimeError:
-                pass
+            except RuntimeError as ex:
+                last_error = ex
 
-        raise RuntimeError(f"Could not read {self._dht_type} sensor.")
+        raise last_error
