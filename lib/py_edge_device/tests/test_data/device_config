@@ -3,7 +3,7 @@ io:
     driver: dht11
     direction: input
     protocol: gpio
-    pin: 5
+    pin: 4
   - identifier: uv-light
     driver: si1145
     direction: input
