@@ -7,12 +7,15 @@ from carlos.edge.device.runtime import IoManager
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 from rich import print, print_json
+from rich.console import Console
 
 from device.connection import (
     ConnectionSettings,
     read_connection_settings,
     write_connection_settings,
 )
+
+console = Console()
 
 config_cli = typer.Typer()
 
@@ -61,4 +64,12 @@ def show():
 def test():  # pragma: no cover
     """Tests the io peripherals."""
 
-    IoManager().setup().test()
+    for io in IoManager().setup().ios:
+        console.log(f"[blue]Testing {io} ... ", end="")
+        try:
+            result = io.test()
+            console.log("[green]passed")
+            console.log(result)
+        except Exception as e:
+            console.log("[red]failed")
+            console.log(e)

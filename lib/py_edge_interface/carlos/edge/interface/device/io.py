@@ -12,8 +12,6 @@ from asyncio import sleep
 from collections import namedtuple
 from typing import Any, Callable, Generic, Iterable, TypeVar
 
-from loguru import logger
-
 from .config import GpioConfig, I2cConfig, IoConfig
 
 IoConfigTypeVar = TypeVar("IoConfigTypeVar", bound=IoConfig)
@@ -52,9 +50,7 @@ class AnalogInput(CarlosPeripheral, ABC):
     def test(self):
         """Tests the analog input by reading the value."""
 
-        logger.info(f"Testing {self}")
-        data = self.read()
-        logger.info(f"Read data: {data}")
+        return self.read()
 
     async def read_async(self) -> dict[str, float]:
         """Reads the value of the analog input asynchronously. The return value is a
@@ -77,13 +73,10 @@ class DigitalOutput(CarlosPeripheral, ABC):
         """Tests the digital output by setting the value to False, then True for 1 second,
         and then back to False."""
 
-        logger.info(f"Testing {self}")
         self.set(False)
         self.set(True)
-        logger.info("Set value to True.")
         sleep(1)
         self.set(False)
-        logger.info("Set value to False.")
 
 
 CarlosIO = AnalogInput | DigitalOutput

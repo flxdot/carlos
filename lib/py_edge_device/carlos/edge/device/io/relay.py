@@ -18,7 +18,7 @@ class Relay(DigitalOutput):
         super().__init__(config=config)
 
     def setup(self):
-        GPIO.setup(self.config.pin, GPIO.OUT)
+        GPIO.setup(self.config.pin, GPIO.OUT, initial=GPIO.LOW)
 
     def set(self, value: bool):
         """Writes the value to the relay."""

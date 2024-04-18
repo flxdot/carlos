@@ -91,14 +91,6 @@ class IoManager:  # pragma: no cover
 
         return self
 
-    def test(self) -> Self:
-        """Tests the I/O peripherals."""
-        for io in self.ios:
-            logger.debug(f"Testing I/O peripheral {io}.")
-            io.test()
-
-        return self
-
 
 async def send_ping(
     communication_handler: DeviceCommunicationHandler,
