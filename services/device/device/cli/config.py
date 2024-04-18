@@ -67,22 +67,22 @@ def test():  # pragma: no cover
     exceptions = {}
     results = {}
     for io in IoManager().setup().ios:
-        console.log(f"[blue]Testing {io} ... ", end="")
+        console.print(f"[cyan]Testing {io} ... ", end="")
         try:
             result = io.test()
-            console.log("[green]passed")
+            console.print("[green]passed")
             if result:
                 results[io.identifier] = result
         except Exception as e:
-            console.log("[red]failed")
+            console.print("[red]failed")
             exceptions[io.identifier] = e
 
     if results:
-        console.log("\n[blue]The following IO peripherals returned data:")
+        console.print("\n[cyan]The following IO peripherals returned data:")
         for identifier, result in results.items():
-            console.log(f"[blue]{identifier}: {result}")
+            console.print(f"[cyan]{identifier}: {result}")
 
     if exceptions:
-        console.log("\n[red]The following IO peripherals failed:")
+        console.print("\n[red]The following IO peripherals failed:")
         for identifier, exception in exceptions.items():
-            console.log(f"[red]{identifier}: {exception}")
+            console.print(f"[red]{identifier}: {exception}")
