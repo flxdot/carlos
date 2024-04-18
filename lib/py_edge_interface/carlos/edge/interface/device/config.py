@@ -19,15 +19,17 @@ class IoConfig(BaseModel):
         "It is used to allow changing addresses, pins if required later.",
     )
 
-    module: str = Field(
+    driver: str = Field(
         ...,
-        description="The module name that will be imported and registers itself in "
-        "the IoFactory. If the module does not contain `.` it is assumed "
-        "to be a built-in module.",
+        description="Refers to the module name that implements the IO driver. "
+        "Built-in drivers located in carlos.edge.device.io module "
+        "don't need to specify the full path. Each driver module"
+        "must make a call to the IoFactory.register method to register"
+        "itself.",
     )
 
-    @field_validator("module", mode="after")
-    def _validate_module(cls, value):
+    @field_validator("driver", mode="after")
+    def _validate_driver(cls, value):
         """Converts a module name to a full module path."""
 
         # check if the given module exists in the current working directory.
@@ -38,9 +40,7 @@ class IoConfig(BaseModel):
             try:
                 importlib.import_module(abs_module)
             except ModuleNotFoundError:  # pragma: no cover
-                raise ValueError(
-                    f"The module {value} ({abs_module}) does not exist."
-                )
+                raise ValueError(f"The module {value} ({abs_module}) does not exist.")
             value = abs_module
 
         return value

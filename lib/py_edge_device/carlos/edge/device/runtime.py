@@ -7,6 +7,7 @@ from pathlib import Path
 from apscheduler import AsyncScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from carlos.edge.interface import DeviceId, EdgeConnectionDisconnected, EdgeProtocol
+from carlos.edge.interface.device.io import validate_device_address_space
 from carlos.edge.interface.protocol import PING
 from loguru import logger
 
@@ -32,12 +33,7 @@ class DeviceRuntime:  # pragma: no cover
     async def run(self):
         """Runs the device runtime."""
 
-        logger.add(
-            sink=Path.cwd() / ".carlos_data" / "device" / "device_log_{time}.log",
-            level="INFO",
-            rotation="50 MB",
-            retention=timedelta(days=60),
-        )
+        self._prepare_runtime()
 
         communication_handler = DeviceCommunicationHandler(
             protocol=self.protocol, device_id=self.device_id
@@ -62,6 +58,19 @@ class DeviceRuntime:  # pragma: no cover
                     await communication_handler.listen()
                 except EdgeConnectionDisconnected:
                     await self.protocol.connect()
+
+    def _prepare_runtime(self):
+
+        logger.add(
+            sink=Path.cwd() / ".carlos_data" / "device" / "device_log_{time}.log",
+            level="INFO",
+            rotation="50 MB",
+            retention=timedelta(days=60),
+        )
+
+        validate_device_address_space(self.ios)
+
+        self._setup_io()
 
     def _setup_io(self):
         """Sets up the I/O peripherals."""

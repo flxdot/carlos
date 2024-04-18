@@ -68,12 +68,12 @@ class IoFactory:
     """A singleton factory for io peripherals."""
 
     _instance = None
-    _module_to_io: dict[str, FactoryItem] = {}
+    _driver_to_io_type: dict[str, FactoryItem] = {}
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(IoFactory, cls).__new__(cls)
-            cls._instance._module_to_io = {}
+            cls._instance._driver_to_io_type = {}
 
         return cls._instance
 
@@ -96,10 +96,10 @@ class IoFactory:
                 "Please ensure that the config class is a subclass of IoConfig."
             )
 
-        if ptype in self._module_to_io:
+        if ptype in self._driver_to_io_type:
             raise RuntimeError(f"The peripheral {ptype} is already registered.")
 
-        self._module_to_io[ptype] = FactoryItem(config, factory)
+        self._driver_to_io_type[ptype] = FactoryItem(config, factory)
 
     def build(self, config: dict[str, Any]) -> CarlosIO:
         """Builds a IO object from its configuration.
@@ -112,14 +112,14 @@ class IoFactory:
 
         io_config = IoConfig.model_validate(config)
 
-        if io_config.module not in self._module_to_io:
+        if io_config.driver not in self._driver_to_io_type:
             raise RuntimeError(
-                f"The peripheral {io_config.module} is not registered."
+                f"The driver {io_config.driver} is not registered."
                 f"Make sure to register `IoFactory().register(...)` "
                 f"the peripheral before building it."
             )
 
-        entry = self._module_to_io[io_config.module]
+        entry = self._driver_to_io_type[io_config.driver]
 
         return entry.factory(entry.config.model_validate(config))
 
@@ -128,14 +128,17 @@ I2C_PINS = [2, 3]
 """The Pin numbers designated for I2C communication."""
 
 
-def validate_device_address_space(configs: Iterable[IoConfig]):
+def validate_device_address_space(ios: Iterable[CarlosIO]):
     """This function ensures that the configured pins and addresses are unique.
 
-    :param configs: The list of IO configurations.
+    :param ios: The list of IOs to validate.
     :raises ValueError: If any of the pins or addresses are configured more than once.
         If the GPIO pins 2 and 3 are when I2C communication is configured.
         If any of the identifiers are configured more than once.
     """
+
+    configs = [io.config for io in ios]
+
     gpio_configs: list[GpioConfig] = [
         io for io in configs if isinstance(io, GpioConfig)
     ]

@@ -17,7 +17,7 @@ def test_config_file_io(tmp_path: Path):
 
     config = GpioConfig(
         identifier="test-config-file-io",
-        module="carlos.edge.device.io.dht11",
+        driver="carlos.edge.device.io.dht11",
         direction="input",
         pin=7,
     )
