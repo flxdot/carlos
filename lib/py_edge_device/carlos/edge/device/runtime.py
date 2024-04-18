@@ -3,6 +3,7 @@ of the application."""
 
 from datetime import timedelta
 from pathlib import Path
+from typing import Self
 
 from apscheduler import AsyncScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -28,6 +29,8 @@ class DeviceRuntime:  # pragma: no cover
         self.device_id = device_id
         self.protocol = protocol
 
+        self.io_manager = IoManager()
+
     async def run(self):
         """Runs the device runtime."""
 
@@ -46,6 +49,7 @@ class DeviceRuntime:  # pragma: no cover
                 kwargs={"communication_handler": communication_handler},
                 trigger=IntervalTrigger(minutes=1),
             )
+            self.io_manager.register_tasks(scheduler=scheduler)
             await scheduler.start_in_background()
 
             while True:
@@ -74,7 +78,7 @@ class IoManager:  # pragma: no cover
         self.ios = load_io()
         validate_device_address_space(self.ios)
 
-    def setup(self):
+    def setup(self) -> Self:
         """Sets up the I/O peripherals."""
         for io in self.ios:
             logger.debug(
@@ -82,13 +86,22 @@ class IoManager:  # pragma: no cover
             )
             io.setup()
 
-    def test(self):
+        return self
+
+    def register_tasks(self, scheduler: AsyncScheduler) -> Self:
+        """Registers the tasks of the I/O peripherals."""
+
+        return self
+
+    def test(self) -> Self:
         """Tests the I/O peripherals."""
         for io in self.ios:
             logger.debug(
                 f"Testing I/O peripheral {io.config.identifier} ({io.config.module})."
             )
             io.test()
+
+        return self
 
 
 async def send_ping(

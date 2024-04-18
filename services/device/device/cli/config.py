@@ -3,6 +3,7 @@ from __future__ import print_function, unicode_literals
 from typing import TypeVar
 
 import typer
+from carlos.edge.device.runtime import IoManager
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 from rich import print, print_json
@@ -54,3 +55,10 @@ def show():
 
     print("\n[bold]Connection[/bold] configuration:")
     print_json(read_connection_settings().model_dump_json())
+
+
+@config_cli.command()
+def test():  # pragma: no cover
+    """Tests the io peripherals."""
+
+    IoManager().setup().test()
