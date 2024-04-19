@@ -5,6 +5,10 @@
         {%- filter indent(4) %}
         {%- block checkout_with %}{% endblock %}
         {%- endfilter %}
+    - name: Set up - Set git credentials
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
 
     # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
     # from installing Poetry every time, which can be slow. Note the use of the Poetry version
