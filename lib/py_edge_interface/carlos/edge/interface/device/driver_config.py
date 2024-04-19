@@ -1,4 +1,5 @@
 __all__ = [
+    "DirectionMixin",
     "DriverConfig",
     "GpioDriverConfig",
     "I2cDriverConfig",

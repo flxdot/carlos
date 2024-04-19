@@ -10,9 +10,14 @@ import concurrent.futures
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from time import sleep
-from typing import Any, Callable, Generic, Iterable, TypeVar
+from typing import Any, Callable, Generic, Iterable, Self, TypeVar
 
-from .driver_config import DriverConfig, GpioDriverConfig, I2cDriverConfig
+from .driver_config import (
+    DirectionMixin,
+    DriverConfig,
+    GpioDriverConfig,
+    I2cDriverConfig,
+)
 
 DriverConfigTypeVar = TypeVar("DriverConfigTypeVar", bound=DriverConfig)
 
@@ -31,7 +36,7 @@ class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
         return self.config.identifier
 
     @abstractmethod
-    def setup(self):
+    def setup(self) -> Self:
         """Sets up the peripheral. This is required for testing. As the test runner
         is not able to run the setup method of the peripheral outside the device."""
         pass
@@ -44,6 +49,16 @@ class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
 
 class AnalogInput(CarlosDriverBase, ABC):
     """Common base class for all analog input peripherals."""
+
+    def __init__(self, config: DriverConfigTypeVar):
+
+        if isinstance(config, DirectionMixin):
+            if config.direction != "input":
+                raise ValueError(
+                    "Recieved a non-input configuration for an analog input."
+                )
+
+        super().__init__(config)
 
     @abstractmethod
     def read(self) -> dict[str, float]:
@@ -68,6 +83,16 @@ class AnalogInput(CarlosDriverBase, ABC):
 
 class DigitalOutput(CarlosDriverBase, ABC):
     """Common base class for all digital output peripherals."""
+
+    def __init__(self, config: DriverConfigTypeVar):
+
+        if isinstance(config, DirectionMixin):
+            if config.direction != "output":
+                raise ValueError(
+                    "Recieved a non-output configuration for a digital output."
+                )
+
+        super().__init__(config)
 
     @abstractmethod
     def set(self, value: bool):
