@@ -1,4 +1,5 @@
-__all__ = ["DeviceRuntime", "read_config", "DeviceConfig"]
+__all__ = [
+    "DeviceRuntime",
+]
 
-from .config import DeviceConfig, read_config
 from .runtime import DeviceRuntime

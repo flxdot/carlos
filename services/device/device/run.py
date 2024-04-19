@@ -1,4 +1,4 @@
-from carlos.edge.device import DeviceRuntime, read_config
+from carlos.edge.device import DeviceRuntime
 from carlos.edge.device.constants import VERSION
 from loguru import logger
 
@@ -24,12 +24,11 @@ async def main():  # pragma: no cover
 
     logger.info(f"Starting Carlos device (v{VERSION})...")
 
-    device_config = read_config()
     device_connection = read_connection_settings()
     protocol = DeviceWebsocketClient(settings=device_connection)
 
     runtime = DeviceRuntime(
-        config=device_config,
+        device_id=device_connection.device_id,
         protocol=protocol,
     )
     await runtime.run()

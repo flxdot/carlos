@@ -1,0 +1,30 @@
+drivers:
+  - identifier: temp-humi-intern
+    driver_module: dht11
+    pin: 4
+  - identifier: uv-light
+    driver_module: si1145
+  - identifier: pump
+    driver_module: relay
+    pin: 20
+  - identifier: valve-1
+    driver_module: relay
+    pin: 21
+  - identifier: valve-2
+    driver_module: relay
+    pin: 22
+  - identifier: valve-3
+    driver_module: relay
+    pin: 23
+  - identifier: valve-4
+    driver_module: carlos.edge.device.driver.relay
+    pin: 24
+  - identifier: relay-6
+    driver_module: carlos.edge.device.driver.relay
+    pin: 25
+  - identifier: relay-7
+    driver_module: carlos.edge.device.driver.relay
+    pin: 26
+  - identifier: relay-8
+    driver_module: carlos.edge.device.driver.relay
+    pin: 27

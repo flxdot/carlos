@@ -2,10 +2,8 @@
 configuration of the application."""
 
 __all__ = [
-    "DeviceConfig",
-    "read_config",
+    "load_drivers",
     "read_config_file",
-    "write_config",
     "write_config_file",
 ]
 
@@ -13,17 +11,12 @@ from pathlib import Path
 from typing import TypeVar
 
 import yaml
-from carlos.edge.interface import DeviceId
-from pydantic import BaseModel, Field
+from carlos.edge.interface.device import CarlosDriver, DriverConfig, DriverFactory
+from loguru import logger
+from pydantic import BaseModel
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME
-
-
-class DeviceConfig(BaseModel):
-    """Configures the pure device settings."""
-
-    device_id: DeviceId = Field(..., description="The unique identifier of the device.")
-
+from carlos.edge.device.driver.device_metrics import DeviceMetrics
 
 Config = TypeVar("Config", bound=BaseModel)
 
@@ -50,15 +43,38 @@ def write_config_file(path: Path, config: Config):
         )
 
 
-def read_config() -> DeviceConfig:  # pragma: no cover
+def load_drivers(config_dir: Path | None = None) -> list[CarlosDriver]:
     """Reads the configuration from the default location."""
+    config_dir = config_dir or Path.cwd()
 
-    return read_config_file(
-        path=Path.cwd() / CONFIG_FILE_NAME,
-        schema=DeviceConfig,
+    with open(config_dir / CONFIG_FILE_NAME, "r") as file:
+        raw_config = yaml.safe_load(file)
+
+    factory = DriverFactory()
+
+    try:
+        driver_configs = [factory.build(config) for config in raw_config["drivers"]]
+    except KeyError:  # pragma: no cover
+        raise KeyError(
+            f"The configuration file {config_dir / CONFIG_FILE_NAME} must contain "
+            f"a 'drivers' key."
+        )
+
+    # We always want to have some device metrics
+    if not any(isinstance(driver, DeviceMetrics) for driver in driver_configs):
+        driver_configs.insert(
+            0,
+            factory.build(
+                DriverConfig(
+                    identifier="__device_metrics__",
+                    driver_module=DeviceMetrics.__module__,
+                ).model_dump()
+            ),
+        )
+
+    logger.info(
+        f"Loaded {len(driver_configs)} IOs: "
+        f"{', '.join(str(io) for io in driver_configs)}"
     )
 
-
-def write_config(config: DeviceConfig):  # pragma: no cover
-    """Writes the configuration to the default location."""
-    write_config_file(path=Path.cwd() / CONFIG_FILE_NAME, config=config)
+    return driver_configs

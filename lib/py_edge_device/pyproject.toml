@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "carlos.edge.device"
-version = "0.1.1"
+version = "0.1.2"
 description = "The library for the edge device of the carlos project."
 authors = ["Felix Fanghanel"]
 license = "MIT"
@@ -16,10 +16,14 @@ apscheduler = "^4.0.0a4"
 pydantic = "^2.6.4"
 pyyaml = "^6.0.1"
 "carlos.edge.interface" = {path = "../py_edge_interface"}
+psutil = "^5.9.8"
+rpi-gpio = {version = "^0.7.1", markers = "platform_machine == 'armv7l' or platform_machine == 'aarch64'"}
+smbus2 = "^0.4.3"
 
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
 types-pyyaml = "^6.0.12.20240311"
+types-psutil = "^5.9.5.20240316"
 
 
 [build-system]
@@ -27,7 +31,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.bumpversion]
-current_version = "0.1.1"
+current_version = "0.1.2"
 commit = true
 tag = false
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(\\-(?P<prerelease>[a-z0-9\\.]+))?"
@@ -76,4 +80,6 @@ exclude_lines = [
 omit = [
     # omit all tests
     "*_test.py",
+    # depends on actual device and hardware
+    "carlos/edge/device/driver/*.py"
 ]
