@@ -1,4 +1,8 @@
-__all__ = ["GpioConfig", "I2cConfig", "IoConfig"]
+__all__ = [
+    "DriverConfig",
+    "GpioDriverConfig",
+    "I2cDriverConfig",
+]
 
 import importlib
 from typing import Literal
@@ -10,25 +14,25 @@ from pydantic import BaseModel, Field, field_validator
 # 3.3V,  2,  3,   4, GND, 17,  27, 22, 3.3V,  10,  9, 11, GND, ID EEPROM,   5,  6,  13, 19, 26, GND # Inner pins # noqa
 
 
-class IoConfig(BaseModel):
-    """Common base class for all IO configurations."""
+class DriverConfig(BaseModel):
+    """Common base class for all driver_module configurations."""
 
     identifier: str = Field(
         ...,
-        description="A unique identifier for the IO configuration. "
+        description="A unique identifier for the driver_module configuration. "
         "It is used to allow changing addresses, pins if required later.",
     )
 
-    driver: str = Field(
+    driver_module: str = Field(
         ...,
-        description="Refers to the module name that implements the IO driver. "
-        "Built-in drivers located in carlos.edge.device.io module "
-        "don't need to specify the full path. Each driver module"
-        "must make a call to the IoFactory.register method to register"
+        description="Refers to the module name that implements the IO driver_module. "
+        "Built-in drivers located in carlos.edge.device.driver module "
+        "don't need to specify the full path. Each driver_module module"
+        "must make a call to the DriverFactory.register method to register"
         "itself.",
     )
 
-    @field_validator("driver", mode="after")
+    @field_validator("driver_module", mode="after")
     def _validate_driver(cls, value):
         """Converts a module name to a full module path."""
 
@@ -36,7 +40,7 @@ class IoConfig(BaseModel):
         try:
             importlib.import_module(value)
         except ModuleNotFoundError:
-            abs_module = "carlos.edge.device.io" + "." + value
+            abs_module = "carlos.edge.device.driver" + "." + value
             try:
                 importlib.import_module(abs_module)
             except ModuleNotFoundError:  # pragma: no cover
@@ -52,7 +56,7 @@ class DirectionMixin(BaseModel):
     )
 
 
-class GpioConfig(IoConfig, DirectionMixin):
+class GpioDriverConfig(DriverConfig, DirectionMixin):
     """Defines a single input configuration."""
 
     protocol: Literal["gpio"] = Field(
@@ -90,7 +94,7 @@ class GpioConfig(IoConfig, DirectionMixin):
     ] = Field(..., description="The GPIO pin number.")
 
 
-class I2cConfig(IoConfig, DirectionMixin):
+class I2cDriverConfig(DriverConfig, DirectionMixin):
     """Defines a single input configuration."""
 
     protocol: Literal["i2c"] = Field(

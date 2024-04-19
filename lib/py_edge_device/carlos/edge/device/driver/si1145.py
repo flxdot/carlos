@@ -1,13 +1,13 @@
 import time
 from typing import Literal
 
-from carlos.edge.interface.device import AnalogInput, I2cConfig, IoFactory
+from carlos.edge.interface.device import AnalogInput, DriverFactory, I2cDriverConfig
 from pydantic import Field
 
 from carlos.edge.device.protocol import I2C
 
 
-class Si1145Config(I2cConfig):
+class Si1145Config(I2cDriverConfig):
 
     direction: Literal["input"] = Field("input")
 
@@ -51,7 +51,7 @@ class SI1145(AnalogInput):
         }
 
 
-IoFactory().register(ptype=__name__, config=Si1145Config, factory=SI1145)
+DriverFactory().register(ptype=__name__, config=Si1145Config, factory=SI1145)
 
 
 class SDL_Pi_SI1145:
@@ -469,16 +469,16 @@ class SDL_Pi_SI1145:
 
         # Get gain
         gain = 1
-        # These are set to defaults in the Adafruit driver -
-        # need to change if you change them in the SI1145 driver
+        # These are set to defaults in the Adafruit driver_module -
+        # need to change if you change them in the SI1145 driver_module
         # range_ = self.read_param(parameter=adc_misc)
         # if (range_ & 32) == 32:
         #     gain = 14.5
 
         # Get sensitivity
         multiplier = 1
-        # These are set to defaults in the Adafruit driver -
-        # need to change if you change them in the SI1145 driver
+        # These are set to defaults in the Adafruit driver_module -
+        # need to change if you change them in the SI1145 driver_module
         # sensitivity = self.read_param(parameter=adc_gain)
         # if (sensitivity & 7) == 0:
         #     multiplier = 1

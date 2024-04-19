@@ -1,8 +1,8 @@
 __all__ = [
     "AnalogInput",
     "DigitalOutput",
-    "CarlosIO",
-    "IoFactory",
+    "CarlosDriver",
+    "DriverFactory",
     "validate_device_address_space",
 ]
 import asyncio
@@ -12,19 +12,19 @@ from collections import namedtuple
 from time import sleep
 from typing import Any, Callable, Generic, Iterable, TypeVar
 
-from .config import GpioConfig, I2cConfig, IoConfig
+from .driver_config import DriverConfig, GpioDriverConfig, I2cDriverConfig
 
-IoConfigTypeVar = TypeVar("IoConfigTypeVar", bound=IoConfig)
+DriverConfigTypeVar = TypeVar("DriverConfigTypeVar", bound=DriverConfig)
 
 
-class CarlosPeripheral(ABC, Generic[IoConfigTypeVar]):
-    """Common base class for all peripherals."""
+class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
+    """Common base class for all drivers."""
 
-    def __init__(self, config: IoConfigTypeVar):
-        self.config: IoConfigTypeVar = config
+    def __init__(self, config: DriverConfigTypeVar):
+        self.config: DriverConfigTypeVar = config
 
     def __str__(self):
-        return f"{self.config.identifier} ({self.config.driver})"
+        return f"{self.config.identifier} ({self.config.driver_module})"
 
     @property
     def identifier(self):
@@ -42,7 +42,7 @@ class CarlosPeripheral(ABC, Generic[IoConfigTypeVar]):
         pass
 
 
-class AnalogInput(CarlosPeripheral, ABC):
+class AnalogInput(CarlosDriverBase, ABC):
     """Common base class for all analog input peripherals."""
 
     @abstractmethod
@@ -66,7 +66,7 @@ class AnalogInput(CarlosPeripheral, ABC):
             return await loop.run_in_executor(executor=pool, func=self.read)
 
 
-class DigitalOutput(CarlosPeripheral, ABC):
+class DigitalOutput(CarlosDriverBase, ABC):
     """Common base class for all digital output peripherals."""
 
     @abstractmethod
@@ -83,29 +83,29 @@ class DigitalOutput(CarlosPeripheral, ABC):
         self.set(False)
 
 
-CarlosIO = AnalogInput | DigitalOutput
+CarlosDriver = AnalogInput | DigitalOutput
 
-FactoryItem = namedtuple("FactoryItem", ["config", "factory"])
+DriverDefinition = namedtuple("DriverDefinition", ["config", "factory"])
 
 
-class IoFactory:
+class DriverFactory:
     """A singleton factory for io peripherals."""
 
     _instance = None
-    _driver_to_io_type: dict[str, FactoryItem] = {}
+    _driver_index: dict[str, DriverDefinition] = {}
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(IoFactory, cls).__new__(cls)
-            cls._instance._driver_to_io_type = {}
+            cls._instance = super(DriverFactory, cls).__new__(cls)
+            cls._instance._driver_index = {}
 
         return cls._instance
 
     def register(
         self,
         ptype: str,
-        config: type[IoConfigTypeVar],
-        factory: Callable[[IoConfigTypeVar], CarlosIO],
+        config: type[DriverConfigTypeVar],
+        factory: Callable[[DriverConfigTypeVar], CarlosDriver],
     ):
         """Registers a peripheral with the peripheral registry.
 
@@ -114,45 +114,47 @@ class IoFactory:
         :param factory: The peripheral factory function.
         """
 
-        if not issubclass(config, IoConfig):
+        if not issubclass(config, DriverConfig):
             raise ValueError(
-                "The config must be a subclass of IoConfig. "
-                "Please ensure that the config class is a subclass of IoConfig."
+                "The config must be a subclass of DriverConfig. "
+                "Please ensure that the config class is a subclass of DriverConfig."
             )
 
-        if ptype in self._driver_to_io_type:
+        if ptype in self._driver_index:
             raise RuntimeError(f"The peripheral {ptype} is already registered.")
 
-        self._driver_to_io_type[ptype] = FactoryItem(config, factory)
+        self._driver_index[ptype] = DriverDefinition(config, factory)
 
-    def build(self, config: dict[str, Any]) -> CarlosIO:
+    def build(self, config: dict[str, Any]) -> CarlosDriver:
         """Builds a IO object from its configuration.
 
         :param config: The raw configuration. The schema must adhere to the
-            IoConfig model. But we require the full config as the ios may require
+            DriverConfig model. But we require the full config as the ios may require
             additional parameters.
         :returns: The IO object.
         """
 
-        io_config = IoConfig.model_validate(config)
+        io_config = DriverConfig.model_validate(config)
 
-        if io_config.driver not in self._driver_to_io_type:
+        if io_config.driver_module not in self._driver_index:
             raise RuntimeError(
-                f"The driver {io_config.driver} is not registered."
-                f"Make sure to register `IoFactory().register(...)` "
+                f"The driver {io_config.driver_module} is not registered."
+                f"Make sure to register `DriverFactory().register(...)` "
                 f"the peripheral before building it."
             )
 
-        entry = self._driver_to_io_type[io_config.driver]
+        driver_definition = self._driver_index[io_config.driver_module]
 
-        return entry.factory(entry.config.model_validate(config))
+        return driver_definition.factory(
+            driver_definition.config.model_validate(config)
+        )
 
 
 I2C_PINS = [2, 3]
 """The Pin numbers designated for I2C communication."""
 
 
-def validate_device_address_space(ios: Iterable[CarlosIO]):
+def validate_device_address_space(ios: Iterable[CarlosDriver]):
     """This function ensures that the configured pins and addresses are unique.
 
     :param ios: The list of IOs to validate.
@@ -163,8 +165,8 @@ def validate_device_address_space(ios: Iterable[CarlosIO]):
 
     configs = [io.config for io in ios]
 
-    gpio_configs: list[GpioConfig] = [
-        io for io in configs if isinstance(io, GpioConfig)
+    gpio_configs: list[GpioDriverConfig] = [
+        io for io in configs if isinstance(io, GpioDriverConfig)
     ]
 
     # Ensure GPIO pins are unique
@@ -180,7 +182,9 @@ def validate_device_address_space(ios: Iterable[CarlosIO]):
             f"Please ensure that each GPIO pin is configured only once."
         )
 
-    i2c_configs: list[I2cConfig] = [io for io in configs if isinstance(io, I2cConfig)]
+    i2c_configs: list[I2cDriverConfig] = [
+        io for io in configs if isinstance(io, I2cDriverConfig)
+    ]
     if i2c_configs:
         if any(gpio.pin in I2C_PINS for gpio in gpio_configs):
             raise ValueError(

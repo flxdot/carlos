@@ -5,13 +5,13 @@ from enum import StrEnum
 from time import sleep
 from typing import Literal
 
-from carlos.edge.interface.device import AnalogInput, GpioConfig
+from carlos.edge.interface.device import AnalogInput, GpioDriverConfig
 from pydantic import Field
 
 from carlos.edge.device.protocol import GPIO
 
 
-class DhtConfig(GpioConfig):
+class DhtConfig(GpioDriverConfig):
     """Configuration for a DHT sensor."""
 
     direction: Literal["input"] = Field("input")
@@ -125,7 +125,7 @@ class DHT:
 class DHTXX(AnalogInput, ABC):
     """DHTXX Temperature and Humidity Sensor."""
 
-    def __init__(self, config: GpioConfig):
+    def __init__(self, config: GpioDriverConfig):
 
         super().__init__(config=config)
 

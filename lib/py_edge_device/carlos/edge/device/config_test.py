@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from carlos.edge.interface.device import AnalogInput, DigitalOutput, GpioConfig
+from carlos.edge.interface.device import AnalogInput, DigitalOutput, GpioDriverConfig
 
 from carlos.edge.device.config import load_io, read_config_file, write_config_file
 from tests.test_data import EXPECTED_IO_COUNT, TEST_DEVICE_WORKDIR
@@ -13,18 +13,18 @@ def test_config_file_io(tmp_path: Path):
     cfg_path = tmp_path / "config"
 
     with pytest.raises(FileNotFoundError):
-        read_config_file(cfg_path, GpioConfig)
+        read_config_file(cfg_path, GpioDriverConfig)
 
-    config = GpioConfig(
+    config = GpioDriverConfig(
         identifier="test-config-file-io",
-        driver="carlos.edge.device.io.dht11",
+        driver_module="carlos.edge.device.driver.dht11",
         direction="input",
         pin=7,
     )
 
     write_config_file(cfg_path, config)
 
-    assert read_config_file(cfg_path, GpioConfig) == config
+    assert read_config_file(cfg_path, GpioDriverConfig) == config
 
 
 def test_load_io():

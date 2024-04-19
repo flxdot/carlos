@@ -8,7 +8,7 @@ from typing import Self
 from apscheduler import AsyncScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from carlos.edge.interface import DeviceId, EdgeConnectionDisconnected, EdgeProtocol
-from carlos.edge.interface.device.io import validate_device_address_space
+from carlos.edge.interface.device.driver import validate_device_address_space
 from carlos.edge.interface.protocol import PING
 from loguru import logger
 

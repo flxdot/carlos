@@ -1,12 +1,12 @@
 __all__ = [
     "AnalogInput",
-    "CarlosIO",
+    "CarlosDriver",
     "DigitalOutput",
-    "GpioConfig",
-    "I2cConfig",
-    "IoConfig",
-    "IoFactory",
+    "DriverConfig",
+    "DriverFactory",
+    "GpioDriverConfig",
+    "I2cDriverConfig",
 ]
 
-from .config import GpioConfig, I2cConfig, IoConfig
-from .io import AnalogInput, CarlosIO, DigitalOutput, IoFactory
+from .driver import AnalogInput, CarlosDriver, DigitalOutput, DriverFactory
+from .driver_config import DriverConfig, GpioDriverConfig, I2cDriverConfig

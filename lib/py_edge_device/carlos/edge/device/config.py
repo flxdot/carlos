@@ -11,12 +11,12 @@ from pathlib import Path
 from typing import TypeVar
 
 import yaml
-from carlos.edge.interface.device import CarlosIO, IoConfig, IoFactory
+from carlos.edge.interface.device import CarlosDriver, DriverConfig, DriverFactory
 from loguru import logger
 from pydantic import BaseModel
 
 from carlos.edge.device.constants import CONFIG_FILE_NAME
-from carlos.edge.device.io.device_metrics import DeviceMetrics
+from carlos.edge.device.driver.device_metrics import DeviceMetrics
 
 Config = TypeVar("Config", bound=BaseModel)
 
@@ -43,24 +43,25 @@ def write_config_file(path: Path, config: Config):
         )
 
 
-def load_io(config_dir: Path | None = None) -> list[CarlosIO]:
+def load_io(config_dir: Path | None = None) -> list[CarlosDriver]:
     """Reads the configuration from the default location."""
     config_dir = config_dir or Path.cwd()
 
     with open(config_dir / CONFIG_FILE_NAME, "r") as file:
         raw_config = yaml.safe_load(file)
 
-    io_factory = IoFactory()
+    factory = DriverFactory()
 
-    ios = [io_factory.build(config) for config in raw_config.get("io", [])]
+    ios = [factory.build(config) for config in raw_config.get("io", [])]
 
     # We always want to have some device metrics
     if not any(isinstance(io, DeviceMetrics) for io in ios):
         ios.insert(
             0,
-            io_factory.build(
-                IoConfig(
-                    identifier="__device_metrics__", driver=DeviceMetrics.__module__
+            factory.build(
+                DriverConfig(
+                    identifier="__device_metrics__",
+                    driver_module=DeviceMetrics.__module__,
                 ).model_dump()
             ),
         )

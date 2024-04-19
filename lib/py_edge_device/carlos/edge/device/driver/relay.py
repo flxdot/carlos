@@ -1,12 +1,12 @@
 from typing import Literal
 
-from carlos.edge.interface.device import DigitalOutput, GpioConfig, IoFactory
+from carlos.edge.interface.device import DigitalOutput, DriverFactory, GpioDriverConfig
 from pydantic import Field
 
 from carlos.edge.device.protocol import GPIO
 
 
-class RelayConfig(GpioConfig):
+class RelayConfig(GpioDriverConfig):
 
     direction: Literal["output"] = Field("output")
 
@@ -25,4 +25,4 @@ class Relay(DigitalOutput):
         GPIO.output(self.config.pin, value)
 
 
-IoFactory().register(ptype=__name__, config=RelayConfig, factory=Relay)
+DriverFactory().register(ptype=__name__, config=RelayConfig, factory=Relay)
