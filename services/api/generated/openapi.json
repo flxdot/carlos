@@ -234,6 +234,7 @@
             "required": true,
             "schema": {
               "type": "string",
+              "format": "uuid",
               "description": "The unique identifier of the device.",
               "title": "Deviceid"
             },

@@ -18,11 +18,15 @@ class Relay(DigitalOutput):
         super().__init__(config=config)
 
     def setup(self):
-        GPIO.setup(self.config.pin, GPIO.OUT, initial=GPIO.LOW)
+
+        # HIGH means off, LOW means
+        GPIO.setup(self.config.pin, GPIO.OUT, initial=GPIO.HIGH)
 
     def set(self, value: bool):
         """Writes the value to the relay."""
-        GPIO.output(self.config.pin, value)
+
+        # HIGH means off, LOW means on
+        GPIO.output(self.config.pin, GPIO.LOW if value else GPIO.HIGH)
 
 
 DriverFactory().register(driver_module=__name__, config=RelayConfig, factory=Relay)

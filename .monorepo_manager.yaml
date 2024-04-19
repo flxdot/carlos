@@ -36,7 +36,6 @@ services/api:
     - if: ${{ !cancelled() }}
       name: Generate - backend openapi spec and client code
       run: make api-openapi
-    - if: ${{ !cancelled() }}
   language: python
 services/device:
   language: python
