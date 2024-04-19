@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from carlos.edge.interface.device import AnalogInput, DigitalOutput, GpioDriverConfig
 
-from carlos.edge.device.config import load_io, read_config_file, write_config_file
+from carlos.edge.device.config import load_drivers, read_config_file, write_config_file
 from tests.test_data import EXPECTED_IO_COUNT, TEST_DEVICE_WORKDIR
 
 
@@ -30,7 +30,7 @@ def test_config_file_io(tmp_path: Path):
 def test_load_io():
     """This test ensures that the IOs are loaded correctly."""
 
-    io = load_io(config_dir=TEST_DEVICE_WORKDIR)
+    io = load_drivers(config_dir=TEST_DEVICE_WORKDIR)
 
     assert len(io) == EXPECTED_IO_COUNT, "The number of IOs does not match."
 

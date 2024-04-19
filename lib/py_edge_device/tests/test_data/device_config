@@ -1,4 +1,4 @@
-io:
+drivers:
   - identifier: temp-humi-intern
     driver_module: dht11
     pin: 4

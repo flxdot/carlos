@@ -46,7 +46,7 @@ class DriverConfig(BaseModel):
                 importlib.import_module(abs_module)
             except ModuleNotFoundError:
                 raise ValueError(f"The module {value} ({abs_module}) does not exist.")
-            value = abs_module
+            value = abs_module  # pragma: no cover
 
         return value
 

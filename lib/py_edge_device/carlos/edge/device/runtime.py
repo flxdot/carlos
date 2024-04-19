@@ -13,7 +13,7 @@ from carlos.edge.interface.protocol import PING
 from loguru import logger
 
 from .communication import DeviceCommunicationHandler
-from .config import load_io
+from .config import load_drivers
 
 
 # We don't cover this in the unit tests. This needs to be tested in an integration test.
@@ -75,14 +75,14 @@ class DriverManager:  # pragma: no cover
 
     def __init__(self):
 
-        self.drivers = load_io()
+        self.drivers = load_drivers()
         validate_device_address_space(self.drivers)
 
     def setup(self) -> Self:
         """Sets up the I/O peripherals."""
-        for io in self.drivers:
-            logger.debug(f"Setting up I/O peripheral {io}.")
-            io.setup()
+        for driver in self.drivers:
+            logger.debug(f"Setting up driver {driver}.")
+            driver.setup()
 
         return self
 

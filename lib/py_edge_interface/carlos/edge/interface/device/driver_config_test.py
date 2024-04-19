@@ -16,11 +16,6 @@ class TestDriverConfig:
         "driver_module, expected",
         [
             pytest.param(VALID_DRIVER_MODULE, VALID_DRIVER_MODULE, id="valid module"),
-            pytest.param(
-                "relay",
-                "carlos.edge.device.driver.relay",
-                id="built-in relative module",
-            ),
             pytest.param("non_existing_module", ValueError, id="invalid module"),
         ],
     )

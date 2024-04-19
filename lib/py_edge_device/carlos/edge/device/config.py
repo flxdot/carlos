@@ -2,7 +2,7 @@
 configuration of the application."""
 
 __all__ = [
-    "load_io",
+    "load_drivers",
     "read_config_file",
     "write_config_file",
 ]
@@ -43,7 +43,7 @@ def write_config_file(path: Path, config: Config):
         )
 
 
-def load_io(config_dir: Path | None = None) -> list[CarlosDriver]:
+def load_drivers(config_dir: Path | None = None) -> list[CarlosDriver]:
     """Reads the configuration from the default location."""
     config_dir = config_dir or Path.cwd()
 
@@ -52,11 +52,17 @@ def load_io(config_dir: Path | None = None) -> list[CarlosDriver]:
 
     factory = DriverFactory()
 
-    ios = [factory.build(config) for config in raw_config.get("io", [])]
+    try:
+        driver_configs = [factory.build(config) for config in raw_config["drivers"]]
+    except KeyError:  # pragma: no cover
+        raise KeyError(
+            f"The configuration file {config_dir / CONFIG_FILE_NAME} must contain "
+            f"a 'drivers' key."
+        )
 
     # We always want to have some device metrics
-    if not any(isinstance(io, DeviceMetrics) for io in ios):
-        ios.insert(
+    if not any(isinstance(driver, DeviceMetrics) for driver in driver_configs):
+        driver_configs.insert(
             0,
             factory.build(
                 DriverConfig(
@@ -66,6 +72,9 @@ def load_io(config_dir: Path | None = None) -> list[CarlosDriver]:
             ),
         )
 
-    logger.info(f"Loaded {len(ios)} IOs: {', '.join(str(io) for io in ios)}")
+    logger.info(
+        f"Loaded {len(driver_configs)} IOs: "
+        f"{', '.join(str(io) for io in driver_configs)}"
+    )
 
-    return ios
+    return driver_configs

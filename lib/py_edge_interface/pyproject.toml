@@ -14,7 +14,6 @@ pydantic = "^2.6.4"
 
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
-"carlos.edge.device" = {path = "../../lib/py_edge_device"}
 
 [tool.poetry.plugins.pytest11]
 qmulus_core = "carlos.edge.interface.plugin_pytest"
