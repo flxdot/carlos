@@ -3,11 +3,18 @@ from __future__ import print_function, unicode_literals
 from typing import TypeVar
 
 import typer
+from rich.live import Live
+from rich.panel import Panel
+from rich.pretty import Pretty
+from rich.rule import Rule
+from rich.spinner import Spinner
+from rich.traceback import Traceback
+
 from carlos.edge.device.runtime import DriverManager
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 from rich import print, print_json
-from rich.console import Console
+from rich.console import Console, Group
 
 from device.connection import (
     ConnectionSettings,
@@ -64,28 +71,39 @@ def show():
 def test():  # pragma: no cover
     """Tests the io peripherals."""
 
-    exceptions = {}
-    results = {}
-    for driver in DriverManager().setup().drivers:
-        console.print(f"[cyan]Testing {driver} ... [/cyan]", end="")
-        try:
-            result = driver.test()
-            console.print("[green]passed[/green]")
-            if result:
-                results[driver.identifier] = result
-        except Exception as e:
-            console.print("[red]failed[/red]")
-            console.print_exception()
-            exceptions[driver.identifier] = e
+    driver_result_ui = []
+    failed = []
+    passed_cnt = 0
+    with Live(Group(), refresh_per_second=4) as live:
+        for driver in DriverManager().setup().drivers:
+            driver_result_ui.append(
+                Panel(
+                    Spinner(name="aesthetic", text="testing..."),
+                    padding=(1, 2),
+                    title=str(driver),
+                    title_align="left",
+                    subtitle="testing",
+                    subtitle_align="right",
+                )
+            )
+            live.update(Group(*driver_result_ui))
 
-    if results:
-        console.print("\nThe following IO peripherals returned data:")
-        for identifier, result in results.items():
-            console.print(f"{identifier}:")
-            console.print(result)
+            try:
+                result = driver.test()
+                driver_result_ui[-1].renderable = Pretty(result)
+                driver_result_ui[-1].subtitle = "[green]passed[/green]"
+                passed_cnt += 1
+            except Exception as e:
+                failed.append(driver)
+                driver_result_ui[-1].renderable = Traceback.from_exception(
+                    type(e), e, e.__traceback__
+                )
+                driver_result_ui[-1].subtitle = "[red]failed[/red]"
 
-    if exceptions:
-        console.print("\nThe following IO peripherals [red]failed[/red]:")
-        for identifier, exception in exceptions.items():
-            console.print(f"[red]{identifier}[/red]:")
-            console.print(exception)
+        conclusions = []
+        if passed_cnt > 0:
+            conclusions.append(f"[green]{passed_cnt} passed[/green]")
+        if failed:
+            conclusions.append(f"[red]{len(failed)} failed[/red]")
+
+        live.update(Group(*driver_result_ui, Rule(", ".join(conclusions))))
