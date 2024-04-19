@@ -33,7 +33,7 @@ class DriverConfig(BaseModel):
     )
 
     @field_validator("driver_module", mode="after")
-    def _validate_driver(cls, value):
+    def _validate_driver_module(cls, value):
         """Converts a module name to a full module path."""
 
         # check if the given module exists in the current working directory.
@@ -43,7 +43,7 @@ class DriverConfig(BaseModel):
             abs_module = "carlos.edge.device.driver" + "." + value
             try:
                 importlib.import_module(abs_module)
-            except ModuleNotFoundError:  # pragma: no cover
+            except ModuleNotFoundError:
                 raise ValueError(f"The module {value} ({abs_module}) does not exist.")
             value = abs_module
 
@@ -122,7 +122,7 @@ class I2cDriverConfig(DriverConfig, DirectionMixin):
         if not 0x03 <= int(value) <= 0x77:
             raise ValueError("The valid I2C address range is 0x03 to 0x77.")
 
-        return hex(value)
+        return f"0x{value:02x}"
 
     @property
     def address_int(self):

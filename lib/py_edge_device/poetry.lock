@@ -148,7 +148,7 @@ test = ["coverage", "freezegun", "pre-commit", "pytest", "pytest-cov", "pytest-m
 
 [[package]]
 name = "carlos-edge-interface"
-version = "0.1.0"
+version = "0.1.1"
 description = "Shared library to handle the edge communication."
 optional = false
 python-versions = ">=3.11,<3.12"
