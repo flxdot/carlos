@@ -15,12 +15,27 @@ pydantic = "^2.6.4"
 [tool.poetry.group.dev.dependencies]
 "devtools" = {path = "../py_dev_dependencies"}
 
+[tool.poetry.plugins.pytest11]
+qmulus_core = "carlos.edge.interface.plugin_pytest"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.plugins.pytest11]
-qmulus_core = "carlos.edge.interface.plugin_pytest"
+[tool.bumpversion]
+current_version = "0.1.0"
+commit = true
+tag = false
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(\\-(?P<prerelease>[a-z0-9\\.]+))?"
+serialize = [
+	"{major}.{minor}.{patch}-{prerelease}",
+	"{major}.{minor}.{patch}",
+]
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = "version = \"{current_version}\""
+replace = "version = \"{new_version}\""
 
 [tool.isort]
 multi_line_output = 3
