@@ -49,7 +49,7 @@ class DeviceRuntime:  # pragma: no cover
                 kwargs={"communication_handler": communication_handler},
                 trigger=IntervalTrigger(minutes=1),
             )
-            self.io_manager.register_tasks(scheduler=scheduler)
+            self.driver_manager.register_tasks(scheduler=scheduler)
             await scheduler.start_in_background()
 
             while True:
@@ -69,6 +69,7 @@ class DeviceRuntime:  # pragma: no cover
             rotation="50 MB",
             retention=timedelta(days=60),
         )
+        self.driver_manager.setup()
 
 
 class DriverManager:  # pragma: no cover
