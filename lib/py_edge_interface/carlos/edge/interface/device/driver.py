@@ -238,7 +238,7 @@ def validate_device_address_space(drivers: Iterable[CarlosDriver]):
     duplicate_i2c_addresses = [
         i2c.address
         for i2c in i2c_configs
-        if i2c.address in i2c_configs or seen_addresses.add(i2c.address)  # type: ignore[func-returns-value] # noqa: E501
+        if i2c.address in seen_addresses or seen_addresses.add(i2c.address)  # type: ignore[func-returns-value] # noqa: E501
     ]
     if duplicate_i2c_addresses:
         raise ValueError(

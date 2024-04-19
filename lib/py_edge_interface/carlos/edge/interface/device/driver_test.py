@@ -1,4 +1,5 @@
 from contextlib import nullcontext
+from secrets import token_hex
 from typing import Self
 
 import pytest
@@ -11,7 +12,7 @@ from .driver import (
     DriverFactory,
     validate_device_address_space,
 )
-from .driver_config import GpioDriverConfig
+from .driver_config import GpioDriverConfig, I2cDriverConfig
 
 DRIVER_MODULE = __name__
 
@@ -187,6 +188,50 @@ def test_driver_factory():
             ],
             ValueError,
             id="duplicate-identifier-gpio-pin",
+        ),
+        pytest.param(
+            [
+                AnalogInputTest(
+                    I2cDriverConfig(
+                        identifier=token_hex(4),
+                        driver_module=DRIVER_MODULE,
+                        direction="input",
+                        address="0x04",
+                    )
+                ),
+                AnalogInputTest(
+                    GpioDriverConfig(
+                        identifier="test",
+                        pin=2,
+                        direction="input",
+                        driver_module=DRIVER_MODULE,
+                    )
+                ),
+            ],
+            ValueError,
+            id="i2c-pin-used",
+        ),
+        pytest.param(
+            [
+                AnalogInputTest(
+                    I2cDriverConfig(
+                        identifier=token_hex(4),
+                        driver_module=DRIVER_MODULE,
+                        direction="input",
+                        address="0x04",
+                    )
+                ),
+                AnalogInputTest(
+                    I2cDriverConfig(
+                        identifier=token_hex(4),
+                        driver_module=DRIVER_MODULE,
+                        direction="input",
+                        address="0x04",
+                    )
+                ),
+            ],
+            ValueError,
+            id="duplicate-i2c-address",
         ),
     ],
 )
