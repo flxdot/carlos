@@ -1,10 +1,20 @@
+__all__ = ["DHTXX", "DhtConfig", "DHTType"]
+
 from abc import ABC
 from enum import StrEnum
 from time import sleep
+from typing import Literal
 
 from carlos.edge.interface.device import AnalogInput, GpioConfig
+from pydantic import Field
 
 from carlos.edge.device.protocol import GPIO
+
+
+class DhtConfig(GpioConfig):
+    """Configuration for a DHT sensor."""
+
+    direction: Literal["input"] = Field("input")
 
 
 class DHTType(StrEnum):
@@ -134,7 +144,7 @@ class DHTXX(AnalogInput, ABC):
 
         # Reading the DHT sensor is quite unreliable, as the device is not a real-time
         # device. Thus, we just try it a couple of times and fail if it does not work.
-        last_error = None
+        last_error: Exception | None = None
         for i in range(16):
             try:
                 temperature, humidity = self._dht.read()
@@ -145,4 +155,5 @@ class DHTXX(AnalogInput, ABC):
             except RuntimeError as ex:
                 last_error = ex
 
+        assert last_error is not None
         raise last_error
