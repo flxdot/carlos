@@ -178,7 +178,6 @@ jobs:
     -   if: ${{ !cancelled() }}
         name: Generate - backend openapi spec and client code
         run: make api-openapi
-    -   if: ${{ !cancelled() }}
 
 
     - name: Auto - commit pending changes
