@@ -89,8 +89,8 @@ def test():  # pragma: no cover
 
             try:
                 result = driver.test()
-                driver_result_ui[-1].renderable = Pretty(
-                    result or "[green]passed[/green]"
+                driver_result_ui[-1].renderable = (
+                    Pretty(result) if result else "[green]passed[/green]"
                 )
                 driver_result_ui[-1].subtitle = "[green]passed[/green]"
                 passed_cnt += 1
