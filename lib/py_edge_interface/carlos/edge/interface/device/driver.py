@@ -182,16 +182,29 @@ I2C_PINS = [2, 3]
 """The Pin numbers designated for I2C communication."""
 
 
-def validate_device_address_space(ios: Iterable[CarlosDriver]):
+def validate_device_address_space(drivers: Iterable[CarlosDriver]):
     """This function ensures that the configured pins and addresses are unique.
 
-    :param ios: The list of IOs to validate.
+    :param drivers: The list of IOs to validate.
     :raises ValueError: If any of the pins or addresses are configured more than once.
         If the GPIO pins 2 and 3 are when I2C communication is configured.
         If any of the identifiers are configured more than once.
     """
 
-    configs = [io.config for io in ios]
+    # Ensure all identifiers are unique
+    seen_identifiers = set()
+    duplicate_identifiers = [
+        driver.identifier
+        for driver in drivers
+        if driver.identifier in seen_identifiers or seen_identifiers.add(driver.identifier)  # type: ignore[func-returns-value] # noqa: E501
+    ]
+    if duplicate_identifiers:
+        raise ValueError(
+            f"The identifiers {duplicate_identifiers} are configured more than "
+            f"once. Please ensure that each identifier is configured only once."
+        )
+
+    configs = [io.config for io in drivers]
 
     gpio_configs: list[GpioDriverConfig] = [
         io for io in configs if isinstance(io, GpioDriverConfig)
@@ -231,17 +244,4 @@ def validate_device_address_space(ios: Iterable[CarlosDriver]):
         raise ValueError(
             f"The I2C addresses {duplicate_i2c_addresses} are configured more than "
             f"once. Please ensure that each I2C address is configured only once."
-        )
-
-    # Ensure all identifiers are unique
-    seen_identifiers = set()
-    duplicate_identifiers = [
-        io.identifier
-        for io in configs
-        if io.identifier in seen_identifiers or seen_identifiers.add(io.identifier)  # type: ignore[func-returns-value] # noqa: E501
-    ]
-    if duplicate_identifiers:
-        raise ValueError(
-            f"The identifiers {duplicate_identifiers} are configured more than "
-            f"once. Please ensure that each identifier is configured only once."
         )

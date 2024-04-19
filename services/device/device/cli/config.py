@@ -66,7 +66,7 @@ def test():  # pragma: no cover
 
     exceptions = {}
     results = {}
-    for driver in DriverManager().setup().ios:
+    for driver in DriverManager().setup().drivers:
         console.print(f"[cyan]Testing {driver} ... [/cyan]", end="")
         try:
             result = driver.test()

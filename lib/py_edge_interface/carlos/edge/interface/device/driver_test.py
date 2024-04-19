@@ -1,9 +1,16 @@
+from contextlib import nullcontext
 from typing import Self
 
 import pytest
 from pydantic import BaseModel
 
-from .driver import AnalogInput, DigitalOutput, DriverFactory
+from .driver import (
+    AnalogInput,
+    CarlosDriver,
+    DigitalOutput,
+    DriverFactory,
+    validate_device_address_space,
+)
 from .driver_config import GpioDriverConfig
 
 DRIVER_MODULE = __name__
@@ -19,7 +26,7 @@ DIGITAL_OUTPUT_CONFIG = GpioDriverConfig(
     identifier="digital-output-test",
     driver_module=DRIVER_MODULE,
     direction="output",
-    pin=13,
+    pin=14,
 )
 
 
@@ -133,3 +140,66 @@ def test_driver_factory():
     assert isinstance(
         driver.config, GpioDriverConfig
     ), "Config should be an instance of GpioDriverConfig."
+
+
+@pytest.mark.parametrize(
+    "drivers, expected_exception",
+    [
+        pytest.param([AnalogInputTest(ANALOG_INPUT_CONFIG)], None, id="valid-single"),
+        pytest.param(
+            [
+                AnalogInputTest(ANALOG_INPUT_CONFIG),
+                DigitalOutputTest(DIGITAL_OUTPUT_CONFIG),
+            ],
+            None,
+            id="valid-multiple",
+        ),
+        pytest.param(
+            [
+                AnalogInputTest(
+                    GpioDriverConfig(
+                        identifier="test",
+                        pin=2,
+                        direction="input",
+                        driver_module=DRIVER_MODULE,
+                    )
+                )
+            ],
+            None,
+            id="valid-i2c-ping-used",
+        ),
+        pytest.param(
+            [
+                AnalogInputTest(ANALOG_INPUT_CONFIG),
+                AnalogInputTest(ANALOG_INPUT_CONFIG),
+            ],
+            ValueError,
+            id="duplicate-identifier",
+        ),
+        pytest.param(
+            [
+                AnalogInputTest(ANALOG_INPUT_CONFIG),
+                AnalogInputTest(
+                    ANALOG_INPUT_CONFIG.model_copy(
+                        update={"identifier": "new-identifier"}
+                    )
+                ),
+            ],
+            ValueError,
+            id="duplicate-identifier-gpio-pin",
+        ),
+    ],
+)
+def test_validate_device_address_space(
+    drivers: list[CarlosDriver], expected_exception: type[Exception] | None
+):
+    """This method ensures that the validate_device_address_space() works
+    as expected."""
+
+    if expected_exception is not None:
+        context = pytest.raises(expected_exception)
+    else:
+        context = nullcontext()
+
+    with context:
+        validate_device_address_space(drivers)
