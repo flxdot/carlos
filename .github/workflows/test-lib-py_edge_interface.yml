@@ -51,6 +51,10 @@ jobs:
       name: Set up - Checkout lib/py_edge_interface
       with:
         ref: ${{ github.head_ref }}
+    - name: Set up - Set git credentials
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
 
     # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
     # from installing Poetry every time, which can be slow. Note the use of the Poetry version
@@ -103,6 +107,24 @@ jobs:
       run: poetry install --no-interaction --no-root --all-extras
       working-directory: ./lib/py_edge_interface
 
+    - name: Set up - Get changed files
+      if: ${{ !cancelled() }}
+      id: detect-changed-files
+      uses: tj-actions/changed-files@v42
+      with:
+        files_yaml: |
+          pyproject_toml:
+            - lib/py_edge_interface/pyproject.toml
+          poetry_lock:
+            - lib/py_edge_interface/poetry.lock
+          python_files:
+            - lib/py_edge_interface/carlos/**/*.py
+
+    - name: Auto - version bump
+      if: (steps.detect-changed-files.outputs.python_files_any_changed == 'true') && (steps.detect-changed-files.outputs.pyproject_toml_any_changed == 'false') && !cancelled()
+      working-directory: ./lib/py_edge_interface
+      run: "poetry run bump-my-version bump patch --no-tag --message 'Bump lib/py_edge_interface version: {current_version} → {new_version}'"
+
     # installing the repository is required to register any pytest plugins
     # that are defined by the repository
     - name: Set up - Install project
@@ -138,29 +160,14 @@ jobs:
       working-directory: ./lib/py_edge_interface
 
     
-    - uses: actions-js/push@master
-      if: ${{ !cancelled() }}
-      name: Push changes
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.head_ref }}
-        message: "update lib/py_edge_interface"
-        coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
-        coauthor_name: ${{ github.event.pull_request.user.login }}
 
-    - name: Set up - Get changed files for CHANGELOG.md
+    - name: Auto - commit pending changes
       if: ${{ !cancelled() }}
-      id: detect-changed-files
-      uses: tj-actions/changed-files@v42
-      with:
-        files_yaml: |
-          pyproject_toml:
-            - lib/py_edge_interface/pyproject.toml
-          python_files:
-            - lib/py_edge_interface/carlos/**/*.py
-    - name: Test - Version bump
-      # This step will fail if there are python files changed but the version in pyproject.toml is not updated
-      if: (steps.detect-changed-files.outputs.python_files_any_changed == 'true') && (steps.detect-changed-files.outputs.pyproject_toml_any_changed == 'false') && !cancelled()
       run: |
-        echo "No changes in pyproject.toml but there are changes in python files. Please update the version in pyproject.toml if the code changes. Otherwise the automatic update of the carlos device may fail."
-        exit 1
+        git add -A
+        git commit -m "update lib/py_edge_interface" $_EMPTY || exit 0
+    - name: Auto - push changes
+      if: ${{ !cancelled() }}
+      run: |
+        git pull --rebase
+        git push origin HEAD:refs/heads/${{ github.head_ref }} || exit 01

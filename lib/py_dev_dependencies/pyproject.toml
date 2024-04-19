@@ -9,6 +9,8 @@ authors = ["Felix Fanghänel"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+# project management
+bump-my-version = "^0.20.1"
 # formatting
 black = "^24.3.0"
 isort = "^5.13.2"
