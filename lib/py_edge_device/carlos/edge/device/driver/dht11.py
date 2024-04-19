@@ -13,4 +13,4 @@ class DHT11(DHTXX):
         self._dht_type = DHTType.DHT11
 
 
-DriverFactory().register(ptype=__name__, config=DhtConfig, factory=DHT11)
+DriverFactory().register(driver_module=__name__, config=DhtConfig, factory=DHT11)

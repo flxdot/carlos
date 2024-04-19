@@ -51,7 +51,7 @@ class SI1145(AnalogInput):
         }
 
 
-DriverFactory().register(ptype=__name__, config=Si1145Config, factory=SI1145)
+DriverFactory().register(driver_module=__name__, config=Si1145Config, factory=SI1145)
 
 
 class SDL_Pi_SI1145:

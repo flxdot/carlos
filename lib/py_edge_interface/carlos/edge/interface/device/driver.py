@@ -128,15 +128,17 @@ class DriverFactory:
 
     def register(
         self,
-        ptype: str,
+        driver_module: str,
         config: type[DriverConfigTypeVar],
         factory: Callable[[DriverConfigTypeVar], CarlosDriver],
     ):
         """Registers a peripheral with the peripheral registry.
 
-        :param ptype: The peripheral type.
+        :param driver_module: The peripheral type.
         :param config: The peripheral configuration model.
         :param factory: The peripheral factory function.
+        :raises ValueError: If the config is not a subclass of DriverConfig.
+        :raises RuntimeError: If the peripheral is already registered.
         """
 
         if not issubclass(config, DriverConfig):
@@ -145,10 +147,10 @@ class DriverFactory:
                 "Please ensure that the config class is a subclass of DriverConfig."
             )
 
-        if ptype in self._driver_index:
-            raise RuntimeError(f"The peripheral {ptype} is already registered.")
+        if driver_module in self._driver_index:
+            raise RuntimeError(f"The peripheral {driver_module} is already registered.")
 
-        self._driver_index[ptype] = DriverDefinition(config, factory)
+        self._driver_index[driver_module] = DriverDefinition(config, factory)
 
     def build(self, config: dict[str, Any]) -> CarlosDriver:
         """Builds a IO object from its configuration.
@@ -157,6 +159,7 @@ class DriverFactory:
             DriverConfig model. But we require the full config as the ios may require
             additional parameters.
         :returns: The IO object.
+        :raises RuntimeError: If the driver is not registered.
         """
 
         io_config = DriverConfig.model_validate(config)

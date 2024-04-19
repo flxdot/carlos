@@ -25,4 +25,4 @@ class Relay(DigitalOutput):
         GPIO.output(self.config.pin, value)
 
 
-DriverFactory().register(ptype=__name__, config=RelayConfig, factory=Relay)
+DriverFactory().register(driver_module=__name__, config=RelayConfig, factory=Relay)

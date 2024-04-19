@@ -32,4 +32,5 @@ class DeviceMetrics(AnalogInput):
             return 0.0
 
 
-DriverFactory().register(ptype=__name__, config=DriverConfig, factory=DeviceMetrics)
+DriverFactory().register(driver_module=__name__, config=DriverConfig,
+                         factory=DeviceMetrics)

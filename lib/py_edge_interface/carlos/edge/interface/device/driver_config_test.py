@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 from .driver_config import DriverConfig, I2cDriverConfig
 
-VALID_DRIVER_MODULE = __package__
+VALID_DRIVER_MODULE = __name__
 """For a driver module to be valid, it must be importable. Everything else
 is checked else where."""
 

@@ -1,17 +1,23 @@
 from typing import Self
 
 import pytest
+from pydantic import BaseModel
 
-from .driver import AnalogInput, DigitalOutput
+from .driver import AnalogInput, DigitalOutput, DriverFactory
 from .driver_config import GpioDriverConfig
+
+DRIVER_MODULE = __name__
 
 ANALOG_INPUT_VALUE = {"value": 0.0}
 ANALOG_INPUT_CONFIG = GpioDriverConfig(
-    identifier="analog-input-test", driver_module=__package__, direction="input", pin=13
+    identifier="analog-input-test",
+    driver_module=DRIVER_MODULE,
+    direction="input",
+    pin=13,
 )
 DIGITAL_OUTPUT_CONFIG = GpioDriverConfig(
     identifier="digital-output-test",
-    driver_module=__package__,
+    driver_module=DRIVER_MODULE,
     direction="output",
     pin=13,
 )
@@ -86,3 +92,44 @@ def test_digital_output():
     # using input config for output should raise an error
     with pytest.raises(ValueError):
         DigitalOutputTest(config=ANALOG_INPUT_CONFIG)
+
+
+def test_driver_factory():
+    """This test tests the driver factory function."""
+
+    factory = DriverFactory()
+
+    raw_analog_input_config = ANALOG_INPUT_CONFIG.model_dump(mode="json")
+
+    # Sofar the AnalogInputTest class was never registered, thus the build method
+    # should raise a RuntimeError.
+    with pytest.raises(RuntimeError):
+        factory.build(raw_analog_input_config)
+
+    factory.register(
+        driver_module=DRIVER_MODULE, config=GpioDriverConfig, factory=AnalogInputTest
+    )
+
+    # Trying to register a driver with the same driver_module should raise a RuntimeError.
+    with pytest.raises(RuntimeError):
+        factory.register(
+            driver_module=DRIVER_MODULE,
+            config=GpioDriverConfig,
+            factory=AnalogInputTest,
+        )
+
+    # Passing a non DriverConfig type as config should raise a ValueError.
+    with pytest.raises(ValueError):
+        factory.register(
+            driver_module=DRIVER_MODULE + ".test",
+            config=BaseModel,
+            factory=DigitalOutputTest,
+        )
+
+    driver = factory.build(raw_analog_input_config)
+    assert isinstance(
+        driver, AnalogInputTest
+    ), "Driver should be an instance of AnalogInputTest."
+    assert isinstance(
+        driver.config, GpioDriverConfig
+    ), "Config should be an instance of GpioDriverConfig."

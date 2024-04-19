@@ -13,4 +13,4 @@ class DHT22(DHTXX):
         self._dht_type = DHTType.DHT22
 
 
-DriverFactory().register(ptype=__name__, config=DhtConfig, factory=DHT22)
+DriverFactory().register(driver_module=__name__, config=DhtConfig, factory=DHT22)
