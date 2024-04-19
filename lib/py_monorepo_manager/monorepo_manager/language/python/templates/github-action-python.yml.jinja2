@@ -82,7 +82,7 @@ jobs:
       run: poetry install --no-interaction --all-extras
       working-directory: ./{{ project.path_from_root }}
 
-    {% if project.custom_ci_steps.post_install_steps %}{{ project.custom_ci_steps.post_install_steps | to_nice_yaml | indent(6) }}{% endif %}
+    {% if project.custom_ci_steps.post_install_steps %}{{ project.custom_ci_steps.post_install_steps | to_nice_yaml | indent(4) }}{% endif %}
 
     - name: Auto - format
       run: make format
@@ -96,7 +96,7 @@ jobs:
       working-directory: ./{{ project.path_from_root }}
 
     {%- endif %}
-    {% if project.custom_ci_steps.post_lint_steps %}{{ project.custom_ci_steps.post_lint_steps | to_nice_yaml | indent(6) }}{% endif %}
+    {% if project.custom_ci_steps.post_lint_steps %}{{ project.custom_ci_steps.post_lint_steps | to_nice_yaml | indent(4) }}{% endif %}
 
     {%- if project.mypy.enabled %}
 
@@ -106,7 +106,7 @@ jobs:
       working-directory: ./{{ project.path_from_root }}
 
     {%- endif %}
-    {% if project.custom_ci_steps.post_type_checking_steps %}{{ project.custom_ci_steps.post_type_checking_steps | to_nice_yaml | indent(6) }}{% endif %}
+    {% if project.custom_ci_steps.post_type_checking_steps %}{{ project.custom_ci_steps.post_type_checking_steps | to_nice_yaml | indent(4) }}{% endif %}
 
     - name: Test - pytest
       if: {% raw %}${{ !cancelled() }}{% endraw %}
@@ -121,7 +121,7 @@ jobs:
       working-directory: ./{{ project.path_from_root }}
     {%- endif %}
 
-    {% if project.custom_ci_steps.post_test_steps %}{{ project.custom_ci_steps.post_test_steps | to_nice_yaml | indent(6) }}{% endif %}
+    {% if project.custom_ci_steps.post_test_steps %}{{ project.custom_ci_steps.post_test_steps | to_nice_yaml | indent(4) }}{% endif %}
 
     {%- if project.deptry.enabled %}
 

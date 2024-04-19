@@ -159,26 +159,26 @@ jobs:
       working-directory: ./services/api
 
     -   if: ${{ !cancelled() }}
-          name: Set up - Install node
-          uses: actions/setup-node@v4
-          with:
-              node-version: 18
-      -   if: ${{ !cancelled() }}
-          name: Set up - Install yarn
-          run: corepack enable && yarn set version classic
-      -   if: ${{ !cancelled() }}
-          name: Set up - Cache dependencies
-          uses: actions/cache@v4
-          with:
-              key: backend-codegen-lock-${{ hashFiles('./yarn.lock') }}
-              path: ./**/node_modules/*
-      -   if: ${{ !cancelled() }}
-          name: Set up - Install codegen dependencies
-          run: yarn install --immutable
-      -   if: ${{ !cancelled() }}
-          name: Generate - backend openapi spec and client code
-          run: make api-openapi
-      -   if: ${{ !cancelled() }}
+        name: Set up - Install node
+        uses: actions/setup-node@v4
+        with:
+            node-version: 18
+    -   if: ${{ !cancelled() }}
+        name: Set up - Install yarn
+        run: corepack enable && yarn set version classic
+    -   if: ${{ !cancelled() }}
+        name: Set up - Cache dependencies
+        uses: actions/cache@v4
+        with:
+            key: backend-codegen-lock-${{ hashFiles('./yarn.lock') }}
+            path: ./**/node_modules/*
+    -   if: ${{ !cancelled() }}
+        name: Set up - Install codegen dependencies
+        run: yarn install --immutable
+    -   if: ${{ !cancelled() }}
+        name: Generate - backend openapi spec and client code
+        run: make api-openapi
+    -   if: ${{ !cancelled() }}
 
 
     - name: Auto - commit pending changes
