@@ -13,5 +13,6 @@
     <orderEntry type="module" module-name="py_edge_server" />
     <orderEntry type="module" module-name="device" />
     <orderEntry type="module" module-name="py_carlos_database" />
+    <orderEntry type="module" module-name="py_carlos_database" />
   </component>
 </module>
