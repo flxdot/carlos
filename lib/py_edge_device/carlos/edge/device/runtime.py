@@ -29,7 +29,7 @@ class DeviceRuntime:  # pragma: no cover
         self.device_id = device_id
         self.protocol = protocol
 
-        self.io_manager = IoManager()
+        self.driver_manager = DriverManager()
 
     async def run(self):
         """Runs the device runtime."""
@@ -71,7 +71,7 @@ class DeviceRuntime:  # pragma: no cover
         )
 
 
-class IoManager:  # pragma: no cover
+class DriverManager:  # pragma: no cover
 
     def __init__(self):
 

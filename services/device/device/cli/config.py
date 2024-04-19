@@ -3,7 +3,7 @@ from __future__ import print_function, unicode_literals
 from typing import TypeVar
 
 import typer
-from carlos.edge.device.runtime import IoManager
+from carlos.edge.device.runtime import DriverManager
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 from rich import print, print_json
@@ -66,17 +66,17 @@ def test():  # pragma: no cover
 
     exceptions = {}
     results = {}
-    for io in IoManager().setup().ios:
-        console.print(f"[cyan]Testing {io} ... [/cyan]", end="")
+    for driver in DriverManager().setup().ios:
+        console.print(f"[cyan]Testing {driver} ... [/cyan]", end="")
         try:
-            result = io.test()
+            result = driver.test()
             console.print("[green]passed[/green]")
             if result:
-                results[io.identifier] = result
+                results[driver.identifier] = result
         except Exception as e:
             console.print("[red]failed[/red]")
             console.print_exception()
-            exceptions[io.identifier] = e
+            exceptions[driver.identifier] = e
 
     if results:
         console.print("\nThe following IO peripherals returned data:")
