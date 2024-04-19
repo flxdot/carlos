@@ -1,51 +1,30 @@
 io:
   - identifier: temp-humi-intern
     driver: dht11
-    direction: input
-    protocol: gpio
     pin: 4
   - identifier: uv-light
     driver: si1145
-    direction: input
-    protocol: i2c
-    address: 0x60
   - identifier: pump
     driver: relay
-    direction: output
-    protocol: gpio
     pin: 20
   - identifier: valve-1
     driver: relay
-    direction: output
-    protocol: gpio
     pin: 21
   - identifier: valve-2
     driver: relay
-    direction: output
-    protocol: gpio
     pin: 22
   - identifier: valve-3
     driver: relay
-    direction: output
-    protocol: gpio
     pin: 23
   - identifier: valve-4
     driver: carlos.edge.device.io.relay
-    direction: output
-    protocol: gpio
     pin: 24
   - identifier: relay-6
     driver: carlos.edge.device.io.relay
-    direction: output
-    protocol: gpio
     pin: 25
   - identifier: relay-7
     driver: carlos.edge.device.io.relay
-    direction: output
-    protocol: gpio
     pin: 26
   - identifier: relay-8
     driver: carlos.edge.device.io.relay
-    direction: output
-    protocol: gpio
     pin: 27
