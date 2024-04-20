@@ -3,9 +3,8 @@ __all__ = ["DHTXX", "DhtConfig", "DHTType"]
 from abc import ABC
 from enum import StrEnum
 from time import sleep
-from typing import Literal
 
-from carlos.edge.interface.device import AnalogInput, GpioDriverConfig
+from carlos.edge.interface.device import AnalogInput, DriverDirection, GpioDriverConfig
 from pydantic import Field
 
 from carlos.edge.device.protocol import GPIO
@@ -14,7 +13,7 @@ from carlos.edge.device.protocol import GPIO
 class DhtConfig(GpioDriverConfig):
     """Configuration for a DHT sensor."""
 
-    direction: Literal["input"] = Field("input")
+    direction: DriverDirection = Field(DriverDirection.INPUT)
 
 
 class DHTType(StrEnum):

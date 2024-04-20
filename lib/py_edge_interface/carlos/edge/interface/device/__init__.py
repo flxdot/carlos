@@ -5,6 +5,7 @@ __all__ = [
     "DigitalInput",
     "DigitalOutput",
     "DriverConfig",
+    "DriverDirection",
     "DriverFactory",
     "GpioDriverConfig",
     "I2cDriverConfig",
@@ -22,4 +23,9 @@ from .driver import (
     InputDriver,
     OutputDriver,
 )
-from .driver_config import DriverConfig, GpioDriverConfig, I2cDriverConfig
+from .driver_config import (
+    DriverConfig,
+    DriverDirection,
+    GpioDriverConfig,
+    I2cDriverConfig,
+)

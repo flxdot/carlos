@@ -20,6 +20,7 @@ from typing import Any, Callable, Generic, Iterable, Self, TypeVar
 from .driver_config import (
     DirectionMixin,
     DriverConfig,
+    DriverDirection,
     GpioDriverConfig,
     I2cDriverConfig,
 )
@@ -60,7 +61,10 @@ class InputDriver(CarlosDriverBase, ABC, Generic[V_]):
     def __init__(self, config: DriverConfigTypeVar):
 
         if isinstance(config, DirectionMixin):
-            if config.direction != "input":
+            if config.direction not in (
+                DriverDirection.INPUT,
+                DriverDirection.BIDIRECTIONAL,
+            ):
                 raise ValueError(
                     "Received a non-input configuration for an analog input."
                 )
@@ -94,7 +98,10 @@ class OutputDriver(CarlosDriverBase, ABC, Generic[V_]):
     def __init__(self, config: DriverConfigTypeVar):
 
         if isinstance(config, DirectionMixin):
-            if config.direction != "output":
+            if config.direction not in (
+                DriverDirection.OUTPUT,
+                DriverDirection.BIDIRECTIONAL,
+            ):
                 raise ValueError(
                     "Received a non-output configuration for a digital output."
                 )
