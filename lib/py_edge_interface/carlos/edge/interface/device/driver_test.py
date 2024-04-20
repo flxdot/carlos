@@ -41,7 +41,7 @@ class AnalogInputTest(AnalogInput):
 
 
 def test_carlos_driver_base():
-    """This test test the methods of the CarlosDriverBase class via the
+    """This test tests the methods of the CarlosDriverBase class via the
     AnalogInputTest class."""
 
     driver = AnalogInputTest(config=ANALOG_INPUT_CONFIG)
@@ -111,15 +111,15 @@ async def test_async_digital_output():
     DigitalOutputTest class."""
     digital_output = DigitalOutputTest(config=DIGITAL_OUTPUT_CONFIG).setup()
 
-    assert await digital_output.read_async() is None, "Initial state should be None."
+    assert digital_output.pytest_state is None, "Initial state should be None."
 
     await digital_output.set_async(True)
 
-    assert await digital_output.read_async() is True, "State should be set to True."
+    assert digital_output.pytest_state is True, "State should be set to True."
 
     await digital_output.set_async(False)
 
-    assert await digital_output.read_async() is False, "State should be set to False."
+    assert digital_output.pytest_state is False, "State should be set to False."
 
 
 def test_driver_factory():
@@ -138,7 +138,8 @@ def test_driver_factory():
         driver_module=DRIVER_MODULE, config=GpioDriverConfig, factory=AnalogInputTest
     )
 
-    # Trying to register a driver with the same driver_module should raise a RuntimeError.
+    # Trying to register a driver with the same driver_module should raise a
+    # RuntimeError.
     with pytest.raises(RuntimeError):
         factory.register(
             driver_module=DRIVER_MODULE,
