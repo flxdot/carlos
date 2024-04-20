@@ -1,11 +1,13 @@
 __all__ = [
     "DirectionMixin",
     "DriverConfig",
+    "DriverDirection",
     "GpioDriverConfig",
     "I2cDriverConfig",
 ]
 
 import importlib
+from enum import StrEnum
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
@@ -51,10 +53,16 @@ class DriverConfig(BaseModel):
         return value
 
 
+class DriverDirection(StrEnum):
+    """Enum for the direction of the IO."""
+
+    INPUT = "input"
+    OUTPUT = "output"
+    BIDIRECTIONAL = "bidirectional"
+
+
 class DirectionMixin(BaseModel):
-    direction: Literal["input", "output"] = Field(
-        ..., description="The direction of the IO."
-    )
+    direction: DriverDirection = Field(..., description="The direction of the IO.")
 
 
 class GpioDriverConfig(DriverConfig, DirectionMixin):

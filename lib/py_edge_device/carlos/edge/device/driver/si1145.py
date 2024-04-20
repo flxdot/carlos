@@ -1,7 +1,12 @@
 import time
 from typing import Literal
 
-from carlos.edge.interface.device import AnalogInput, DriverFactory, I2cDriverConfig
+from carlos.edge.interface.device import (
+    AnalogInput,
+    DriverDirection,
+    DriverFactory,
+    I2cDriverConfig,
+)
 from pydantic import Field
 
 from carlos.edge.device.protocol import I2C
@@ -9,7 +14,7 @@ from carlos.edge.device.protocol import I2C
 
 class Si1145Config(I2cDriverConfig):
 
-    direction: Literal["input"] = Field("input")
+    direction: DriverDirection = Field(DriverDirection.INPUT)
 
     address: Literal["0x60"] = Field("0x60")
 

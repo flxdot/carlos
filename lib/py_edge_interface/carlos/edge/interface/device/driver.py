@@ -1,20 +1,26 @@
 __all__ = [
     "AnalogInput",
-    "DigitalOutput",
+    "AnalogOutput",
     "CarlosDriver",
+    "DigitalInput",
+    "DigitalOutput",
     "DriverFactory",
+    "InputDriver",
+    "OutputDriver",
     "validate_device_address_space",
 ]
 import asyncio
 import concurrent.futures
 from abc import ABC, abstractmethod
 from collections import namedtuple
+from functools import partial
 from time import sleep
 from typing import Any, Callable, Generic, Iterable, Self, TypeVar
 
 from .driver_config import (
     DirectionMixin,
     DriverConfig,
+    DriverDirection,
     GpioDriverConfig,
     I2cDriverConfig,
 )
@@ -47,31 +53,36 @@ class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
         pass
 
 
-class AnalogInput(CarlosDriverBase, ABC):
-    """Common base class for all analog input peripherals."""
+V_ = TypeVar("V_", float, bool)
+
+
+class InputDriver(CarlosDriverBase, ABC, Generic[V_]):
 
     def __init__(self, config: DriverConfigTypeVar):
 
         if isinstance(config, DirectionMixin):
-            if config.direction != "input":
+            if config.direction not in (
+                DriverDirection.INPUT,
+                DriverDirection.BIDIRECTIONAL,
+            ):
                 raise ValueError(
-                    "Recieved a non-input configuration for an analog input."
+                    "Received a non-input configuration for an analog input."
                 )
 
         super().__init__(config)
 
     @abstractmethod
-    def read(self) -> dict[str, float]:
+    def read(self) -> dict[str, V_]:
         """Reads the value of the analog input. The return value is a dictionary
         containing the value of the analog input."""
         pass
 
-    def test(self):
+    def test(self) -> dict[str, V_]:
         """Tests the analog input by reading the value."""
 
         return self.read()
 
-    async def read_async(self) -> dict[str, float]:
+    async def read_async(self) -> dict[str, V_]:
         """Reads the value of the analog input asynchronously. The return value is a
         dictionary containing the value of the analog input."""
 
@@ -81,26 +92,42 @@ class AnalogInput(CarlosDriverBase, ABC):
             return await loop.run_in_executor(executor=pool, func=self.read)
 
 
-class DigitalOutput(CarlosDriverBase, ABC):
-    """Common base class for all digital output peripherals."""
+class OutputDriver(CarlosDriverBase, ABC, Generic[V_]):
+    """Defines the interface for each output driver."""
 
     def __init__(self, config: DriverConfigTypeVar):
 
         if isinstance(config, DirectionMixin):
-            if config.direction != "output":
+            if config.direction not in (
+                DriverDirection.OUTPUT,
+                DriverDirection.BIDIRECTIONAL,
+            ):
                 raise ValueError(
-                    "Recieved a non-output configuration for a digital output."
+                    "Received a non-output configuration for a digital output."
                 )
 
         super().__init__(config)
 
     @abstractmethod
-    def set(self, value: bool):
-        pass
+    def set(self, value: V_):
+        """Sets the value of the digital output. The value should be set immediately."""
+        raise NotImplementedError
 
-    def test(self):
-        """Tests the digital output by setting the value to False, then True for 1 second,
-        and then back to False."""
+    async def set_async(self, value: V_):
+        """Sets the value of the digital output asynchronously. The value should be set
+        immediately."""
+
+        loop = asyncio.get_running_loop()
+
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            return await loop.run_in_executor(
+                executor=pool, func=partial(self.set, value=value)
+            )
+
+    def test(self):  # pragma: no cover
+        """Tests the digital output by setting the value to False, then True for
+        1 second, and then back to False.
+        """
 
         self.set(False)
         self.set(True)
@@ -108,7 +135,23 @@ class DigitalOutput(CarlosDriverBase, ABC):
         self.set(False)
 
 
-CarlosDriver = AnalogInput | DigitalOutput
+class AnalogInput(InputDriver[float], ABC):
+    """Common base class for all analog input peripherals."""
+
+
+class AnalogOutput(OutputDriver[float], ABC):
+    """Common base class for all analog output peripherals."""
+
+
+class DigitalInput(InputDriver[bool], ABC):
+    """Common base class for all digital input peripherals."""
+
+
+class DigitalOutput(OutputDriver[bool], ABC):
+    """Common base class for all digital output peripherals."""
+
+
+CarlosDriver = AnalogInput | AnalogOutput | DigitalInput | DigitalOutput
 
 DriverDefinition = namedtuple("DriverDefinition", ["config", "factory"])
 
