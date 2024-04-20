@@ -81,25 +81,45 @@ class DigitalOutputTest(DigitalOutput):
         self.pytest_state = None
         return self
 
+    def read(self) -> bool:
+        return self.pytest_state
+
     def set(self, value: bool):
         self.pytest_state = value
 
 
 def test_digital_output():
-    """This test tests the DigitalOutput Interface bia the DigitalOutputTest class."""
+    """This test tests the DigitalOutput Interface via the DigitalOutputTest class."""
     digital_output = DigitalOutputTest(config=DIGITAL_OUTPUT_CONFIG).setup()
 
-    assert digital_output.pytest_state is None, "Initial state should be None."
+    assert digital_output.read() is None, "Initial state should be None."
 
     digital_output.test()
 
     assert (
-        digital_output.pytest_state is not None
+        digital_output.read() is not None
     ), "State should be set to a value after running the test."
 
     # using input config for output should raise an error
     with pytest.raises(ValueError):
         DigitalOutputTest(config=ANALOG_INPUT_CONFIG)
+
+
+@pytest.mark.asyncio
+async def test_async_digital_output():
+    """This test tests the async DigitalOutput Interface bia the
+    DigitalOutputTest class."""
+    digital_output = DigitalOutputTest(config=DIGITAL_OUTPUT_CONFIG).setup()
+
+    assert await digital_output.read_async() is None, "Initial state should be None."
+
+    await digital_output.set_async(True)
+
+    assert await digital_output.read_async() is True, "State should be set to True."
+
+    await digital_output.set_async(False)
+
+    assert await digital_output.read_async() is False, "State should be set to False."
 
 
 def test_driver_factory():

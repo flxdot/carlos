@@ -9,6 +9,7 @@ import asyncio
 import concurrent.futures
 from abc import ABC, abstractmethod
 from collections import namedtuple
+from functools import partial
 from time import sleep
 from typing import Any, Callable, Generic, Iterable, Self, TypeVar
 
@@ -89,23 +90,66 @@ class DigitalOutput(CarlosDriverBase, ABC):
         if isinstance(config, DirectionMixin):
             if config.direction != "output":
                 raise ValueError(
-                    "Recieved a non-output configuration for a digital output."
+                    "Received a non-output configuration for a digital output."
                 )
 
         super().__init__(config)
 
     @abstractmethod
-    def set(self, value: bool):
+    def read(self) -> bool:
+        """Read the current value of the digital output."""
         pass
 
+    async def read_async(self) -> bool:
+        """Reads the value of the analog input asynchronously. The return value is a
+        dictionary containing the value of the analog input."""
+
+        loop = asyncio.get_running_loop()
+
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            return await loop.run_in_executor(executor=pool, func=self.read)
+
+    @abstractmethod
+    def set(self, value: bool):
+        """Sets the value of the digital output. The value should be set immediately."""
+        pass
+
+    async def set_async(self, value: bool):
+        """Sets the value of the digital output asynchronously. The value should be set
+        immediately."""
+
+        loop = asyncio.get_running_loop()
+
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            return await loop.run_in_executor(
+                executor=pool, func=partial(self.set, value=value)
+            )
+
     def test(self):
-        """Tests the digital output by setting the value to False, then True for 1 second,
-        and then back to False."""
+        """Tests the digital output by setting the value to False, then True for
+        1 second, and then back to False.
+
+        :raises RuntimeError: If the digital output is not in sync with the set value.
+        """
 
         self.set(False)
+        sleep(0.01)
+        if self.read() is not False:
+            raise RuntimeError(
+                "The digital output should be False."
+            )  # pragma: no cover
+
         self.set(True)
         sleep(1)
+        if self.read() is not True:
+            raise RuntimeError("The digital output should be True.")  # pragma: no cover
+
         self.set(False)
+        sleep(0.01)
+        if self.read() is not False:
+            raise RuntimeError(
+                "The digital output should be False."
+            )  # pragma: no cover
 
 
 CarlosDriver = AnalogInput | DigitalOutput
