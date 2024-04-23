@@ -4,6 +4,9 @@ __all__ = [
     "DeviceWebsocketClient",
 ]
 
+from collections import namedtuple
+from datetime import datetime, timedelta
+
 import websockets
 from carlos.edge.device.retry import BackOff
 from carlos.edge.interface import CarlosMessage, EdgeProtocol
@@ -12,6 +15,8 @@ from httpx import AsyncClient
 from loguru import logger
 
 from .connection import ConnectionSettings
+
+TokenStore: tuple[str, datetime] = namedtuple("TokenStore", ["token", "valid_until"])
 
 
 # can only be tested in integration tests
@@ -25,6 +30,11 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         self._settings = settings
 
         self._connection: websockets.WebSocketClientProtocol | None = None
+
+        # todo: store token in a local database to prevent unnecessary requests
+        #  background: Auth0 grants a token for 24 hours but only 1000 tokens per month
+        #  and the wifi hotspot creates a lot of new connection over the course of a day
+        self._api_token_store: TokenStore | None = None
 
     @property
     def is_connected(self) -> bool:
@@ -89,6 +99,12 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         :raises ConnectionError: If the token could not be fetched.
         """
 
+        if (
+            self._api_token_store is not None
+            and self._api_token_store.valid_until > datetime.now() - timedelta(seconds=10)
+        ):
+            return self._api_token_store.token
+
         auth0_response = await client.post(
             f"https://{self._settings.auth0.domain}/oauth/token",
             json={
@@ -100,7 +116,14 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         )
         if not auth0_response.is_success:
             raise ConnectionError("Failed to authenticate with Auth0.")
-        return auth0_response.json()["access_token"]
+
+        response_data = auth0_response.json()
+        self._api_token_store = TokenStore(
+            token=response_data["access_token"],
+            valid_until=datetime.now() + timedelta(seconds=response_data["expires_in"]),
+        )
+
+        return self._api_token_store.token
 
     async def disconnect(self):
         """Called when the connection is disconnected."""
