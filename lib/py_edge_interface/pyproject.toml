@@ -13,7 +13,7 @@ python = ">=3.11,<3.12"
 pydantic = "^2.6.4"
 
 [tool.poetry.group.dev.dependencies]
-"devtools" = {path = "../py_dev_dependencies"}
+"devtools" = {path = "../py_dev_dependencies", develop = true}
 
 [tool.poetry.plugins.pytest11]
 qmulus_core = "carlos.edge.interface.plugin_pytest"

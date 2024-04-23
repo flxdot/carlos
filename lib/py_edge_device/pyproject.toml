@@ -19,9 +19,13 @@ pyyaml = "^6.0.1"
 psutil = "^5.9.8"
 rpi-gpio = {version = "^0.7.1", markers = "platform_machine == 'armv7l' or platform_machine == 'aarch64'"}
 smbus2 = "^0.4.3"
+aiosqlite = "^0.20.0"
+alembic = "^1.13.1"
+sqlalchemy = "^2.0.29"
 
 [tool.poetry.group.dev.dependencies]
-"devtools" = {path = "../py_dev_dependencies"}
+"devtools" = {path = "../py_dev_dependencies", develop = true}
+"carlos.edge.interface" = {path = "../py_edge_interface", develop = true}
 types-pyyaml = "^6.0.12.20240311"
 types-psutil = "^5.9.5.20240316"
 
@@ -45,6 +49,9 @@ filename = "pyproject.toml"
 search = "version = \"{current_version}\""
 replace = "version = \"{new_version}\""
 
+
+[tool.pytest.ini_options]
+asyncio_mode = 'auto'
 
 [tool.isort]
 multi_line_output = 3
