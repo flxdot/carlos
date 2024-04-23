@@ -34,9 +34,6 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
 
         self._connection: websockets.WebSocketClientProtocol | None = None
 
-        # todo: store token in a local database to prevent unnecessary requests
-        #  background: Auth0 grants a token for 24 hours but only 1000 tokens per month
-        #  and the wifi hotspot creates a lot of new connection over the course of a day
         self._api_token_store: ApiToken | None = None
 
     @property
