@@ -27,7 +27,11 @@ asyncpg = "^0.29.0"
 loguru = "^0.7.2"
 
 [tool.poetry.group.dev.dependencies]
-"devtools" = {path = "../../lib/py_dev_dependencies"}
+"devtools" = {path = "../../lib/py_dev_dependencies", develop = true}
+"carlos.database" = {path = "../../lib/py_carlos_database", develop = true}
+"carlos.edge.interface" = {path = "../../lib/py_edge_interface", develop = true}
+"carlos.edge.device" = {path = "../../lib/py_edge_device", develop = true}
+"carlos.edge.server" = {path = "../../lib/py_edge_server", develop = true}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

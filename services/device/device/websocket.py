@@ -4,8 +4,16 @@ __all__ = [
     "DeviceWebsocketClient",
 ]
 
+from datetime import datetime, timedelta
+
 import websockets
 from carlos.edge.device.retry import BackOff
+from carlos.edge.device.storage.api_token import (
+    ApiToken,
+    read_api_token,
+    write_api_token,
+)
+from carlos.edge.device.storage.connection import get_storage_engine
 from carlos.edge.interface import CarlosMessage, EdgeProtocol
 from carlos.edge.interface.protocol import EdgeConnectionDisconnected
 from httpx import AsyncClient
@@ -25,6 +33,8 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         self._settings = settings
 
         self._connection: websockets.WebSocketClientProtocol | None = None
+
+        self._api_token_store: ApiToken | None = None
 
     @property
     def is_connected(self) -> bool:
@@ -89,18 +99,36 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         :raises ConnectionError: If the token could not be fetched.
         """
 
-        auth0_response = await client.post(
-            f"https://{self._settings.auth0.domain}/oauth/token",
-            json={
-                "audience": self._settings.auth0.audience,
-                "client_id": self._settings.auth0.client_id,
-                "client_secret": self._settings.auth0.client_secret,
-                "grant_type": "client_credentials",
-            },
-        )
-        if not auth0_response.is_success:
-            raise ConnectionError("Failed to authenticate with Auth0.")
-        return auth0_response.json()["access_token"]
+        with get_storage_engine().connect() as connection:
+            self._api_token_store = read_api_token(connection=connection)
+
+            if (self._api_token_store or None) and self._api_token_store.is_valid:
+                return self._api_token_store.token
+
+            auth0_response = await client.post(
+                f"https://{self._settings.auth0.domain}/oauth/token",
+                json={
+                    "audience": self._settings.auth0.audience,
+                    "client_id": self._settings.auth0.client_id,
+                    "client_secret": self._settings.auth0.client_secret,
+                    "grant_type": "client_credentials",
+                },
+            )
+            if not auth0_response.is_success:
+                raise ConnectionError("Failed to authenticate with Auth0.")
+
+            response_data = auth0_response.json()
+
+            self._api_token_store = write_api_token(
+                connection=connection,
+                token=ApiToken(
+                    token=response_data["access_token"],
+                    valid_until_utc=datetime.utcnow()
+                    + timedelta(seconds=response_data["expires_in"]),
+                ),
+            )
+
+        return self._api_token_store.token
 
     async def disconnect(self):
         """Called when the connection is disconnected."""
