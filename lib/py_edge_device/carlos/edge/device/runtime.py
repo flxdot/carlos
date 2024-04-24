@@ -59,7 +59,12 @@ class DeviceRuntime:  # pragma: no cover
     def _handle_signal(self, signum: int, frame: FrameType | None):
         """Tries to gracefully stop the device runtime."""
 
-        asyncio.run(self.stop())
+        logger.info(f"Received signal {signum}. Stopping the device runtime.")
+
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.stop())
+
+        logger.info("Device runtime stopped.")
 
     def _prepare_runtime(self):
         """Prepares the device runtime."""
