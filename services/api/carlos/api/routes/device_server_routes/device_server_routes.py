@@ -23,9 +23,9 @@ from starlette.responses import PlainTextResponse
 
 from carlos.api.depends.authentication import verify_token as auth_verify_token
 from carlos.api.depends.context import request_context
+from carlos.api.depends.database import carlos_db_connection
 from carlos.api.routes.devices_routes import DEVICE_ID_PATH
 
-from ...depends.database import carlos_db_connection
 from .protocol import WebsocketProtocol
 from .state import DEVICE_CONNECTION_MANAGER
 

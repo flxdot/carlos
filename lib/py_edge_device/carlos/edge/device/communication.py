@@ -4,6 +4,7 @@ from carlos.edge.interface import (
     CarlosMessage,
     DeviceId,
     EdgeCommunicationHandler,
+    EdgeConnectionDisconnected,
     EdgeProtocol,
     EdgeVersionPayload,
     MessageType,
@@ -31,6 +32,16 @@ class DeviceCommunicationHandler(EdgeCommunicationHandler):
                 MessageType.EDGE_VERSION: handle_edge_version,
             }
         )
+
+    async def listen(self):  # pragma: no cover
+        """Wrapper around the actual listen method to catch exceptions and automatically
+        reconnect."""
+
+        while not self._stopped:
+            try:
+                await super().listen()
+            except EdgeConnectionDisconnected:
+                await self.protocol.connect()
 
 
 async def handle_edge_version(
