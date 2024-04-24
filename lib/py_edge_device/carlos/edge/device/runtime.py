@@ -60,6 +60,9 @@ class DeviceRuntime:  # pragma: no cover
         await self.task_scheduler.stop()
         logger.info("Task scheduler stopped.")
 
+        # Give the tasks some time to finish.
+        await asyncio.sleep(1)
+
         tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
         [task.cancel() for task in tasks]
         logger.info(f"Cancelling {len(tasks)} outstanding tasks")
