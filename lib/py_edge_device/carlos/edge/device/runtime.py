@@ -4,6 +4,7 @@ of the application."""
 import asyncio
 import signal
 from datetime import timedelta
+from time import sleep, time
 from types import FrameType
 from typing import Self
 
@@ -62,10 +63,18 @@ class DeviceRuntime:  # pragma: no cover
         logger.info(f"Received signal {signum}. Stopping the device runtime.")
 
         loop = asyncio.get_event_loop()
-        loop.create_task(self.stop())
+        task = loop.create_task(self.stop())
+
+        t1 = time()
+        while not task.done():
+            sleep(0.1)
+            if time() - t1 > 5:
+                logger.warning(
+                    "Stopping the device runtime took too long. Forcing exit."
+                )
+                exit(1)
 
         logger.info("Device runtime stopped.")
-
         exit(0)
 
     def _prepare_runtime(self):
