@@ -81,10 +81,6 @@ class DeviceRuntime:  # pragma: no cover
         except asyncio.CancelledError:
             pass
 
-        logger.debug("Stopping the event loop.")
-        loop = asyncio.get_event_loop()
-        loop.stop()
-
         logger.info("Device runtime stopped.")
 
     def _prepare_runtime(self):
