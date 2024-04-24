@@ -75,6 +75,8 @@ class DeviceRuntime:  # pragma: no cover
         except asyncio.TimeoutError:
             logger.error("Stopping the device runtime timed out.")
             exit(1)
+        except asyncio.CancelledError:
+            pass
 
         logger.debug("Stopping the event loop.")
         loop = asyncio.get_event_loop()
