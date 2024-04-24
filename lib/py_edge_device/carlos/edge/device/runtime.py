@@ -50,6 +50,8 @@ class DeviceRuntime:  # pragma: no cover
             tg.create_task(self.communication_handler.listen())
             tg.create_task(self._run_task_scheduler())
 
+        logger.debug("Device runtime exited.")
+
     async def stop(self):
         """Stops the device runtime."""
         self.communication_handler.stop()
@@ -69,8 +71,12 @@ class DeviceRuntime:  # pragma: no cover
             logger.error("Stopping the device runtime timed out.")
             exit(1)
 
+        logger.debug("Stopping the event loop.")
+        loop = asyncio.get_event_loop()
+        loop.stop()
+        loop.close()
+
         logger.info("Device runtime stopped.")
-        exit(0)
 
     def _prepare_runtime(self):
         """Prepares the device runtime."""
