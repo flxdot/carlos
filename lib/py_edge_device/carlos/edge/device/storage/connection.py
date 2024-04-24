@@ -18,12 +18,16 @@ def build_storage_url(path: Path = STORAGE_PATH, is_async: bool = False) -> str:
 
 
 @cache
-def get_storage_engine(url: str) -> Engine:
+def get_storage_engine(url: str | None = None) -> Engine:
     """Get the storage engine for the device."""
-    return create_engine(url, pool_pre_ping=True, poolclass=NullPool)
+    return create_engine(
+        url or build_storage_url(), pool_pre_ping=True, poolclass=NullPool
+    )
 
 
 @cache
-async def get_async_storage_engine(url: str) -> AsyncEngine:
+async def get_async_storage_engine(url: str | None = None) -> AsyncEngine:
     """Get the async storage engine for the device."""
-    return create_async_engine(url, pool_pre_ping=True, poolclass=NullPool)
+    return create_async_engine(
+        url or build_storage_url(is_async=True), pool_pre_ping=True, poolclass=NullPool
+    )
