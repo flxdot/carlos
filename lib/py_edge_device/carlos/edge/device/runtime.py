@@ -1,19 +1,24 @@
 """The runtime module contains the device runtime that is used as the main entry point
 of the application."""
 
+import asyncio
 from datetime import timedelta
-from pathlib import Path
 from typing import Self
 
 from apscheduler import AsyncScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from carlos.edge.interface import DeviceId, EdgeConnectionDisconnected, EdgeProtocol
-from carlos.edge.interface.device.driver import validate_device_address_space
+from carlos.edge.interface import DeviceId, EdgeProtocol
+from carlos.edge.interface.device.driver import (
+    InputDriver,
+    validate_device_address_space,
+)
 from carlos.edge.interface.protocol import PING
 from loguru import logger
 
 from .communication import DeviceCommunicationHandler
 from .config import load_drivers
+from .constants import LOCAL_DEVICE_STORAGE_PATH
+from .storage.migration import alembic_upgrade
 
 
 # We don't cover this in the unit tests. This needs to be tested in an integration test.
@@ -27,74 +32,105 @@ class DeviceRuntime:  # pragma: no cover
         """
 
         self.device_id = device_id
-        self.protocol = protocol
 
+        self.communication_handler = DeviceCommunicationHandler(
+            device_id=self.device_id, protocol=protocol
+        )
+        self.task_scheduler = AsyncScheduler()
         self.driver_manager = DriverManager()
 
     async def run(self):
         """Runs the device runtime."""
 
-        self._prepare_runtime()
+        await self._prepare_runtime()
 
-        communication_handler = DeviceCommunicationHandler(
-            protocol=self.protocol, device_id=self.device_id
-        )
+        async with asyncio.TaskGroup() as tg:
+            await tg.create_task(self.communication_handler.listen())
+            await tg.create_task(self.task_scheduler.run_until_stopped())
 
-        if not self.protocol.is_connected:
-            await self.protocol.connect()
+    async def _prepare_runtime(self):
+        """Prepares the device runtime."""
 
-        async with AsyncScheduler() as scheduler:
-            await scheduler.add_schedule(
-                func_or_task_id=send_ping,
-                kwargs={"communication_handler": communication_handler},
-                trigger=IntervalTrigger(minutes=1),
-            )
-            self.driver_manager.register_tasks(scheduler=scheduler)
-            await scheduler.start_in_background()
-
-            while True:
-                if not self.protocol.is_connected:
-                    await self.protocol.connect()
-
-                try:
-                    await communication_handler.listen()
-                except EdgeConnectionDisconnected:
-                    await self.protocol.connect()
-
-    def _prepare_runtime(self):
-
+        # configure the logger
         logger.add(
-            sink=Path.cwd() / ".carlos_data" / "device" / "device_log_{time}.log",
+            sink=LOCAL_DEVICE_STORAGE_PATH / "log" / "device_log_{time}.log",
             level="INFO",
             rotation="50 MB",
             retention=timedelta(days=60),
         )
+
+        # Migrate the local database to the latest version.
+        alembic_upgrade()
+
+        # Setup the I/O peripherals.
         self.driver_manager.setup()
+
+        # Register the tasks of the I/O peripherals.
+        await self.task_scheduler.add_schedule(
+            func_or_task_id=send_ping,
+            kwargs={"communication_handler": self.communication_handler},
+            trigger=IntervalTrigger(minutes=1),
+        )
+        await self.task_scheduler.add_schedule(
+            func_or_task_id=self._send_pending_data,
+            trigger=IntervalTrigger(minutes=3),
+        )
+        await self.driver_manager.register_tasks(scheduler=self.task_scheduler)
+
+    async def _send_pending_data(self):
+        """Sends the pending data to the server."""
+        logger.debug("Sending pending data to the server.")
+        pass
+
+
+INPUT_SAMPLE_INTERVAL = 60
+"""The time between two consecutive samples of the input devices in seconds."""
 
 
 class DriverManager:  # pragma: no cover
 
     def __init__(self):
 
-        self.drivers = load_drivers()
+        self.drivers = {driver.identifier: driver for driver in load_drivers()}
         validate_device_address_space(self.drivers)
 
     def setup(self) -> Self:
         """Sets up the I/O peripherals."""
-        for driver in self.drivers:
+        for driver in self.drivers.values():
             logger.debug(f"Setting up driver {driver}.")
             driver.setup()
 
         return self
 
-    def register_tasks(self, scheduler: AsyncScheduler) -> Self:
+    async def register_tasks(self, scheduler: AsyncScheduler) -> Self:
         """Registers the tasks of the I/O peripherals."""
 
+        for driver in self.drivers.values():
+            if isinstance(driver, InputDriver):
+                await scheduler.add_schedule(
+                    func_or_task_id=self.read_input,
+                    kwargs={"driver": driver.identifier},
+                    trigger=IntervalTrigger(seconds=INPUT_SAMPLE_INTERVAL),
+                )
+
         return self
+
+    async def read_input(self, driver: str):
+        """Reads the value of the input driver."""
+        logger.debug(f"Reading data from driver {driver}.")
+        data = await self.drivers[driver].read_async()
+
+        # todo: write to database
+        logger.debug(f"Received data from driver {driver}: {data}")
 
 
 async def send_ping(
     communication_handler: DeviceCommunicationHandler,
 ):  # pragma: no cover
     """Sends a ping to the server."""
+
+    if not communication_handler.protocol.is_connected:
+        logger.warning("Cannot send ping, as the device is not connected.")
+        return
+
     await communication_handler.send(PING)

@@ -1,11 +1,12 @@
 from functools import cache
 from pathlib import Path
 
-from carlos.edge.interface.data_directory import DATA_DIRECTORY
 from sqlalchemy import Engine, NullPool, create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-STORAGE_PATH = DATA_DIRECTORY / "device" / "storage.db"
+from carlos.edge.device.constants import LOCAL_DEVICE_STORAGE_PATH
+
+STORAGE_PATH = LOCAL_DEVICE_STORAGE_PATH / "storage.db"
 
 
 def build_storage_url(path: Path = STORAGE_PATH, is_async: bool = False) -> str:

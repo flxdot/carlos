@@ -54,7 +54,9 @@ def build_alembic_config(connection_url: str) -> Config:
 DEFAULT_ALEMBIC_CONFIG = build_alembic_config(connection_url=build_storage_url())
 
 
-def alembic_upgrade(alembic_config: Config, revision: str | Revision | None = None):
+def alembic_upgrade(
+    alembic_config: Config | None = None, revision: str | Revision | None = None
+):
     """Adjusts the Database via alembic to the specified revision.
     If no revision is given, it will be upgraded to `head`."""
 
@@ -64,7 +66,9 @@ def alembic_upgrade(alembic_config: Config, revision: str | Revision | None = No
     )
 
 
-def alembic_downgrade(alembic_config: Config, revision: str | Revision | None = None):
+def alembic_downgrade(
+    alembic_config: Config | None = None, revision: str | Revision | None = None
+):
     """Adjusts the Database via alembic to the specified revision.
     If no revision is given, it will be upgraded to `head`."""
 
