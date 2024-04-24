@@ -1,4 +1,4 @@
-__all__ = ["ServerDeviceCommunicationHandler"]
+__all__ = ["ServerEdgeCommunicationHandler"]
 
 from carlos.database.connection import get_async_carlos_db_connection
 from carlos.database.context import RequestContext
@@ -8,7 +8,7 @@ from carlos.edge.interface import CarlosMessage, EdgeCommunicationHandler
 from carlos.edge.server.constants import CLIENT_NAME
 
 
-class ServerDeviceCommunicationHandler(EdgeCommunicationHandler):
+class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
     """Special server side implementation of the EdgeCommunicationHandler."""
 
     async def handle_message(self, message: CarlosMessage):

@@ -13,7 +13,7 @@ from carlos.edge.interface.endpoint import (
     get_websocket_endpoint,
     get_websocket_token_endpoint,
 )
-from carlos.edge.server.device_handler import ServerDeviceCommunicationHandler
+from carlos.edge.server.device_handler import ServerEdgeCommunicationHandler
 from carlos.edge.server.token import issue_token, verify_token
 from fastapi import APIRouter, Depends, Query, Request, Security, WebSocket
 from jwt import InvalidTokenError
@@ -23,9 +23,9 @@ from starlette.responses import PlainTextResponse
 
 from carlos.api.depends.authentication import verify_token as auth_verify_token
 from carlos.api.depends.context import request_context
+from carlos.api.depends.database import carlos_db_connection
 from carlos.api.routes.devices_routes import DEVICE_ID_PATH
 
-from ...depends.database import carlos_db_connection
 from .protocol import WebsocketProtocol
 from .state import DEVICE_CONNECTION_MANAGER
 
@@ -101,7 +101,7 @@ async def device_server_websocket(
     await DEVICE_CONNECTION_MANAGER.add_device(device_id=device_id, protocol=protocol)
 
     try:
-        await ServerDeviceCommunicationHandler(
+        await ServerEdgeCommunicationHandler(
             protocol=protocol, device_id=device_id
         ).listen()
     except EdgeConnectionDisconnected:

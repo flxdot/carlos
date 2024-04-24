@@ -28,6 +28,11 @@ from .driver_config import (
 DriverConfigTypeVar = TypeVar("DriverConfigTypeVar", bound=DriverConfig)
 
 
+DRIVER_THREAD_POOL = concurrent.futures.ThreadPoolExecutor(
+    thread_name_prefix="DeviceDriver"
+)
+
+
 class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
     """Common base class for all drivers."""
 
@@ -88,8 +93,7 @@ class InputDriver(CarlosDriverBase, ABC, Generic[V_]):
 
         loop = asyncio.get_running_loop()
 
-        with concurrent.futures.ThreadPoolExecutor() as pool:
-            return await loop.run_in_executor(executor=pool, func=self.read)
+        return await loop.run_in_executor(executor=DRIVER_THREAD_POOL, func=self.read)
 
 
 class OutputDriver(CarlosDriverBase, ABC, Generic[V_]):
@@ -119,10 +123,9 @@ class OutputDriver(CarlosDriverBase, ABC, Generic[V_]):
 
         loop = asyncio.get_running_loop()
 
-        with concurrent.futures.ThreadPoolExecutor() as pool:
-            return await loop.run_in_executor(
-                executor=pool, func=partial(self.set, value=value)
-            )
+        return await loop.run_in_executor(
+            executor=DRIVER_THREAD_POOL, func=partial(self.set, value=value)
+        )
 
     def test(self):  # pragma: no cover
         """Tests the digital output by setting the value to False, then True for
