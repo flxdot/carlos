@@ -92,7 +92,7 @@ class DriverManager:  # pragma: no cover
     def __init__(self):
 
         self.drivers = {driver.identifier: driver for driver in load_drivers()}
-        validate_device_address_space(self.drivers)
+        validate_device_address_space(self.drivers.values())
 
     def setup(self) -> Self:
         """Sets up the I/O peripherals."""
