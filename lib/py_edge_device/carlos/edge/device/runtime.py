@@ -60,14 +60,6 @@ class DeviceRuntime:  # pragma: no cover
         await self.task_scheduler.stop()
         logger.info("Task scheduler stopped.")
 
-        # Give the tasks some time to finish.
-        await asyncio.sleep(3)
-
-        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
-        [task.cancel() for task in tasks]
-        logger.info(f"Cancelling {len(tasks)} outstanding tasks")
-        await asyncio.gather(*tasks, return_exceptions=True)
-
     async def _handle_signal(self, signum: int):
         """Tries to gracefully stop the device runtime."""
 
@@ -80,6 +72,14 @@ class DeviceRuntime:  # pragma: no cover
             exit(1)
         except asyncio.CancelledError:
             pass
+
+        # Give the tasks some time to finish.
+        await asyncio.sleep(3)
+
+        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+        [task.cancel() for task in tasks]
+        logger.info(f"Cancelling {len(tasks)} outstanding tasks")
+        await asyncio.gather(*tasks, return_exceptions=True)
 
         logger.info("Device runtime stopped.")
 
