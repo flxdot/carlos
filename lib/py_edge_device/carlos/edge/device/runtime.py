@@ -36,17 +36,19 @@ class DeviceRuntime:  # pragma: no cover
         self.communication_handler = DeviceCommunicationHandler(
             device_id=self.device_id, protocol=protocol
         )
-        self.task_scheduler = AsyncScheduler()
+        self.task_scheduler: AsyncScheduler | None = None
         self.driver_manager = DriverManager()
 
     async def run(self):
         """Runs the device runtime."""
 
-        await self._prepare_runtime()
+        async with AsyncScheduler() as self.task_scheduler:
 
-        async with asyncio.TaskGroup() as tg:
-            await tg.create_task(self.communication_handler.listen())
-            await tg.create_task(self.task_scheduler.run_until_stopped())
+            await self._prepare_runtime()
+
+            async with asyncio.TaskGroup() as tg:
+                await tg.create_task(self.communication_handler.listen())
+                await tg.create_task(self.task_scheduler.run_until_stopped())
 
     async def _prepare_runtime(self):
         """Prepares the device runtime."""
