@@ -66,6 +66,8 @@ class DeviceRuntime:  # pragma: no cover
 
         logger.info("Device runtime stopped.")
 
+        exit(0)
+
     def _prepare_runtime(self):
         """Prepares the device runtime."""
 
