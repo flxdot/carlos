@@ -55,7 +55,10 @@ class DeviceRuntime:  # pragma: no cover
     async def stop(self):
         """Stops the device runtime."""
         self.communication_handler.stop()
+        logger.debug("Communication handler stopped.")
+
         await self.task_scheduler.stop()
+        logger.debug("Task scheduler stopped.")
 
     def _handle_signal(self, signum: int, frame: FrameType | None):
         """Tries to gracefully stop the device runtime."""
