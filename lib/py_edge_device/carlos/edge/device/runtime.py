@@ -74,12 +74,12 @@ class DeviceRuntime:  # pragma: no cover
             pass
 
         # Give the tasks some time to finish.
-        await asyncio.sleep(3)
+        await asyncio.sleep(1)
 
-        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
-        [task.cancel() for task in tasks]
-        logger.info(f"Cancelling {len(tasks)} outstanding tasks")
-        await asyncio.gather(*tasks, return_exceptions=True)
+        # tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+        # [task.cancel() for task in tasks]
+        # logger.info(f"Cancelling {len(tasks)} outstanding tasks")
+        # await asyncio.gather(*tasks, return_exceptions=True)
 
         logger.info("Device runtime stopped.")
 
