@@ -36,21 +36,18 @@ class DeviceRuntime:  # pragma: no cover
         self.communication_handler = DeviceCommunicationHandler(
             device_id=self.device_id, protocol=protocol
         )
-        self.task_scheduler: AsyncScheduler | None = None
         self.driver_manager = DriverManager()
 
     async def run(self):
         """Runs the device runtime."""
 
-        async with AsyncScheduler() as self.task_scheduler:
+        self._prepare_runtime()
 
-            await self._prepare_runtime()
+        async with asyncio.TaskGroup() as tg:
+            await tg.create_task(self.communication_handler.listen())
+            await tg.create_task(self._run_task_scheduler())
 
-            async with asyncio.TaskGroup() as tg:
-                await tg.create_task(self.communication_handler.listen())
-                await tg.create_task(self.task_scheduler.run_until_stopped())
-
-    async def _prepare_runtime(self):
+    def _prepare_runtime(self):
         """Prepares the device runtime."""
 
         # configure the logger
@@ -67,17 +64,24 @@ class DeviceRuntime:  # pragma: no cover
         # Setup the I/O peripherals.
         self.driver_manager.setup()
 
-        # Register the tasks of the I/O peripherals.
-        await self.task_scheduler.add_schedule(
-            func_or_task_id=send_ping,
-            kwargs={"communication_handler": self.communication_handler},
-            trigger=IntervalTrigger(minutes=1),
-        )
-        await self.task_scheduler.add_schedule(
-            func_or_task_id=self._send_pending_data,
-            trigger=IntervalTrigger(minutes=3),
-        )
-        await self.driver_manager.register_tasks(scheduler=self.task_scheduler)
+    async def _run_task_scheduler(self):
+        """Runs the task scheduler."""
+
+        async with AsyncScheduler() as scheduler:
+            logger.debug("Registering tasks.")
+            await scheduler.add_schedule(
+                func_or_task_id=send_ping,
+                kwargs={"communication_handler": self.communication_handler},
+                trigger=IntervalTrigger(minutes=1),
+            )
+            await scheduler.add_schedule(
+                func_or_task_id=self._send_pending_data,
+                trigger=IntervalTrigger(minutes=3),
+            )
+            await self.driver_manager.register_tasks(scheduler=scheduler)
+
+            logger.debug("Running task scheduler.")
+            await scheduler.run_until_stopped()
 
     async def _send_pending_data(self):
         """Sends the pending data to the server."""
