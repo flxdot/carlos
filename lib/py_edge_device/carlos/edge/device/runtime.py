@@ -62,7 +62,7 @@ class DeviceRuntime:  # pragma: no cover
         logger.info(f"Received signal {signum}. Stopping the device runtime.")
 
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.stop())
+        loop.create_task(self.stop())
 
         logger.info("Device runtime stopped.")
 
