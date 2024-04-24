@@ -4,8 +4,6 @@ of the application."""
 import asyncio
 import signal
 from datetime import timedelta
-from time import sleep, time
-from types import FrameType
 from typing import Self
 
 from apscheduler import AsyncScheduler
@@ -55,27 +53,21 @@ class DeviceRuntime:  # pragma: no cover
     async def stop(self):
         """Stops the device runtime."""
         self.communication_handler.stop()
-        logger.debug("Communication handler stopped.")
+        logger.info("Communication handler stopped.")
 
         await self.task_scheduler.stop()
-        logger.debug("Task scheduler stopped.")
+        logger.info("Task scheduler stopped.")
 
-    def _handle_signal(self, signum: int, frame: FrameType | None):
+    async def _handle_signal(self, signum: int):
         """Tries to gracefully stop the device runtime."""
 
         logger.info(f"Received signal {signum}. Stopping the device runtime.")
 
-        loop = asyncio.get_event_loop()
-        task = loop.create_task(self.stop())
-
-        t1 = time()
-        while not task.done():
-            sleep(0.1)
-            if time() - t1 > 5:
-                logger.warning(
-                    "Stopping the device runtime took too long. Forcing exit."
-                )
-                exit(1)
+        try:
+            await asyncio.wait_for(self.stop(), timeout=5)
+        except asyncio.TimeoutError:
+            logger.error("Stopping the device runtime timed out.")
+            exit(1)
 
         logger.info("Device runtime stopped.")
         exit(0)
@@ -83,8 +75,11 @@ class DeviceRuntime:  # pragma: no cover
     def _prepare_runtime(self):
         """Prepares the device runtime."""
 
-        signal.signal(signalnum=signal.SIGINT, handler=self._handle_signal)
-        signal.signal(signalnum=signal.SIGTERM, handler=self._handle_signal)
+        loop = asyncio.get_event_loop()
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler(
+                sig, lambda: asyncio.create_task(self._handle_signal(sig))
+            )
 
         # configure the logger
         logger.add(
