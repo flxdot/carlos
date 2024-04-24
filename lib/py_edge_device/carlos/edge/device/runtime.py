@@ -44,8 +44,8 @@ class DeviceRuntime:  # pragma: no cover
         self._prepare_runtime()
 
         async with asyncio.TaskGroup() as tg:
-            await tg.create_task(self.communication_handler.listen())
-            await tg.create_task(self._run_task_scheduler())
+            tg.create_task(self.communication_handler.listen())
+            tg.create_task(self._run_task_scheduler())
 
     def _prepare_runtime(self):
         """Prepares the device runtime."""
