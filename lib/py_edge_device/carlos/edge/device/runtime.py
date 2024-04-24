@@ -53,7 +53,7 @@ class DeviceRuntime:  # pragma: no cover
 
     async def stop(self):
         """Stops the device runtime."""
-        await self.communication_handler.stop()
+        self.communication_handler.stop()
         await self.task_scheduler.stop()
 
     def _handle_signal(self, signum: int, frame: FrameType | None):
