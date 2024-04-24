@@ -15,7 +15,7 @@ from carlos.edge.interface.device.driver import (
 from carlos.edge.interface.protocol import PING
 from loguru import logger
 
-from .communication import DeviceCommunicationHandler
+from .communication import ClientEdgeCommunicationHandler
 from .config import load_drivers
 from .constants import LOCAL_DEVICE_STORAGE_PATH
 from .storage.migration import alembic_upgrade
@@ -33,7 +33,7 @@ class DeviceRuntime:  # pragma: no cover
 
         self.device_id = device_id
 
-        self.communication_handler = DeviceCommunicationHandler(
+        self.communication_handler = ClientEdgeCommunicationHandler(
             device_id=self.device_id, protocol=protocol
         )
         self.driver_manager = DriverManager()
@@ -131,7 +131,7 @@ class DriverManager:  # pragma: no cover
 
 
 async def send_ping(
-    communication_handler: DeviceCommunicationHandler,
+    communication_handler: ClientEdgeCommunicationHandler,
 ):  # pragma: no cover
     """Sends a ping to the server."""
 

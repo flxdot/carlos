@@ -16,7 +16,7 @@ from .constants import VERSION
 from .update import update_device
 
 
-class DeviceCommunicationHandler(EdgeCommunicationHandler):
+class ClientEdgeCommunicationHandler(EdgeCommunicationHandler):
     """Handles and registers all handlers for the device communication."""
 
     def __init__(self, protocol: EdgeProtocol, device_id: DeviceId):
@@ -34,8 +34,8 @@ class DeviceCommunicationHandler(EdgeCommunicationHandler):
         )
 
     async def listen(self):  # pragma: no cover
-        """Wrapper around the actual listen method to catch exceptions and automatically
-        reconnect."""
+        """The client specific implementation of the listen method should always
+        try to reconnect if the connection is lost."""
 
         while not self._stopped:
             try:

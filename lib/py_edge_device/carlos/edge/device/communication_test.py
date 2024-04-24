@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from carlos.edge.interface.plugin_pytest import EdgeProtocolTestingConnection
 
-from carlos.edge.device.communication import DeviceCommunicationHandler
+from carlos.edge.device.communication import ClientEdgeCommunicationHandler
 
 
 class TestDeviceCommunicationHandler:
@@ -13,12 +13,12 @@ class TestDeviceCommunicationHandler:
             EdgeProtocolTestingConnection, EdgeProtocolTestingConnection
         ],
     ):
-        """This test simply ensures that the DeviceCommunicationHandler can be created.
+        """This test simply ensures that the ClientEdgeCommunicationHandler can be created.
 
-        Since we have no other logic in the DeviceCommunicationHandler at the moment
+        Since we have no other logic in the ClientEdgeCommunicationHandler at the moment
         it makes no sense to rest more already tested functionality.
         """
 
-        assert DeviceCommunicationHandler(
+        assert ClientEdgeCommunicationHandler(
             protocol=edge_testing_protocol[0], device_id=uuid4()
         )

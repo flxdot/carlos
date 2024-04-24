@@ -13,7 +13,7 @@ from carlos.edge.interface.endpoint import (
     get_websocket_endpoint,
     get_websocket_token_endpoint,
 )
-from carlos.edge.server.device_handler import ServerDeviceCommunicationHandler
+from carlos.edge.server.device_handler import ServerEdgeCommunicationHandler
 from carlos.edge.server.token import issue_token, verify_token
 from fastapi import APIRouter, Depends, Query, Request, Security, WebSocket
 from jwt import InvalidTokenError
@@ -101,7 +101,7 @@ async def device_server_websocket(
     await DEVICE_CONNECTION_MANAGER.add_device(device_id=device_id, protocol=protocol)
 
     try:
-        await ServerDeviceCommunicationHandler(
+        await ServerEdgeCommunicationHandler(
             protocol=protocol, device_id=device_id
         ).listen()
     except EdgeConnectionDisconnected:

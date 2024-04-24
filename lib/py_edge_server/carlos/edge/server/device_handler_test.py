@@ -5,7 +5,7 @@ from carlos.database.testing.expectations import DeviceId
 from carlos.edge.interface import CarlosMessage, MessageType
 from carlos.edge.interface.plugin_pytest import EdgeProtocolTestingConnection
 
-from .device_handler import ServerDeviceCommunicationHandler
+from .device_handler import ServerEdgeCommunicationHandler
 
 
 @pytest.fixture()
@@ -17,14 +17,14 @@ def device_a_handler(
 
     server, client = edge_testing_protocol
 
-    return ServerDeviceCommunicationHandler(
+    return ServerEdgeCommunicationHandler(
         protocol=server, device_id=DeviceId.DEVICE_A.value
     )
 
 
 @pytest.mark.asyncio()
 async def test_handle_message(
-    device_a_handler: ServerDeviceCommunicationHandler,
+    device_a_handler: ServerEdgeCommunicationHandler,
     async_carlos_db_context: RequestContext,
 ):
     """This method tests the effects of the handle_message method."""
