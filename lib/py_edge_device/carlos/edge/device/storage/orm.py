@@ -46,13 +46,13 @@ class TimeseriesIndexOrm(CarlosDeviceModelBase):
 class TimeseriesDataOrm(CarlosDeviceModelBase):
     __tablename__ = "timeseries_data"
 
-    timeseries_id: Mapped[int] = mapped_column(
-        "timeseries_id", INTEGER, nullable=False, primary_key=True
+    sample_id: Mapped[int] = mapped_column(
+        "sample_id", INTEGER, primary_key=True, autoincrement=True
     )
 
-    timestamp_utc: Mapped[int] = mapped_column(
-        "timestamp_utc", INTEGER, nullable=False, primary_key=True
-    )
+    timeseries_id: Mapped[int] = mapped_column("timeseries_id", INTEGER, nullable=False)
+
+    timestamp_utc: Mapped[int] = mapped_column("timestamp_utc", INTEGER, nullable=False)
 
     value: Mapped[float] = mapped_column("value", FLOAT, nullable=False)
 

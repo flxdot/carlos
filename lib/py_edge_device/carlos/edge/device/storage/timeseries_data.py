@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from carlos.edge.interface.messages import DriverDataPayload, DriverTimeseries
 from carlos.edge.interface.types import CarlosSchema
 from pydantic import Field
-from sqlalchemy import delete, insert, or_, select, text, update
+from sqlalchemy import delete, insert, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from carlos.edge.device.storage.orm import TimeseriesDataOrm, TimeseriesIndexOrm
@@ -44,7 +44,7 @@ async def add_timeseries_data(
         [
             {
                 "timeseries_id": timeseries_id,
-                "timestamp_utc": timeseries_input.timestamp_utc.timestamp(),
+                "timestamp_utc": int(timeseries_input.timestamp_utc.timestamp()),
                 "value": value,
             }
             for timeseries_id, value in timeseries_input.values.items()
@@ -65,9 +65,10 @@ async def stage_timeseries_data(
     returned in a DriverDataPayload object.
     """
 
-    if max_values > SQLITE_MAX_VARIABLE_NUMBER:
+    # we have 2 additional variables in the payload
+    if max_values > SQLITE_MAX_VARIABLE_NUMBER - 2:
         raise ValueError(  # pragma: no cover
-            f"max_values cannot be greater than {SQLITE_MAX_VARIABLE_NUMBER}."
+            f"max_values cannot be greater than {SQLITE_MAX_VARIABLE_NUMBER - 2}."
             "This is a limitation of SQLite."
         )
 
@@ -76,16 +77,15 @@ async def stage_timeseries_data(
     staging_time = datetime.utcnow()
     expired_staging_time = staging_time - timedelta(minutes=30)
 
-    rowids_query = (
-        select(text("rowid"))
-        .select_from(TimeseriesDataOrm)
+    sample_ids_query = (
+        select(TimeseriesDataOrm.sample_id)
         .where(
             # Only select rows that are
             # - not staged or have an expired staging time
             # - have a server_timeseries_id
             or_(
                 TimeseriesDataOrm.staging_id.is_(None),
-                TimeseriesDataOrm.timestamp_utc < expired_staging_time.timestamp(),
+                TimeseriesDataOrm.timestamp_utc < int(expired_staging_time.timestamp()),
             ),
             TimeseriesIndexOrm.server_timeseries_id.isnot(None),
         )
@@ -97,21 +97,30 @@ async def stage_timeseries_data(
         .order_by(TimeseriesDataOrm.timestamp_utc.desc())
         .limit(max_values)
     )
-    rowids = (await connection.execute(rowids_query)).scalars().all()
+    sample_ids = (await connection.execute(sample_ids_query)).scalars().all()
 
     stage_stmt = (
         update(TimeseriesDataOrm)
         .values(
             {
                 "staging_id": payload.staging_id,
-                "staged_at_utc": staging_time.timestamp(),
+                "staged_at_utc": int(staging_time.timestamp()),
             }
         )
-        .where(text("rowid IN :rowids"))
-        .returning(TimeseriesDataOrm)
+        .where(TimeseriesDataOrm.sample_id.in_(sample_ids))
     )
-    staged_rows = (await connection.execute(stage_stmt, {"rowids": rowids})).all()
+    await connection.execute(stage_stmt)
     await connection.commit()
+
+    staged_query = (
+        select(TimeseriesDataOrm, TimeseriesIndexOrm.server_timeseries_id)
+        .join(
+            TimeseriesIndexOrm,
+            TimeseriesIndexOrm.timeseries_id == TimeseriesDataOrm.timeseries_id,
+        )
+        .where(TimeseriesDataOrm.staging_id == payload.staging_id)
+    )
+    staged_rows = (await connection.execute(staged_query)).all()
 
     if not staged_rows:
         return None

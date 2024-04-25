@@ -24,6 +24,10 @@ TEST_STORAGE_PATH = Path(__file__).parent / "tests" / "storage.db"
 def db_migration() -> None:
     """Fixture that upgrades the database and downgrades it after the test."""
 
+    if TEST_STORAGE_PATH.exists():
+        TEST_STORAGE_PATH.unlink()
+    assert not TEST_STORAGE_PATH.exists(), "Failed to remove the test database."
+
     alembic_config = build_alembic_config(
         connection_url=build_storage_url(TEST_STORAGE_PATH)
     )

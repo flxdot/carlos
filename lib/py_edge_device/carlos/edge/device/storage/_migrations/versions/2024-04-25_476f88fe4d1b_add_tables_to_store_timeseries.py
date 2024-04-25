@@ -29,12 +29,12 @@ def upgrade():
 
     timeseries_data_ddl = """
     CREATE TABLE timeseries_data (
+        sample_id INTEGER PRIMARY KEY AUTOINCREMENT,
         timeseries_id INTEGER NOT NULL,
         timestamp_utc INTEGER NOT NULL,
         value FLOAT NOT NULL,
         staging_id VARCHAR(4) NULL,
         staged_at_utc INTEGER NULL,
-        PRIMARY KEY(timeseries_id, timestamp_utc),
         FOREIGN KEY(timeseries_id) REFERENCES timeseries_index(timeseries_id)
     );
     """
