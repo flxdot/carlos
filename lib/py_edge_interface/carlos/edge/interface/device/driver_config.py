@@ -4,6 +4,7 @@ __all__ = [
     "DriverDirection",
     "GpioDriverConfig",
     "I2cDriverConfig",
+    "DRIVER_IDENTIFIER_LENGTH",
 ]
 
 import importlib
@@ -16,12 +17,14 @@ from pydantic import BaseModel, Field, field_validator
 #   5V, 5V, GND,  14, 15, 18, GND, 23,   24, GND, 25,  8,   7, ID EEPROM, GND, 12, GND, 16, 20,  21 # Outer pins # noqa
 # 3.3V,  2,  3,   4, GND, 17,  27, 22, 3.3V,  10,  9, 11, GND, ID EEPROM,   5,  6,  13, 19, 26, GND # Inner pins # noqa
 
+DRIVER_IDENTIFIER_LENGTH = 64
 
 class DriverConfig(BaseModel):
     """Common base class for all driver_module configurations."""
 
     identifier: str = Field(
         ...,
+        max_length=DRIVER_IDENTIFIER_LENGTH,
         description="A unique identifier for the driver_module configuration. "
         "It is used to allow changing addresses, pins if required later.",
     )

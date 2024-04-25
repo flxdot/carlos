@@ -26,7 +26,7 @@ def get_storage_engine(url: str | None = None) -> Engine:
 
 
 @cache
-async def get_async_storage_engine(url: str | None = None) -> AsyncEngine:
+def get_async_storage_engine(url: str | None = None) -> AsyncEngine:
     """Get the async storage engine for the device."""
     return create_async_engine(
         url or build_storage_url(is_async=True), pool_pre_ping=True, poolclass=NullPool
