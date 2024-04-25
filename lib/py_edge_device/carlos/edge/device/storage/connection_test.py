@@ -17,7 +17,7 @@ def test_get_storage_engine():
 
 
 async def test_get_async_storage_engine():
-    engine = await get_async_storage_engine(
+    engine = get_async_storage_engine(
         build_storage_url(TEST_STORAGE_PATH, is_async=True)
     )
 

@@ -2,11 +2,13 @@ import pytest
 
 from carlos.edge.interface.messages import (
     MESSAGE_TYPE_TO_MODEL,
+    SID_SIZE,
     CarlosMessage,
     CarlosPayload,
     CarlosSchema,
     EdgeVersionPayload,
     MessageType,
+    generate_staging_id,
 )
 
 
@@ -92,3 +94,16 @@ class TestCarlosMessage:
 
         with pytest.raises(ValueError):
             CarlosMessage.from_str(transport_layer_payload)
+
+
+def test_generate_staging_id():
+    """This test ensures that the staging_id is generated correctly."""
+
+    sid = generate_staging_id()
+    assert len(sid) == SID_SIZE, f"Expected {SID_SIZE}, got {len(sid)}"
+
+    previous_sid = sid
+    for _ in range(10):
+        sid = generate_staging_id()
+        assert sid != previous_sid, "Expected different sid"
+        previous_sid = sid

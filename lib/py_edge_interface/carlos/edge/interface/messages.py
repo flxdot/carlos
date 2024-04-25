@@ -3,13 +3,17 @@ Carlos Edge device."""
 
 __all__ = [
     "CarlosMessage",
+    "CarlosPayload",
+    "DriverDataPayload",
     "EdgeVersionPayload",
+    "DriverTimeseries",
     "MessageType",
     "PingMessage",
     "PongMessage",
-    "CarlosPayload",
 ]
 
+import secrets
+import string
 from abc import ABC
 from enum import Enum
 
@@ -32,6 +36,13 @@ class MessageType(str, Enum):
     EDGE_VERSION = "edge_version"
     """Requests the communication partner to respond with the version of the Carlos Edge
     device. This is used to determine if a Carlos Edge device requires an update."""
+
+    DRIVER_DATA = "driver_data"
+    """Send by the device. This message contains a collection of samples measured 
+    by the device."""
+
+    DRIVER_DATA_ACK = "driver_data_ack"
+    """Send by the server. This message is a response to a DRIVER_DATA message."""
 
 
 class CarlosPayloadBase(CarlosSchema, ABC):
@@ -146,8 +157,71 @@ class EdgeVersionPayload(CarlosPayloadBase):
     )
 
 
+SID_SIZE = 6
+
+
+def generate_staging_id() -> str:
+    """Staging ids are used to allow confirmation of successful data transmission."""
+
+    return "".join(
+        secrets.choice(string.ascii_letters + string.digits) for _ in range(SID_SIZE)
+    )
+
+
+class DriverTimeseries(CarlosPayloadBase):
+    """Defines the payload of a EDGE_VERSION message."""
+
+    timestamps_utc: list[int] = Field(
+        # we choose as short a possible alias to save bandwidth
+        ...,
+        alias="ts",
+        description="A list of timestamps in UTC when the data was recorded.",
+    )
+
+    values: list[float] = Field(
+        # we choose as short a possible alias to save bandwidth
+        ...,
+        alias="v",
+        description="A list of values for the respective signal.",
+    )
+
+
+class DriverDataPayload(CarlosPayloadBase):
+    """Defines the payload of a DRIVER_DATA message."""
+
+    staging_id: str = Field(
+        # we choose as short a possible alias to save bandwidth
+        default_factory=generate_staging_id,
+        alias="sid",
+        max_length=SID_SIZE,
+        description="The staging id of the Carlos Edge device.",
+    )
+
+    data: dict[int, DriverTimeseries] = Field(
+        # we choose as short a possible alias to save bandwidth
+        ...,
+        alias="d",
+        description="A mapping of the timeseries_id on the server to the actual"
+        "timeseries data.",
+    )
+
+
+class DriverDataAckPayload(CarlosPayloadBase):
+    """Defines the payload of a DRIVER_DATA_ACK message."""
+
+    staging_id: str = Field(
+        # we choose as short a possible alias to save bandwidth
+        ...,
+        alias="sid",
+        max_length=SID_SIZE,
+        description="The staging id of the Carlos Edge device.",
+    )
+
+
 MESSAGE_TYPE_TO_MODEL: dict[MessageType, type[CarlosPayloadBase] | None] = {
     MessageType.PING: PingMessage,
     MessageType.PONG: PongMessage,
     MessageType.EDGE_VERSION: EdgeVersionPayload,
+    MessageType.DRIVER_DATA: DriverDataPayload,
+    MessageType.DRIVER_DATA_ACK: DriverDataAckPayload,
 }
