@@ -59,3 +59,6 @@ class TimeseriesDataOrm(CarlosDeviceModelBase):
     staging_id: Mapped[str | None] = mapped_column(
         "staging_id", VARCHAR(4), nullable=True
     )
+    staged_at_utc: Mapped[int | None] = mapped_column(
+        "staged_at_utc", INTEGER, nullable=True
+    )

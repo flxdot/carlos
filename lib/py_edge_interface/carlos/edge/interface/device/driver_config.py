@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field, field_validator
 
 DRIVER_IDENTIFIER_LENGTH = 64
 
+
 class DriverConfig(BaseModel):
     """Common base class for all driver_module configurations."""
 
