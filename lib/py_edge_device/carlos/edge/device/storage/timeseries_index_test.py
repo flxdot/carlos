@@ -1,41 +1,17 @@
-from typing import Generator
-
 import pytest
 from sqlalchemy.ext.asyncio import AsyncConnection
 
+from .conftest import TO_CREATE
 from .exceptions import NotFoundError
 from .timeseries_index import (
     TimeseriesIndex,
-    TimeseriesIndexMutation,
-    create_timeseries_index,
     delete_timeseries_index,
     find_timeseries_index,
     get_timeseries_index,
     update_timeseries_index,
 )
 
-TO_CREATE = TimeseriesIndexMutation(
-    driver_identifier="test_driver",
-    driver_signal="test_signal",
-)
 UNKNOWN_TIMESERIES_ID = 42069
-
-
-@pytest.fixture(autouse=True)
-async def temporary_timeseries_index(
-    async_connection: AsyncConnection,
-) -> Generator[TimeseriesIndex, None, None]:
-    """Creates a temporary timeseries index for testing purposes."""
-
-    created = await create_timeseries_index(
-        connection=async_connection, timeseries_index=TO_CREATE
-    )
-
-    yield created
-
-    await delete_timeseries_index(
-        connection=async_connection, timeseries_id=created.timeseries_id
-    )
 
 
 @pytest.mark.parametrize(
@@ -54,6 +30,7 @@ async def temporary_timeseries_index(
 )
 async def test_find_timeseries_index(
     async_connection: AsyncConnection,
+    temporary_timeseries_index: TimeseriesIndex,
     driver_identifier: str | None,
     driver_signal: str | None,
     expected_result_cnt: int,

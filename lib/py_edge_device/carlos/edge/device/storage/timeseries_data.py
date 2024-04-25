@@ -14,6 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 
 from carlos.edge.device.storage.orm import TimeseriesDataOrm, TimeseriesIndexOrm
 
+from .constants import DEFAULT_STAGING_SAMPLE_SIZE, SQLITE_MAX_VARIABLE_NUMBER
+
 
 class TimeseriesInput(CarlosSchema):
 
@@ -53,12 +55,8 @@ async def add_timeseries_data(
     await connection.commit()
 
 
-SQLITE_MAX_VARIABLE_NUMBER = 999
-"""The maximum number of variables that can be used in a single query."""
-
-
 async def stage_timeseries_data(
-    connection: AsyncConnection, max_values: int = 250
+    connection: AsyncConnection, max_values: int = DEFAULT_STAGING_SAMPLE_SIZE
 ) -> DriverDataPayload | None:
     """Stages any pending data from the timeseries_data table.
 
