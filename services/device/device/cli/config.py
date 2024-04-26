@@ -74,7 +74,7 @@ def test():  # pragma: no cover
     failed = []
     passed_cnt = 0
     with Live(Group(), refresh_per_second=4) as live:
-        for driver in DriverManager().setup().drivers:
+        for driver in DriverManager().setup().drivers.values():
             driver_result_ui.append(
                 Panel(
                     Spinner(name="aesthetic", text="testing..."),
