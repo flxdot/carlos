@@ -39,6 +39,7 @@ class Relay(DigitalOutput, DigitalInput):
         """Reads the value of the relay."""
 
         GPIO.setup(self.config.pin, GPIO.IN)
+        time.sleep(0.1)
         return {"state": GPIO.input(self.config.pin)}
 
     def test(self):
