@@ -18,7 +18,7 @@ class SHT30Config(I2cDriverConfig):
 
     direction: DriverDirection = Field(DriverDirection.INPUT)
 
-    address: Literal["0x45"] = Field("0x45")
+    address: Literal["0x44", "0x45"] = Field("0x44")
 
 
 class SHT30(AnalogInput):
