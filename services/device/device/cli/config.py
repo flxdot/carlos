@@ -67,7 +67,7 @@ def show():
 
 
 @config_cli.command()
-def test(identifier: str | None = None):  # pragma: no cover
+def test(identifier: str = ""):  # pragma: no cover
     """Tests the io peripherals."""
 
     driver_result_ui = []
