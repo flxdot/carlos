@@ -55,22 +55,22 @@ class SHT30(AnalogInput):
     def read(self) -> dict[str, float]:
         """Reads various light levels from the sensor."""
 
-        read_delay_ms = 100
-        for i in range(3):
-            try:
-                humidity, temperature = self._get_measurement(
-                    read_delay_ms=read_delay_ms
-                )
-                return {
-                    "temperature": float(temperature),
-                    "humidity": float(humidity),
-                }
-            except ValueError as e:
-                logger.exception(f"Failed to read sensor: {e}. Retrying in 0.1s.")
-                time.sleep(0.1)
-                read_delay_ms = 2 * read_delay_ms
-
-        raise ValueError("Failed to read sensor after 3 retries.")
+        read_delay_ms = 500
+        # for i in range(3):
+        #     try:
+        humidity, temperature = self._get_measurement(
+            read_delay_ms=read_delay_ms
+        )
+        return {
+            "temperature": float(temperature),
+            "humidity": float(humidity),
+        }
+        #     except ValueError as e:
+        #         logger.exception(f"Failed to read sensor: {e}. Retrying in 0.1s.")
+        #         time.sleep(0.1)
+        #         read_delay_ms = 2 * read_delay_ms
+        #
+        # raise ValueError("Failed to read sensor after 3 retries.")
 
     def _get_measurement(self, read_delay_ms: int = 100) -> tuple[float, float]:
         """Gets the measurement from the sensor.
