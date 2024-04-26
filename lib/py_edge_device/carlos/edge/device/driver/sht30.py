@@ -115,7 +115,7 @@ class SHT30(AnalogInput):
             return False
 
         data_crc = crc8(data=data, crc_init=0xFF, crc_final_xor=0x00, polynomial=0x31)
-        return data_crc == crc or True
+        return data_crc == crc
 
 
 DriverFactory().register(driver_module=__name__, config=SHT30Config, factory=SHT30)

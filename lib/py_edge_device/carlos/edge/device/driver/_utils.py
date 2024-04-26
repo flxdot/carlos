@@ -21,4 +21,4 @@ def crc8(
                 crc = (crc << 1) ^ polynomial
             else:
                 crc <<= 1
-    return crc & crc_final_xor
+    return crc ^ crc_final_xor
