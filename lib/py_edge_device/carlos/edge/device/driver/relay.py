@@ -39,25 +39,28 @@ class Relay(DigitalOutput, DigitalInput):
         """Reads the value of the relay."""
 
         GPIO.setup(self.config.pin, GPIO.IN)
-        return {"state": not bool(GPIO.input(self.config.pin))}
+        return {"state": GPIO.input(self.config.pin)}
 
     def test(self):
         """Tests the relay by reading the value."""
 
         self.set(False)
         time.sleep(0.01)
-        if self.read() is not False:
-            raise ValueError("Value of relay was not set to false.")
+        state = self.read()
+        if state is not False:
+            raise ValueError(f"Value of relay was not set to false. Got: {state}")
 
         self.set(True)
         time.sleep(1)
-        if self.read() is not True:
-            raise ValueError("Value of relay was not set to true.")
+        state = self.read()
+        if state is not True:
+            raise ValueError(f"Value of relay was not set to true. Got: {state}")
 
         self.set(False)
         time.sleep(0.01)
-        if self.read() is not False:
-            raise ValueError("Value of relay was not set to false.")
+        state = self.read()
+        if state is not False:
+            raise ValueError(f"Value of relay was not set to false. Got: {state}")
 
 
 DriverFactory().register(driver_module=__name__, config=RelayConfig, factory=Relay)
