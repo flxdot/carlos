@@ -7,11 +7,10 @@ from carlos.edge.interface.device import (
     DriverFactory,
     I2cDriverConfig,
 )
-from loguru import logger
 from pydantic import Field
 
-from carlos.edge.device.driver._utils import crc8
 from carlos.edge.device.protocol import I2C
+from carlos.edge.device.utils import crc8
 
 
 class SHT30Config(I2cDriverConfig):
@@ -56,9 +55,7 @@ class SHT30(AnalogInput):
         """Reads various light levels from the sensor."""
 
         read_delay_ms = 100
-        humidity, temperature = self._get_measurement(
-            read_delay_ms=read_delay_ms
-        )
+        humidity, temperature = self._get_measurement(read_delay_ms=read_delay_ms)
         return {
             "temperature": float(temperature),
             "humidity": float(humidity),
