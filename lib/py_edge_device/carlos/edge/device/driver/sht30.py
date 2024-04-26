@@ -68,6 +68,7 @@ class SHT30(AnalogInput):
         """Gets the measurement from the sensor.
 
         :return: The humidity and temperature.
+        :raises ValueError: If the data CRC of the data does not match.
         """
 
         assert self._i2c is not None, "The sensor has not been set up."

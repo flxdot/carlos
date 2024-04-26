@@ -48,19 +48,19 @@ class Relay(DigitalOutput, DigitalInput):
         self.set(False)
         time.sleep(0.01)
         state = self.read()
-        if state is not False:
+        if state:
             raise ValueError(f"Value of relay was not set to false. Got: {state}")
 
         self.set(True)
         time.sleep(1)
         state = self.read()
-        if state is not True:
+        if not state:
             raise ValueError(f"Value of relay was not set to true. Got: {state}")
 
         self.set(False)
         time.sleep(0.01)
         state = self.read()
-        if state is not False:
+        if state:
             raise ValueError(f"Value of relay was not set to false. Got: {state}")
 
 
