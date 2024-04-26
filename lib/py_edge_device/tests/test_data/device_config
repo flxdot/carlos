@@ -1,4 +1,6 @@
 drivers:
+  - identifier: temp-humi
+    driver_module: sht30
   - identifier: temp-humi-intern
     driver_module: dht11
     pin: 4
