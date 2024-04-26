@@ -114,6 +114,7 @@ class SHT30(AnalogInput):
         if not data:
             return False
 
+        # For details see chapter 4.12 - Table 20 in the data sheet.
         data_crc = crc8(data=data, crc_init=0xFF, crc_final_xor=0x00, polynomial=0x31)
         return data_crc == crc
 
