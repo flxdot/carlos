@@ -32,15 +32,15 @@ class Relay(DigitalOutput, DigitalInput):
         """Writes the value to the relay."""
 
         GPIO.setup(self.config.pin, GPIO.OUT)
-        # HIGH means off, LOW means on
+        # HIGH (1) means off, LOW (0) means on
         GPIO.output(self.config.pin, not value)
 
     def read(self) -> dict[str, bool]:
         """Reads the value of the relay."""
 
         GPIO.setup(self.config.pin, GPIO.IN)
-        time.sleep(0.1)
-        return {"state": GPIO.input(self.config.pin)}
+        # HIGH (1) means off, LOW (0) means on
+        return {"state": not GPIO.input(self.config.pin)}
 
     def test(self):
         """Tests the relay by reading the value."""
