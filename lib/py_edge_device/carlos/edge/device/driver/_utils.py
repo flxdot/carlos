@@ -14,8 +14,6 @@ def crc8(
     """
     crc = crc_init
 
-    print("data: ", data)
-
     for byte in data:
         crc ^= byte
         for _ in range(8):
@@ -23,7 +21,6 @@ def crc8(
                 crc = (crc << 1) ^ polynomial
             else:
                 crc <<= 1
-
-    print("crc: ", crc)
+        crc &= 0xFF
 
     return crc ^ crc_final_xor
