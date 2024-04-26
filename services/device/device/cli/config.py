@@ -1,6 +1,6 @@
 from __future__ import print_function, unicode_literals
 
-from typing import TypeVar
+from typing import Annotated, Optional, TypeVar
 
 import typer
 from carlos.edge.device.runtime import DriverManager
@@ -67,7 +67,9 @@ def show():
 
 
 @config_cli.command()
-def test(identifier: str = ""):  # pragma: no cover
+def test(
+    identifier: Annotated[Optional[str], typer.Argument()] = None
+):  # pragma: no cover
     """Tests the io peripherals."""
 
     driver_result_ui = []
