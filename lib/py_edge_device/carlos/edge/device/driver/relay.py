@@ -23,13 +23,17 @@ class Relay(DigitalOutput, DigitalInput):
     def __init__(self, config: RelayConfig):
         super().__init__(config=config)
 
+        self._state = False
+
     def setup(self):
 
         # HIGH means off, LOW means
-        GPIO.setup(self.config.pin, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(self.config.pin, GPIO.OUT, initial=not self._state)
 
     def set(self, value: bool):
         """Writes the value to the relay."""
+
+        self._state = value
 
         GPIO.setup(self.config.pin, GPIO.OUT)
         # HIGH (1) means off, LOW (0) means on
@@ -38,9 +42,7 @@ class Relay(DigitalOutput, DigitalInput):
     def read(self) -> dict[str, bool]:
         """Reads the value of the relay."""
 
-        GPIO.setup(self.config.pin, GPIO.IN)
-        # HIGH (1) means off, LOW (0) means on
-        return {"state": not GPIO.input(self.config.pin)}
+        return {"state": self._state}
 
     def test(self):
         """Tests the relay by reading the value."""
