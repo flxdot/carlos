@@ -67,7 +67,7 @@ def show():
 
 
 @config_cli.command()
-def test():  # pragma: no cover
+def test(identifier: str | None = None):  # pragma: no cover
     """Tests the io peripherals."""
 
     driver_result_ui = []
@@ -75,6 +75,8 @@ def test():  # pragma: no cover
     passed_cnt = 0
     with Live(Group(), refresh_per_second=4) as live:
         for driver in DriverManager().setup().drivers.values():
+            if identifier and driver.identifier != identifier:
+                continue
             driver_result_ui.append(
                 Panel(
                     Spinner(name="aesthetic", text="testing..."),
