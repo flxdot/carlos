@@ -78,6 +78,9 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
     maintainAspectRatio: true,
     aspectRatio: 3,
     responsive: true,
+    animation: {
+      duration: 0,
+    },
     plugins: {
       legend: {
         display: false,

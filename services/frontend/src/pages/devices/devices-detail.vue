@@ -18,7 +18,7 @@
     </router-link>
     <card class="device-card">
       <template #title>
-        <div class="input-group">
+        <div class="card-title">
           <device-status-badge
             v-if="deviceDetails !== undefined"
             :device="deviceDetails"
@@ -27,17 +27,17 @@
         </div>
       </template>
       <template #content>
-        <pre>{{ deviceDetails }}</pre>
+        <markdown-text :content="deviceDetails?.description || ''" />
       </template>
     </card>
     <card>
       <template #title>
-        <div class="flex gap-4 items-end">
+        <div class="card-title">
           <span>{{ renderTimeseriesAsString(temperatureTs, tempEmojis) }}</span>
           <span>{{ renderTimeseriesAsString(humidityTs, humidEmojis) }}</span>
           <span
             v-tooltip="lastDataAt !== undefined ? lastDataAt.format('lll') : ''"
-            class="text-sm font-normal"
+            class="card-title__sub"
           >{{ dataAge }}</span>
         </div>
       </template>
@@ -45,7 +45,7 @@
         <message
           severity="warn"
           :closable="false"
-          style="margin: 0"
+          style="margin-top: 0"
         >
           The shown data is for presentation purposes only. The real data is not yet connected.
         </message>
@@ -92,6 +92,8 @@ import {
   tempEmojis,
   humidEmojis,
 } from '@/utils/value-render.ts';
+import ChangelogContent from "../../../PUBLIC_CHANGELOG.md";
+import MarkdownText from "@/components/markdown-text/markdown-text.vue";
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -181,6 +183,18 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+
+.card-title {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+
+  &__sub {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+  }
+}
 
 @media only screen and (width <= 769px) {
   .container-group {
