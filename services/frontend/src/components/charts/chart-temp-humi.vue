@@ -117,7 +117,7 @@ function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: 
         if (mediaSize >= MediaSize.TABLET) {
           return `${value} ${timeseries.unitSymbol}`;
         }
-        return '';
+        return `${value}`;
       },
     },
     afterBuildTicks: setConstantTicks(ticks),

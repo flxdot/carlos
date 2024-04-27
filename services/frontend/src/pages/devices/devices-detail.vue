@@ -210,6 +210,14 @@ onBeforeUnmount(() => {
   }
 }
 
+@media only screen and (width <= 481px) {
+  .card-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
 @media only screen and (width <= 769px) {
   .container-group {
     margin-top: 1rem;
