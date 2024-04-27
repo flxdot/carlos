@@ -52,9 +52,19 @@ const tempGradient = ref<Gradient>({
   chartHeight: undefined,
   gradient: undefined,
 });
+const tempBgGradient = ref<Gradient>({
+  chartWidth: undefined,
+  chartHeight: undefined,
+  gradient: undefined,
+});
 const tempYLimit = computed<TAxisLimit>(() => getSuitableLimit(tempLimits, props.temperature.values));
 
 const humidGradient = ref<Gradient>({
+  chartWidth: undefined,
+  chartHeight: undefined,
+  gradient: undefined,
+});
+const humidBgGradient = ref<Gradient>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
@@ -63,7 +73,9 @@ const humidYLimit = computed<TAxisLimit>(() => getSuitableLimit(humidityLimits, 
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => {
   const tempColor = borderColor(tempGradient.value, tempYLimit.value, vividTemperatureGradient);
+  const tempBgColor = borderColor(tempBgGradient.value, tempYLimit.value, vividTemperatureGradient, 0.5, true);
   const humidColor = borderColor(humidGradient.value, humidYLimit.value, pastelHumidityGradient);
+  const humidBgColor = borderColor(humidBgGradient.value, humidYLimit.value, pastelHumidityGradient, 0.5, true);
 
   return {
     datasets: [
@@ -71,8 +83,9 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
         label: 'Temperature',
         data: toPoints(props.temperature),
         borderWidth: 2,
-        backgroundColor: tempColor,
         borderColor: tempColor,
+        backgroundColor: tempBgColor,
+        fill: true,
         pointStyle: false,
         yAxisID: 'temp',
         // The tension helps to smooth the line in case of oversampling
@@ -82,8 +95,9 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
         label: 'Humidity',
         data: toPoints(props.humidity),
         borderWidth: 3,
-        backgroundColor: humidColor,
         borderColor: humidColor,
+        backgroundColor: humidBgColor,
+        fill: false,
         borderDash: DASHED,
         pointStyle: false,
         yAxisID: 'humid',

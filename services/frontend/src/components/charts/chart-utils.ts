@@ -64,9 +64,12 @@ export function updateGradient(
   chartArea: ChartArea,
   yLim: [number, number],
   colorStops: ColorStop[],
+  alpha: number = 1,
+  alphaGradient: boolean = false,
 ): Gradient {
   const chartWidth = chartArea.right - chartArea.left;
   const chartHeight = chartArea.bottom - chartArea.top;
+
 
   // Create the gradient because this is either the first render or the size of the chart has changed
   if (!gradient.gradient || gradient.chartWidth !== chartWidth || gradient.chartHeight !== chartHeight) {
@@ -79,7 +82,9 @@ export function updateGradient(
     for (const colorStop of colorStops) {
       const relativeY = (colorStop.atValue - yLim[0]) / (yLim[1] - yLim[0]);
       if (relativeY >= 0 && relativeY <= 1) {
-        gradient.gradient.addColorStop(relativeY, colorStop.color);
+        const totalAlpha = alphaGradient ? alpha * (relativeY - 0.15) : alpha;
+        const alphaHex = Math.round(255 * Math.min(1, Math.max(0, totalAlpha))).toString(16).padStart(2, '0');
+        gradient.gradient.addColorStop(relativeY, colorStop.color + alphaHex);
       }
     }
   }
@@ -87,7 +92,7 @@ export function updateGradient(
   return gradient;
 }
 
-export function borderColor(gradient: Gradient, yLim: [number, number], colorStops: ColorStop[]) {
+export function borderColor(gradient: Gradient, yLim: [number, number], colorStops: ColorStop[], alpha: number = 1, alphaGradient: boolean = false) {
   return (context: ScriptableChartContext) => {
     const {
       ctx, chartArea,
@@ -98,7 +103,7 @@ export function borderColor(gradient: Gradient, yLim: [number, number], colorSto
       return undefined;
     }
 
-    return updateGradient(gradient, ctx, chartArea, yLim, colorStops).gradient;
+    return updateGradient(gradient, ctx, chartArea, yLim, colorStops, alpha, alphaGradient).gradient;
   };
 }
 
