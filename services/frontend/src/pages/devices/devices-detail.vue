@@ -56,7 +56,7 @@
       </template>
       <template #content>
         <message
-          severity="warn"
+          severity="def"
           :closable="false"
           style="margin-top: 0"
         >
@@ -64,6 +64,16 @@
         </message>
         <chart-temp-humi
           :temperature="temperatureTs"
+          :humidity="humidityTs"
+        />
+        <chart-temp-humi-two
+          :temperature="temperatureTs"
+          :humidity="humidityTs"
+        />
+        <chart-temp
+          :temperature="temperatureTs"
+        />
+        <chart-humi
           :humidity="humidityTs"
         />
       </template>
@@ -107,6 +117,9 @@ import {
   humidEmojis,
 } from '@/utils/value-render.ts';
 import MarkdownText from '@/components/markdown-text/markdown-text.vue';
+import ChartTemp from '@/components/charts/chart-temp.vue';
+import ChartHumi from '@/components/charts/chart-humi.vue';
+import ChartTempHumiTwo from '@/components/charts/chart-temp-humi-two.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -196,7 +209,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-
+.p-card {
+  background: var(--carlos-bg-color);
+  color: var(--carlos-text-color);
+}
 .card-title {
   display: flex;
   gap: 1rem;

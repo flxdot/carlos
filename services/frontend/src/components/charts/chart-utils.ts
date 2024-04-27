@@ -3,8 +3,12 @@ import {
   ChartArea, Scale, ScriptableChartContext,
 } from 'chart.js';
 import {
-  ITimeseries,
+  ITimeseries, TAxisLimit, TLineAxisProps,
 } from '@/components/charts/chart-types.ts';
+import {
+  getMediaCategory, MediaSize,
+} from '@/utils/window.ts';
+import i18n from '@/plugins/i18n';
 
 export function generateChartTimestamps(days: number, minutesBetweenSamples: number): string[] {
   const timestamps: string[] = [];
@@ -69,7 +73,6 @@ export function updateGradient(
 ): Gradient {
   const chartWidth = chartArea.right - chartArea.left;
   const chartHeight = chartArea.bottom - chartArea.top;
-
 
   // Create the gradient because this is either the first render or the size of the chart has changed
   if (!gradient.gradient || gradient.chartWidth !== chartWidth || gradient.chartHeight !== chartHeight) {
@@ -136,4 +139,37 @@ export function toPoints(timeseries: ITimeseries): {x: string, y: number}[] {
     x: timestamp,
     y: timeseries.values[index],
   }));
+}
+
+export function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: TAxisLimit, ticks: number[], tickPrefix: (arg0: number) => string): TLineAxisProps[string] {
+  const mediaSize = getMediaCategory();
+
+  return {
+    // @ts-ignore - unsure why the types do not match
+    type: 'linear',
+    display: true,
+    position,
+    title: {
+      display: mediaSize >= MediaSize.DESKTOP,
+      text: i18n.global.t('data.labelWithUnit', {
+        label: timeseries.label,
+        unit: timeseries.unitSymbol,
+      }),
+    },
+    min: limits[0],
+    max: limits[1],
+    ticks: {
+      callback: (value: number) => {
+        return `${value}`;
+        if (mediaSize >= MediaSize.DESKTOP) {
+          return `${tickPrefix(value)} ${value} ${timeseries.unitSymbol}`;
+        }
+        if (mediaSize >= MediaSize.TABLET) {
+          return `${value} ${timeseries.unitSymbol}`;
+        }
+        return `${value}`;
+      },
+    },
+    afterBuildTicks: setConstantTicks(ticks),
+  };
 }

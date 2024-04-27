@@ -17,4 +17,34 @@ define the Carlos theme.
   --carlos-bg-color: #1f2128;
 
   --carlos-danger-color: #ef4444;
+
+  /* Palette ONE */
+  --carlos-palette1-sycamore: #a4833a;
+  --carlos-palette1-firefly: #133b34;
+  --carlos-palette1-charlotte: #acf9ea;
+  --carlos-palette1-nutmeg: #792c29;
+
+  /* palette two */
+  --carlos-palette2-cream: #f4fec1;
+  --carlos-palette2-mindaro: #d9f9a5;
+  --carlos-palette2-citron: #d2d68d;
+  --carlos-palette2-cinerous: #81726a;
+  --carlos-palette2-wenge: #68534d;
+
+    /* palette three */
+  --carlos-palette3-mindaro: #cbe896;
+  --carlos-palette3-ash-grey: #aac0aa;
+  --carlos-palette3-peach-yellow: #fcdfa6;
+  --carlos-palette3-beaver: #a18276;
+  --carlos-palette3-fawn: #f4b886;
+
+  /* palette ten */
+  --carlos-palette-ten: #f9c74f;
+
+  /* palette jet */
+  --carlos-palette-jet1: #366dea;
+  --carlos-palette-jet2: #7dcce1;
+  --carlos-palette-jet3: #bccf71;
+  --carlos-palette-jet4: #f0ce47;
+  --carlos-palette-jet5: #ab3124;
 }

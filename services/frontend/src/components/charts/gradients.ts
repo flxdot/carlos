@@ -31,35 +31,35 @@ export const pastelTemperatureGradient: ColorStop[] = [
 export const vividTemperatureGradient: ColorStop[] = [
   {
     atValue: -16, // °C
-    color: '#366DEA',
+    color: '#366dea',
   },
   {
     atValue: -6, // °C
-    color: '#56A2F5',
+    color: '#56a2f5',
   },
   {
     atValue: 5, // °C
-    color: '#7DCCE1',
+    color: '#7dcce1',
   },
   {
     atValue: 11, // °C
-    color: '#8AD1C0',
+    color: '#8ad1c0',
   },
   {
     atValue: 16, // °C
-    color: '#BCCF71',
+    color: '#bccf71',
   },
   {
     atValue: 21, // °C
-    color: '#F0CE47',
+    color: '#f0ce47',
   },
   {
     atValue: 38, // °C
-    color: '#C73E2F',
+    color: '#c73e2f',
   },
   {
     atValue: 43, // °C
-    color: '#AB3124',
+    color: '#ab3124',
   },
 ];
 
@@ -93,26 +93,61 @@ export const pastelHumidityGradient: ColorStop[] = [
 export const vividHumidityGradient: ColorStop[] = [
   {
     atValue: 0, // %
-    color: '#56A2F5',
+    color: '#56a2f5',
   },
   {
     atValue: 10, // %
-    color: '#56A2F5',
+    color: '#56a2f5',
   },
   {
     atValue: 30, // %
-    color: '#65DB7C',
+    color: '#65db7c',
   },
   {
     atValue: 70, // %
-    color: '#65DB7C',
+    color: '#65db7c',
   },
   {
     atValue: 90, // %
-    color: '#F0CE47',
+    color: '#f0ce47',
   },
   {
     atValue: 100, // %
-    color: '#F0CE47',
+    color: '#f0ce47',
+  },
+];
+
+export const carlosPalettePrimary: ColorStop[] = [
+  {
+    atValue: 0,
+    color: '#98b274',
+  },
+  {
+    atValue: 40,
+    color: '#98b274',
+  },
+];
+
+const col = '#acf9ea';
+
+export const carlosPaletteSand: ColorStop[] = [
+  {
+    atValue: 0,
+    color: col,
+  },
+  {
+    atValue: 100,
+    color: col,
+  },
+];
+
+export const carlosPaletteBrown: ColorStop[] = [
+  {
+    atValue: 0,
+    color: '#7f7750',
+  },
+  {
+    atValue: 100,
+    color: '#7f7750',
   },
 ];

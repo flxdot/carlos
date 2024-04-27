@@ -48,18 +48,19 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         unit: 'day',
       },
       ticks: {
+        display: false,
         color,
       },
       border: {
         display: false,
-        color: surfaceBorder,
+        color,
       },
       grid: {
         display: true,
         drawOnChartArea: true,
         drawTicks: true,
-        color: surfaceBorder,
-        tickColor: surfaceBorder,
+        color,
+        tickColor: color,
       },
     },
   };
@@ -68,21 +69,23 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   Object.keys(props.yAxes).forEach((key, index) => {
     const yAxisOverwrite: TLineAxisProps[string] = {
       title: {
+        display: false,
         color,
       },
       ticks: {
+        display: true,
         color,
       },
       border: {
         display: false,
-        color: surfaceBorder,
+        color,
       },
       grid: {
         display: false,
         drawOnChartArea: true,
         drawTicks: true,
-        color: surfaceBorder,
-        tickColor: surfaceBorder,
+        color,
+        tickColor: color,
       },
     };
 
@@ -95,6 +98,9 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
     aspectRatio: 3,
     animation: {
       duration: 0,
+    },
+    layout: {
+      padding: 0,
     },
     plugins: {
       legend: {
