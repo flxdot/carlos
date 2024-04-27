@@ -123,15 +123,19 @@ onMounted(() => {
   updateDevice();
   intervalId = setInterval(updateDevice, UPDATE_INTERVAL);
 
+  // Some representative data to showcase the full spectrum of the chart
   const timestamps = generateChartTimestamps(7, 1);
-  const temperature = generateSinWaveFromTimestamps(timestamps, 8, 25, 0);
-  const humidity = generateSinWaveFromTimestamps(timestamps, 7.3, 90, 1);
-
-  temperatureTs.value.timestamps = timestamps;
-  temperatureTs.value.values = temperature;
-
   humidityTs.value.timestamps = timestamps;
-  humidityTs.value.values = humidity;
+  temperatureTs.value.timestamps = timestamps;
+
+  const dailyTemp = generateSinWaveFromTimestamps(timestamps, 8, 0, 0);
+  const weeklyTemp = generateSinWaveFromTimestamps(timestamps, 32, 20, 1, 1/7);
+  temperatureTs.value.values = dailyTemp.map((daily, index) => daily + weeklyTemp[index]);
+
+  const dailyHumid = generateSinWaveFromTimestamps(timestamps, 7.3, 0, 2);
+  const weeklyHumid = generateSinWaveFromTimestamps(timestamps, 90, 50, 3, 1/7);
+  humidityTs.value.values = dailyHumid.map((daily, index) => daily + weeklyHumid[index]);
+
 });
 
 onBeforeUnmount(() => {

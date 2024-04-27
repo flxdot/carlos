@@ -24,18 +24,19 @@ export function generateChartTimestamps(days: number, minutesBetweenSamples: num
   return timestamps.reverse();
 }
 
-export function generateSinWaveFromTimestamps(timestamps: string[], amplitude: number = 1, offset: number = 0, phaseShift: number = 0): number[] {
+export function generateSinWaveFromTimestamps(timestamps: string[], amplitude: number = 1, offset: number = 0, phaseShift: number = 0, frequency: number = 1): number[] {
   const sinWave: number[] = [];
 
-  const angularFrequency: number = 2 * Math.PI / 24;
+  const angularFrequency: number = 2 * Math.PI;
 
   // Loop through the provided timestamps
+  const firstTimestamp: dayjs.Dayjs = dayjs(timestamps[0]);
   for (const timestamp of timestamps) {
     const date: dayjs.Dayjs = dayjs(timestamp);
 
-    const timeHours: number = date.hour() + date.minute() / 60 + date.second() / 3600;
+    const days: number = date.diff(firstTimestamp) / (24 * 60 * 60 * 1000);
 
-    const sineValue: number = offset + amplitude / 2 * Math.sin(angularFrequency * timeHours + phaseShift);
+    const sineValue: number = offset + amplitude / 2 * Math.sin(angularFrequency * days * frequency + phaseShift);
 
     sinWave.push(sineValue);
   }
