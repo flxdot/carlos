@@ -7,11 +7,19 @@ const authentication = {
   logout: 'Abmelden',
 };
 
+const data = {
+  labelWithUnit: '{label} in {unit}',
+};
+
 const device = {
   status: {
     online: 'Online',
     offline: 'Offline',
+    offlineSince: 'Offline set {time}',
     disconnected: 'Getrennt',
+  },
+  warning: {
+    dummyData: 'Die gezeigten Daten sind nur für Präsentationszwecke. Die echten Daten sind noch nicht verbunden.',
   },
 };
 
@@ -35,6 +43,7 @@ const pages = {
 
 export default {
   authentication,
+  data,
   device,
   error,
   navbar,

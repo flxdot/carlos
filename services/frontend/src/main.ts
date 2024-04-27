@@ -5,6 +5,7 @@ import {
   createPinia,
 } from 'pinia';
 import PrimeVue from 'primevue/config';
+import Tooltip from 'primevue/tooltip';
 import {
   createAuth0,
 } from '@auth0/auth0-vue';
@@ -18,6 +19,8 @@ import '@/styles/main.css';
 import '@/styles/carlos.css';
 import config from '@/config.ts';
 import i18n from '@/plugins/i18n';
+import '@/plugins/chartjs';
+import '@/plugins/dayjs';
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -38,5 +41,7 @@ app.use(
   }),
 );
 app.use(router);
+
+app.directive('tooltip', Tooltip);
 
 app.mount('#app');
