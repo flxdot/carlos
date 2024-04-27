@@ -8,7 +8,6 @@
 
 <script setup lang="ts">
 import Chart from 'primevue/chart';
-import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 
 import {
   computed,
