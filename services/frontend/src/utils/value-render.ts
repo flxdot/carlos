@@ -2,30 +2,36 @@ export function tempEmojis(temp: number): string {
   if (temp <= 0) {
     return '❄️';
   }
-  if (temp <= 10) {
+  if (temp < 10) {
     return '🥶';
   }
+  if (temp < 15) {
+    return '😨';
+  }
   if (temp < 21) {
-    return '😊';
+    return '😬';
   }
   if (temp < 32) {
-    return '🌞';
+    return '😊';
+  }
+  if (temp < 35) {
+    return '🫠';
   }
   return '🥵';
 }
 
 export function humidEmojis(humid: number): string {
-  if (humid < 25) {
-    return '🏜️';
+  if (humid < 10) {
+    return '🔥';
   }
   if (humid < 30) {
     return '🌵';
   }
   if (humid <= 70) {
-    return '🌳';
+    return '👌';
   }
-  if (humid <= 75) {
-    return '🌧️';
+  if (humid <= 90) {
+    return '🌴';
   }
-  return '💧';
+  return '💦';
 }
