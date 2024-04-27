@@ -3,6 +3,7 @@
     type="line"
     :data="chartData"
     :options="chartOptions"
+    :style="{ height: props.height || '20rem' }"
   />
 </template>
 
@@ -30,6 +31,7 @@ import {
 const props = defineProps<{
   chartData: DeepPartial<TLineChartData>,
   yAxes: TLineAxisProps,
+  height: string,
 }>();
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => props.chartData);
