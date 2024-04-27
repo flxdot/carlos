@@ -78,6 +78,7 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
     maintainAspectRatio: true,
     aspectRatio: 3,
     responsive: true,
+    resizeDelay: 350,
     animation: {
       duration: 0,
     },

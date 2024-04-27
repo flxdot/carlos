@@ -43,7 +43,7 @@
         />
       </template>
     </card>
-    <card>
+    <card class="device-card">
       <template #title>
         <div class="card-title">
           <span>{{ renderTimeseriesAsString(temperatureTs, tempEmojis) }}</span>
@@ -201,6 +201,7 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 1rem;
   align-items: flex-end;
+  flex-wrap: wrap;
 
   &__sub {
     font-size: 0.875rem;
