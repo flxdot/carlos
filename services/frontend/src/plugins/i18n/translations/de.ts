@@ -11,6 +11,7 @@ const device = {
   status: {
     online: 'Online',
     offline: 'Offline',
+    offlineSince: 'Offline set {time}',
     disconnected: 'Getrennt',
   },
 };

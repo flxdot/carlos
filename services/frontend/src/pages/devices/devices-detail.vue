@@ -31,18 +31,24 @@
       </template>
     </card>
     <card>
+      <template #title>
+        <div class="flex gap-4 items-end">
+          <span>{{ renderTimeseriesAsString(temperatureTs, tempEmojis) }}</span>
+          <span>{{ renderTimeseriesAsString(humidityTs, humidEmojis) }}</span>
+          <span
+            v-tooltip="lastDataAt !== undefined ? lastDataAt.format('lll') : ''"
+            class="text-sm font-normal"
+          >{{ dataAge }}</span>
+        </div>
+      </template>
       <template #content>
         <message
           severity="warn"
           :closable="false"
           style="margin: 0"
         >
-          The shown data is for presentation pruposes only. The real data is not yet connected.
+          The shown data is for presentation purposes only. The real data is not yet connected.
         </message>
-        <div class="flex gap-4 p-4">
-          <span>{{ renderTimeseriesAsString(temperatureTs, tempEmojis) }}</span>
-          <span>{{ renderTimeseriesAsString(humidityTs, humidEmojis) }}</span>
-        </div>
         <chart-temp-humi
           :temperature="temperatureTs"
           :humidity="humidityTs"
@@ -56,13 +62,16 @@
 import {
   ref,
   onMounted,
-  onBeforeUnmount,
+  onBeforeUnmount, computed,
 } from 'vue';
 import {
   useRoute,
 } from 'vue-router';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
+import dayjs, {
+  Dayjs,
+} from 'dayjs';
 import {
   getDeviceDetail, TGetDeviceDetailResponse,
 } from '@/api/devices.ts';
@@ -104,9 +113,37 @@ const humidityTs = ref<ITimeseries>({
   values: [],
 });
 
-function renderTimeseriesAsString(ts: ITimeseries, suffix: (num: number) => string): string {
+const lastDataAt = computed<Dayjs | undefined>(() => {
+  const lastTempAt = temperatureTs.value.timestamps[temperatureTs.value.timestamps.length - 1];
+  const lastHumidAt = humidityTs.value.timestamps[humidityTs.value.timestamps.length - 1];
+
+  if (lastTempAt === undefined && lastHumidAt === undefined) {
+    return undefined;
+  }
+
+  return dayjs.max(dayjs(lastTempAt), dayjs(lastHumidAt))!;
+});
+
+const dataAge = computed<string | undefined>(() => {
+  if (lastDataAt.value === undefined) {
+    return undefined;
+  }
+
+  return dayjs.duration(lastDataAt.value!.diff(dayjs())).humanize(true);
+});
+
+function renderTimeseriesAsString(ts: ITimeseries, suffix: ((num: number) => string) | undefined = undefined, showLabel: boolean = true): string {
   const value = ts.values[ts.values.length - 1];
-  return `${ts.label}: ${value !== undefined ? value.toFixed(1) : '-'} ${ts.unitSymbol} ${suffix(value)}`;
+  let rendered = `${value !== undefined ? value.toFixed(1) : '-'} ${ts.unitSymbol}`;
+
+  if (suffix !== undefined) {
+    rendered += ` ${suffix(value)}`;
+  }
+  if (showLabel) {
+    rendered = `${ts.label}: ${rendered}`;
+  }
+
+  return rendered;
 }
 
 function updateDevice() {

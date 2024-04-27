@@ -12,7 +12,7 @@
   <tag
     v-else
     severity="danger"
-    :value="i18n.global.t('device.status.offline')"
+    :value="`${i18n.global.t('device.status.offlineSince', { time: dayjs(device?.lastSeenAt ).fromNow(true)})}`"
   />
 </template>
 
@@ -21,6 +21,7 @@ import {
   defineProps,
 } from 'vue';
 import Tag from 'primevue/tag';
+import dayjs from 'dayjs';
 import i18n from '@/plugins/i18n';
 import {
   TGetDeviceDetailResponse,
