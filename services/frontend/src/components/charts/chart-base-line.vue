@@ -15,6 +15,7 @@ import {
 } from 'vue';
 import {
   ChartOptions,
+  Scale,
 } from 'chart.js';
 import {
   deepUnion,
@@ -38,7 +39,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => props.chartData);
 const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   const documentStyle = getComputedStyle(document.documentElement);
   const color = documentStyle.getPropertyValue('--text-color-secondary');
-  const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+  // const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
   const xAxis: TTimeAxisProps = {
     x: {
@@ -66,10 +67,10 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   };
   // explicitly set the color of the ticks and grid lines if not set in the props
   const yAxis: TLineAxisProps = {};
-  Object.keys(props.yAxes).forEach((key, index) => {
+  Object.keys(props.yAxes).forEach((key) => {
     const yAxisOverwrite: TLineAxisProps[string] = {
       title: {
-        display: false,
+        display: true,
         color,
       },
       ticks: {
@@ -87,6 +88,11 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         color,
         tickColor: color,
       },
+      afterFit: (scale: Scale) => {
+        // This line ensures that all Y axis have the same width and
+        // therefore all charts are synchronized
+        scale.width = 60; // eslint-disable-line no-param-reassign
+      },
     };
 
     yAxis[key] = deepUnion(props.yAxes[key], yAxisOverwrite);
@@ -101,6 +107,9 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
     },
     layout: {
       padding: 0,
+    },
+    interaction: {
+      mode: 'x',
     },
     plugins: {
       legend: {

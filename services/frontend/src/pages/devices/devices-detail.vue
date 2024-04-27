@@ -213,6 +213,7 @@ onBeforeUnmount(() => {
   background: var(--carlos-bg-color);
   color: var(--carlos-text-color);
 }
+
 .card-title {
   display: flex;
   gap: 1rem;

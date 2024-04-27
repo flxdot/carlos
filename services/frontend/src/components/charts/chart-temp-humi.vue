@@ -32,7 +32,6 @@ import {
   humidEmojis, tempEmojis,
 } from '@/utils/value-render.ts';
 import {
-  DASHED,
   humidityLimits,
   humidityTicks, LineWidth,
   tempLimits,
