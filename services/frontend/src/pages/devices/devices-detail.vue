@@ -30,6 +30,14 @@
         <pre>{{ deviceDetails }}</pre>
       </template>
     </card>
+    <card>
+      <template #content>
+        <chart-temp-humi
+          :temperature="temperatureTs"
+          :humidity="humidityTs"
+        />
+      </template>
+    </card>
   </div>
 </template>
 
@@ -51,6 +59,14 @@ import {
 } from '@/router/route-name.ts';
 import i18n from '@/plugins/i18n';
 import DeviceStatusBadge from '@/components/device/device-status-badge.vue';
+import ChartTempHumi from '@/components/charts/chart-temp-humi.vue';
+import {
+  Timeseries,
+} from '@/components/charts/chart-types.ts';
+import {
+  generateChartTimestamps,
+  generateSinWaveFromTimestamps,
+} from '@/components/charts/chart-utils.ts';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -58,6 +74,19 @@ let intervalId: ReturnType<typeof setInterval>;
 const route = useRoute();
 
 const deviceDetails = ref<TGetDeviceDetailResponse | undefined>(undefined);
+
+const temperatureTs = ref<Timeseries>({
+  label: 'Temperature',
+  unitSymbol: '°C',
+  timestamps: [],
+  values: [],
+});
+const humidityTs = ref<Timeseries>({
+  label: 'Humidity',
+  unitSymbol: '%',
+  timestamps: [],
+  values: [],
+});
 
 function updateDevice() {
   getDeviceDetail(
@@ -72,6 +101,16 @@ function updateDevice() {
 onMounted(() => {
   updateDevice();
   intervalId = setInterval(updateDevice, UPDATE_INTERVAL);
+
+  const timestamps = generateChartTimestamps(7, 1);
+  const temperature = generateSinWaveFromTimestamps(timestamps, 5, 20, 0);
+  const humidity = generateSinWaveFromTimestamps(timestamps, 6, 40, 1);
+
+  temperatureTs.value.timestamps = timestamps;
+  temperatureTs.value.values = temperature;
+
+  humidityTs.value.timestamps = timestamps;
+  humidityTs.value.values = humidity;
 });
 
 onBeforeUnmount(() => {

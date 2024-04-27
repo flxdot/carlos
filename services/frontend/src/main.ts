@@ -8,6 +8,9 @@ import PrimeVue from 'primevue/config';
 import {
   createAuth0,
 } from '@auth0/auth0-vue';
+import {
+  Chart,
+} from 'chart.js';
 import App from './app.vue';
 import router from '@/router';
 import 'primevue/resources/themes/aura-light-lime/theme.css';
@@ -38,5 +41,8 @@ app.use(
   }),
 );
 app.use(router);
+
+Chart.defaults.font.size = 14;
+Chart.defaults.font.family = 'Geist';
 
 app.mount('#app');
