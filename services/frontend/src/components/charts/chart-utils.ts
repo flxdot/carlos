@@ -107,3 +107,18 @@ export function setConstantTicks(ticks: number[]) {
     }));
   };
 }
+
+export function roundToNearestMultiple(value: number, n: number): number {
+  return Math.sign(value) * Math.ceil(Math.abs(value / n)) * n;
+}
+
+export function getSuitableLimit(staticLimits: [number, number], values: number[], n: number = 5): [number, number] {
+  if (values.length === 0) {
+    return staticLimits;
+  }
+  return [
+    // eslint-disable-next-line array-element-newline
+    Math.min(staticLimits[0], roundToNearestMultiple(Math.min(...values), n)),
+    Math.max(staticLimits[1], roundToNearestMultiple(Math.max(...values), n)),
+  ];
+}

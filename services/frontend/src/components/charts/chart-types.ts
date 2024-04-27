@@ -4,3 +4,5 @@ export interface Timeseries {
     timestamps: string[];
     values: number[];
 }
+
+export type AxisLimit = [number, number];

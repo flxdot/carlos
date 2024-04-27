@@ -12,26 +12,31 @@ import {
   ref,
 } from 'vue';
 import {
-  ChartTypeRegistry,
-  ScaleOptionsByType,
+  LinearScaleOptions,
 } from 'chart.js';
 import ChartBase from '@/components/charts/chart-base.vue';
 import {
+  AxisLimit,
   Timeseries,
 } from '@/components/charts/chart-types.ts';
 import {
   borderColor,
   Gradient,
-  ColorStop, setConstantTicks,
+  getSuitableLimit, setConstantTicks,
 } from '@/components/charts/chart-utils.ts';
-import {
-  tempEmojis,
-  humidEmojis,
-} from '@/utils/value-render.ts';
 import {
   pastelHumidityGradient,
   vividTemperatureGradient,
 } from '@/components/charts/gradients.ts';
+import {
+  humidEmojis, tempEmojis,
+} from '@/utils/value-render.ts';
+import {
+  humidityLimits,
+  humidityTicks,
+  tempLimits,
+  tempTicks,
+} from '@/components/charts/constants.ts';
 
 const props = defineProps<{temperature: Timeseries, humidity: Timeseries}>();
 
@@ -40,24 +45,18 @@ const tempGradient = ref<Gradient>({
   chartHeight: undefined,
   gradient: undefined,
 });
-const tempYLimit = [
-  0,
-  40,
-] as [number, number];
+const tempYLimit = computed<AxisLimit>(() => getSuitableLimit(tempLimits, props.temperature.values));
 
 const humidGradient = ref<Gradient>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
-const humidYLimit = [
-  0,
-  100,
-] as [number, number];
+const humidYLimit = computed<AxisLimit>(() => getSuitableLimit(humidityLimits, props.humidity.values));
 
 const chartData = computed(() => {
-  const tempColor = borderColor(tempGradient.value, tempYLimit, vividTemperatureGradient);
-  const humidColor = borderColor(humidGradient.value, humidYLimit, pastelHumidityGradient);
+  const tempColor = borderColor(tempGradient.value, tempYLimit.value, vividTemperatureGradient);
+  const humidColor = borderColor(humidGradient.value, humidYLimit.value, pastelHumidityGradient);
 
   return {
     datasets: [
@@ -82,10 +81,7 @@ const chartData = computed(() => {
         borderWidth: 3,
         backgroundColor: humidColor,
         borderColor: humidColor,
-        borderDash: [
-          2,
-          4,
-        ],
+        borderDash: [10, 10],
         pointStyle: false,
         yAxisID: 'humid',
       },
@@ -97,8 +93,10 @@ const chartData = computed(() => {
 // Peppers (Paprika): Peppers, including paprika, also prefer temperatures similar to tomatoes. They grow best in temperatures around 70°F to 85°F (21°C to 29°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night.
 // Zucchini: Zucchini plants prefer slightly warmer temperatures compared to tomatoes and peppers. They grow best in temperatures around 70°F to 90°F (21°C to 32°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night.
 
-const yAxes: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales']> } = {
-  temp: {
+export type TAxis = { [p: string]: Partial<LinearScaleOptions> };
+
+const yAxes = computed<TAxis>(() => {
+  const tempAxis = {
     type: 'linear',
     display: true,
     position: 'left',
@@ -106,20 +104,15 @@ const yAxes: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales
       display: true,
       text: 'Temperature in °C',
     },
-    min: tempYLimit[0],
-    max: tempYLimit[1],
+    min: tempYLimit.value[0],
+    max: tempYLimit.value[1],
     ticks: {
       callback: (value: number) => `${tempEmojis(value)} ${value} °C`,
     },
-    afterBuildTicks: setConstantTicks([
-      0,
-      10,
-      20,
-      30,
-      40,
-    ]),
-  },
-  humid: {
+    afterBuildTicks: setConstantTicks(tempTicks),
+  };
+
+  const humidAxis = {
     type: 'linear',
     display: true,
     position: 'right',
@@ -127,19 +120,18 @@ const yAxes: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales
       display: true,
       text: 'Humidity in %',
     },
-    min: humidYLimit[0],
-    max: humidYLimit[1],
+    min: humidYLimit.value[0],
+    max: humidYLimit.value[1],
     ticks: {
       callback: (value: number) => `${humidEmojis(value)} ${value} %`,
     },
-    afterBuildTicks: setConstantTicks([
-      0,
-      25,
-      50,
-      75,
-      100,
-    ]),
-  },
-};
+    afterBuildTicks: setConstantTicks(humidityTicks),
+  };
+
+  return {
+    temp: tempAxis,
+    humid: humidAxis,
+  };
+});
 
 </script>

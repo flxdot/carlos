@@ -74,7 +74,7 @@ export const pastelHumidityGradient: ColorStop[] = [
     color: '#d5e8d4',
   },
   {
-    atValue: 67, // %
+    atValue: 70, // %
     color: '#d5e8d4',
   },
   {
@@ -84,5 +84,32 @@ export const pastelHumidityGradient: ColorStop[] = [
   {
     atValue: 100, // %
     color: '#8ab6d6',
+  },
+];
+
+export const vividHumidityGradient: ColorStop[] = [
+  {
+    atValue: 0, // %
+    color: '#56A2F5',
+  },
+  {
+    atValue: 10, // %
+    color: '#56A2F5',
+  },
+  {
+    atValue: 30, // %
+    color: '#65DB7C',
+  },
+  {
+    atValue: 70, // %
+    color: '#65DB7C',
+  },
+  {
+    atValue: 90, // %
+    color: '#F0CE47',
+  },
+  {
+    atValue: 100, // %
+    color: '#F0CE47',
   },
 ];

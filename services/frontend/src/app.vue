@@ -35,13 +35,7 @@ const {
   getAccessTokenSilently,
 } = useAuth0();
 
-watch([
-  isAuthenticated,
-  isLoading,
-], async ([
-  newIsAuthenticate,
-  newIsLoading,
-]) => {
+watch([isAuthenticated, isLoading], async ([newIsAuthenticate, newIsLoading]) => {
   if (newIsAuthenticate && !newIsLoading) {
     authStore.setToken(await getAccessTokenSilently());
   } else {
