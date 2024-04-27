@@ -3,6 +3,7 @@
     type="line"
     :data="chartData"
     :options="chartOptions"
+    :plugins="[crosshair]"
     :style="{ height: props.height || '20rem' }"
   />
 </template>
@@ -32,9 +33,9 @@ import {
   borderColor, Gradient,
 } from '@/components/charts/chart-utils.ts';
 import {
-  carlosPaletteBrown,
-  pastelHumidityGradient, xTicksGradient,
+  xTicksGradient,
 } from '@/components/charts/gradients.ts';
+import crosshair from '@/components/charts/crosshair.ts';
 
 const props = defineProps<{
   chartData: DeepPartial<TLineChartData>,
@@ -136,6 +137,9 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
       intersect: false,
     },
     plugins: {
+      tooltip: {
+        enabled: false,
+      },
       legend: {
         display: false,
       },

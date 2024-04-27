@@ -85,7 +85,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
         pointHoverRadius: 5,
         pointRadius: 0,
         fill: true,
-        pointStyle: 'circle',
+        pointStyle: false,
         yAxisID: 'temp',
         // The tension helps to smooth the line in case of oversampling
         tension: 0.1,
