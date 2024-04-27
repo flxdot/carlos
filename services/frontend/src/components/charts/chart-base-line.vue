@@ -31,7 +31,7 @@ import {
 const props = defineProps<{
   chartData: DeepPartial<TLineChartData>,
   yAxes: TLineAxisProps,
-  height: string,
+  height?: string,
 }>();
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => props.chartData);
