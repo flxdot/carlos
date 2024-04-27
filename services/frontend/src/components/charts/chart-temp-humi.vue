@@ -1,5 +1,5 @@
 <template>
-  <chart-base
+  <chart-base-line
     :chart-data="chartData"
     :y-axes="yAxes"
   />
@@ -11,13 +11,10 @@ import {
   computed,
   ref,
 } from 'vue';
+import ChartBaseLine from '@/components/charts/chart-base-line.vue';
 import {
-  LinearScaleOptions,
-} from 'chart.js';
-import ChartBase from '@/components/charts/chart-base.vue';
-import {
-  AxisLimit,
-  Timeseries,
+  TAxisLimit,
+  ITimeseries, TLineAxisProps, TLineChartData,
 } from '@/components/charts/chart-types.ts';
 import {
   borderColor,
@@ -37,24 +34,27 @@ import {
   tempLimits,
   tempTicks,
 } from '@/components/charts/constants.ts';
+import {
+  DeepPartial,
+} from '@/utils/types.ts';
 
-const props = defineProps<{temperature: Timeseries, humidity: Timeseries}>();
+const props = defineProps<{temperature: ITimeseries, humidity: ITimeseries}>();
 
 const tempGradient = ref<Gradient>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
-const tempYLimit = computed<AxisLimit>(() => getSuitableLimit(tempLimits, props.temperature.values));
+const tempYLimit = computed<TAxisLimit>(() => getSuitableLimit(tempLimits, props.temperature.values));
 
 const humidGradient = ref<Gradient>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
-const humidYLimit = computed<AxisLimit>(() => getSuitableLimit(humidityLimits, props.humidity.values));
+const humidYLimit = computed<TAxisLimit>(() => getSuitableLimit(humidityLimits, props.humidity.values));
 
-const chartData = computed(() => {
+const chartData = computed<DeepPartial<TLineChartData>>(() => {
   const tempColor = borderColor(tempGradient.value, tempYLimit.value, vividTemperatureGradient);
   const humidColor = borderColor(humidGradient.value, humidYLimit.value, pastelHumidityGradient);
 
@@ -86,16 +86,10 @@ const chartData = computed(() => {
         yAxisID: 'humid',
       },
     ],
-  };
+  } as DeepPartial<TLineChartData>;
 });
 
-// Tomatoes: Tomatoes prefer temperatures between 70°F to 85°F (21°C to 29°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night for optimal growth and fruit production.
-// Peppers (Paprika): Peppers, including paprika, also prefer temperatures similar to tomatoes. They grow best in temperatures around 70°F to 85°F (21°C to 29°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night.
-// Zucchini: Zucchini plants prefer slightly warmer temperatures compared to tomatoes and peppers. They grow best in temperatures around 70°F to 90°F (21°C to 32°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night.
-
-export type TAxis = { [p: string]: Partial<LinearScaleOptions> };
-
-const yAxes = computed<TAxis>(() => {
+const yAxes = computed<TLineAxisProps>(() => {
   const tempAxis = {
     type: 'linear',
     display: true,
@@ -131,7 +125,7 @@ const yAxes = computed<TAxis>(() => {
   return {
     temp: tempAxis,
     humid: humidAxis,
-  };
+  } as TLineAxisProps;
 });
 
 </script>

@@ -15,30 +15,34 @@ import {
 } from 'vue';
 import {
   ChartOptions,
-  ChartData,
-  ScaleOptionsByType,
-  ChartTypeRegistry,
 } from 'chart.js';
 import {
   deepUnion,
 } from '@/utils/object.ts';
+import {
+  TLineAxisProps,
+  TLineChartData,
+  TTimeAxisProps,
+} from '@/components/charts/chart-types.ts';
+import {
+  DeepPartial,
+} from '@/utils/types.ts';
 
 const props = defineProps<{
-  chartData: ChartData,
-  yAxes: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales']> },
+  chartData: DeepPartial<TLineChartData>,
+  yAxes: TLineAxisProps,
 }>();
 
-type AxisProps = { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales']> }
-
-const chartData = computed<ChartData>(() => props.chartData);
-const chartOptions = computed<ChartOptions>(() => {
+const chartData = computed<DeepPartial<TLineChartData>>(() => props.chartData);
+const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   const documentStyle = getComputedStyle(document.documentElement);
   const textColor = documentStyle.getPropertyValue('--text-color');
   const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
   const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-  const xAxis: AxisProps = {
+  const xAxis: TTimeAxisProps = {
     x: {
+      // @ts-ignore - unsure why the types do not match
       type: 'time',
       time: {
         unit: 'day',
@@ -52,9 +56,9 @@ const chartOptions = computed<ChartOptions>(() => {
     },
   };
   // explicitly set the color of the ticks and grid lines if not set in the props
-  const yAxis: AxisProps = {};
+  const yAxis: TLineAxisProps = {};
   Object.keys(props.yAxes).forEach((key, index) => {
-    const yAxisOverwrite: AxisProps[string] = {
+    const yAxisOverwrite: TLineAxisProps[string] = {
       title: {
         color: textColor,
       },

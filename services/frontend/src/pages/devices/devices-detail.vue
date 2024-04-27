@@ -73,7 +73,7 @@ import i18n from '@/plugins/i18n';
 import DeviceStatusBadge from '@/components/device/device-status-badge.vue';
 import ChartTempHumi from '@/components/charts/chart-temp-humi.vue';
 import {
-  Timeseries,
+  ITimeseries,
 } from '@/components/charts/chart-types.ts';
 import {
   generateChartTimestamps,
@@ -91,20 +91,20 @@ const route = useRoute();
 
 const deviceDetails = ref<TGetDeviceDetailResponse | undefined>(undefined);
 
-const temperatureTs = ref<Timeseries>({
+const temperatureTs = ref<ITimeseries>({
   label: 'Temperature',
   unitSymbol: '°C',
   timestamps: [],
   values: [],
 });
-const humidityTs = ref<Timeseries>({
+const humidityTs = ref<ITimeseries>({
   label: 'Humidity',
   unitSymbol: '%',
   timestamps: [],
   values: [],
 });
 
-function renderTimeseriesAsString(ts: Timeseries, suffix: (num: number) => string): string {
+function renderTimeseriesAsString(ts: ITimeseries, suffix: (num: number) => string): string {
   const value = ts.values[ts.values.length - 1];
   return `${ts.label}: ${value !== undefined ? value.toFixed(1) : '-'} ${ts.unitSymbol} ${suffix(value)}`;
 }

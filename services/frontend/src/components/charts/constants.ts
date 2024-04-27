@@ -1,8 +1,8 @@
 import {
-  AxisLimit,
+  TAxisLimit,
 } from '@/components/charts/chart-types.ts';
 
-export const tempLimits = [0, 40] as AxisLimit;
+export const tempLimits = [0, 40] as TAxisLimit;
 export const tempTicks = [
   0,
   10,
@@ -11,7 +11,7 @@ export const tempTicks = [
   40,
 ];
 
-export const humidityLimits = [0, 100] as AxisLimit;
+export const humidityLimits = [0, 100] as TAxisLimit;
 export const humidityTicks = [
   0,
   25,
