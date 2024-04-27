@@ -11,7 +11,7 @@
 import Chart from 'primevue/chart';
 
 import {
-  computed,
+  computed, ref,
 } from 'vue';
 import {
   ChartOptions,
@@ -28,6 +28,13 @@ import {
 import {
   DeepPartial,
 } from '@/utils/types.ts';
+import {
+  borderColor, Gradient,
+} from '@/components/charts/chart-utils.ts';
+import {
+  carlosPaletteBrown,
+  pastelHumidityGradient, xTicksGradient,
+} from '@/components/charts/gradients.ts';
 
 const props = defineProps<{
   chartData: DeepPartial<TLineChartData>,
@@ -35,10 +42,16 @@ const props = defineProps<{
   height?: string,
 }>();
 
+const humidGradient = ref<Gradient>({
+  chartWidth: undefined,
+  chartHeight: undefined,
+  gradient: undefined,
+});
+
 const chartData = computed<DeepPartial<TLineChartData>>(() => props.chartData);
 const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   const documentStyle = getComputedStyle(document.documentElement);
-  const color = documentStyle.getPropertyValue('--text-color-secondary');
+  const color = documentStyle.getPropertyValue('--carlos-bg-text--dark');
   // const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
   const xAxis: TTimeAxisProps = {
@@ -49,7 +62,7 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         unit: 'day',
       },
       ticks: {
-        display: false,
+        display: true,
         color,
       },
       border: {
@@ -60,8 +73,14 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         display: true,
         drawOnChartArea: true,
         drawTicks: true,
-        color,
-        tickColor: color,
+        color: borderColor(humidGradient.value, [
+          0,
+          1,
+        ], xTicksGradient),
+        tickColor: borderColor(humidGradient.value, [
+          0,
+          1,
+        ], xTicksGradient),
       },
     },
   };
@@ -110,6 +129,11 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
     },
     interaction: {
       mode: 'x',
+      intersect: false,
+    },
+    hover: {
+      mode: 'x',
+      intersect: false,
     },
     plugins: {
       legend: {

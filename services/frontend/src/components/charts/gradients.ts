@@ -136,10 +136,25 @@ export const carlosPaletteSand: ColorStop[] = [
 export const carlosPaletteBrown: ColorStop[] = [
   {
     atValue: 0,
-    color: '#7f7750',
+    color: '#f4fec1',
   },
   {
     atValue: 100,
-    color: '#7f7750',
+    color: '#f4fec1',
+  },
+];
+
+export const xTicksGradient: ColorStop[] = [
+  {
+    atValue: 0,
+    color: '#64748b',
+  },
+  {
+    atValue: 0.6,
+    color: '#64748b',
+  },
+  {
+    atValue: 0.9,
+    color: '#1f2128',
   },
 ];
