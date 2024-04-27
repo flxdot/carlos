@@ -35,9 +35,14 @@
         <message
           severity="warn"
           :closable="false"
+          style="margin: 0"
         >
           The shown data is for presentation pruposes only. The real data is not yet connected.
         </message>
+        <div class="flex gap-4 p-4">
+          <span>{{ renderTimeseriesAsString(temperatureTs, tempEmojis) }}</span>
+          <span>{{ renderTimeseriesAsString(humidityTs, humidEmojis) }}</span>
+        </div>
         <chart-temp-humi
           :temperature="temperatureTs"
           :humidity="humidityTs"
@@ -74,6 +79,10 @@ import {
   generateChartTimestamps,
   generateSinWaveFromTimestamps,
 } from '@/components/charts/chart-utils.ts';
+import {
+  tempEmojis,
+  humidEmojis,
+} from '@/utils/value-render.ts';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -95,6 +104,11 @@ const humidityTs = ref<Timeseries>({
   values: [],
 });
 
+function renderTimeseriesAsString(ts: Timeseries, suffix: (num: number) => string): string {
+  const value = ts.values[ts.values.length - 1];
+  return `${ts.label}: ${value !== undefined ? value.toFixed(1) : '-'} ${ts.unitSymbol} ${suffix(value)}`;
+}
+
 function updateDevice() {
   getDeviceDetail(
     {
@@ -110,8 +124,8 @@ onMounted(() => {
   intervalId = setInterval(updateDevice, UPDATE_INTERVAL);
 
   const timestamps = generateChartTimestamps(7, 1);
-  const temperature = generateSinWaveFromTimestamps(timestamps, 40, 20, 0);
-  const humidity = generateSinWaveFromTimestamps(timestamps, 100, 50, 1);
+  const temperature = generateSinWaveFromTimestamps(timestamps, 8, 25, 0);
+  const humidity = generateSinWaveFromTimestamps(timestamps, 7.3, 90, 1);
 
   temperatureTs.value.timestamps = timestamps;
   temperatureTs.value.values = temperature;
