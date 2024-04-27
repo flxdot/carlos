@@ -29,6 +29,7 @@ import {
   humidEmojis, tempEmojis,
 } from '@/utils/value-render.ts';
 import {
+  DASHED,
   humidityLimits,
   humidityTicks,
   tempLimits,
@@ -85,7 +86,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
         borderWidth: 3,
         backgroundColor: humidColor,
         borderColor: humidColor,
-        borderDash: [10, 10],
+        borderDash: DASHED,
         pointStyle: false,
         yAxisID: 'humid',
       },

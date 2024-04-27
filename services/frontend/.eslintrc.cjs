@@ -6,8 +6,6 @@ module.exports = {
     '**/*.scss',
   ],
   rules: {
-    'array-bracket-newline': ["error", { "multiline": true, "minItems": 3 }],
-    'array-element-newline': ["error", { "multiline": true, "minItems": 3 }],
     'no-mixed-operators': 'off',
     'no-plusplus': 'off',
     'no-underscore-dangle': [

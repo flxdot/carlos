@@ -248,7 +248,10 @@ const userName = computed<string | undefined>(() => {
 
 const userInitials = computed<string>(() => {
   if (userName.value) {
-    const [firstName, lastName] = userName.value.split(' ');
+    const [
+      firstName,
+      lastName,
+    ] = userName.value.split(' ');
     return `${firstName.charAt(0)}${lastName ? lastName.charAt(0) : ''}`;
   }
   return '';
