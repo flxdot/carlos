@@ -69,20 +69,12 @@ export const pastelHumidityGradient: ColorStop[] = [
     color: '#f29595',
   },
   {
-    atValue: 25, // %
-    color: '#f29595',
-  },
-  {
     atValue: 30, // %
     color: '#d5e8d4',
   },
   {
     atValue: 70, // %
     color: '#d5e8d4',
-  },
-  {
-    atValue: 75, // %
-    color: '#8ab6d6',
   },
   {
     atValue: 100, // %
@@ -128,7 +120,7 @@ export const carlosPalettePrimary: ColorStop[] = [
   },
 ];
 
-const col = '#acf9ea';
+const col = '#f0ce47';
 
 export const carlosPaletteSand: ColorStop[] = [
   {

@@ -94,8 +94,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
         borderWidth: LineWidth,
         borderColor: humidColor,
         backgroundColor: humidBgColor,
-        fill: false,
-        borderDash: DASHED,
+        fill: true,
         pointStyle: false,
         yAxisID: 'humid',
         // The tension helps to smooth the line in case of oversampling
