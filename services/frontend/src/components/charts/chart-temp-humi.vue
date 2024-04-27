@@ -19,7 +19,9 @@ import {
 import {
   borderColor,
   Gradient,
-  getSuitableLimit, setConstantTicks,
+  getSuitableLimit,
+  setConstantTicks,
+  toPoints,
 } from '@/components/charts/chart-utils.ts';
 import {
   pastelHumidityGradient,
@@ -67,10 +69,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
     datasets: [
       {
         label: 'Temperature',
-        data: props.temperature.timestamps.map((timestamp, index) => ({
-          x: timestamp,
-          y: props.temperature.values[index],
-        })),
+        data: toPoints(props.temperature),
         borderWidth: 2,
         backgroundColor: tempColor,
         borderColor: tempColor,
@@ -79,10 +78,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
       },
       {
         label: 'Humidity',
-        data: props.humidity.timestamps.map((timestamp, index) => ({
-          x: timestamp,
-          y: props.humidity.values[index],
-        })),
+        data: toPoints(props.humidity),
         borderWidth: 3,
         backgroundColor: humidColor,
         borderColor: humidColor,

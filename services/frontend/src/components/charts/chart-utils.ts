@@ -2,6 +2,9 @@ import dayjs from 'dayjs';
 import {
   ChartArea, Scale, ScriptableChartContext,
 } from 'chart.js';
+import {
+  ITimeseries,
+} from '@/components/charts/chart-types.ts';
 
 export function generateChartTimestamps(days: number, minutesBetweenSamples: number): string[] {
   const timestamps: string[] = [];
@@ -121,4 +124,11 @@ export function getSuitableLimit(staticLimits: [number, number], values: number[
     Math.min(staticLimits[0], roundToNearestMultiple(Math.min(...values), n)),
     Math.max(staticLimits[1], roundToNearestMultiple(Math.max(...values), n)),
   ];
+}
+
+export function toPoints(timeseries: ITimeseries): {x: string, y: number}[] {
+  return timeseries.timestamps.map((timestamp, index) => ({
+    x: timestamp,
+    y: timeseries.values[index],
+  }));
 }
