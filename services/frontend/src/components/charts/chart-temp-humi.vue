@@ -108,6 +108,7 @@ const chartData = computed(() => {
           x: timestamp,
           y: props.temperature.values[index],
         })),
+        borderWidth: 2,
         borderColor: borderColor(tempGradient.value, tempYLimit, tempColorStops),
         pointStyle: false,
         yAxisID: 'temp',
@@ -118,6 +119,7 @@ const chartData = computed(() => {
           x: timestamp,
           y: props.humidity.values[index],
         })),
+        borderWidth: 3,
         borderColor: borderColor(humidGradient.value, humidYLimit, humidColorStops),
         borderDash: [
           2,
