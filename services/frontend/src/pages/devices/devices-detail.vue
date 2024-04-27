@@ -18,7 +18,14 @@
     </router-link>
     <card class="device-card">
       <template #title>
-        <div class="card-title">
+        <skeleton
+          v-if="deviceDetails === undefined"
+          height="1.875rem"
+        />
+        <div
+          v-else
+          class="card-title"
+        >
           <device-status-badge
             v-if="deviceDetails !== undefined"
             :device="deviceDetails"
@@ -27,7 +34,13 @@
         </div>
       </template>
       <template #content>
-        <markdown-text :content="deviceDetails?.description || ''" />
+        <skeleton
+          v-if="deviceDetails === undefined"
+        />
+        <markdown-text
+          v-else
+          :content="deviceDetails?.description || ''"
+        />
       </template>
     </card>
     <card>
@@ -69,6 +82,7 @@ import {
 } from 'vue-router';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
+import Skeleton from 'primevue/skeleton';
 import dayjs, {
   Dayjs,
 } from 'dayjs';
@@ -92,8 +106,7 @@ import {
   tempEmojis,
   humidEmojis,
 } from '@/utils/value-render.ts';
-import ChangelogContent from "../../../PUBLIC_CHANGELOG.md";
-import MarkdownText from "@/components/markdown-text/markdown-text.vue";
+import MarkdownText from '@/components/markdown-text/markdown-text.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
