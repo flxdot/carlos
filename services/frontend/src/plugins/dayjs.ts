@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import '@/plugins/i18n/dayjs_i18n';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import duration from 'dayjs/plugin/duration';
