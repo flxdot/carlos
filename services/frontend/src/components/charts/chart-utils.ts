@@ -75,7 +75,9 @@ export function updateGradient(
     gradient.gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
     for (const colorStop of colorStops) {
       const relativeY = (colorStop.atValue - yLim[0]) / (yLim[1] - yLim[0]);
-      gradient.gradient.addColorStop(relativeY, colorStop.color);
+      if (relativeY >= 0 && relativeY <= 1) {
+        gradient.gradient.addColorStop(relativeY, colorStop.color);
+      }
     }
   }
 

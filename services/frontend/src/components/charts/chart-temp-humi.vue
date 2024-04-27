@@ -28,31 +28,13 @@ import {
   tempEmojis,
   humidEmojis,
 } from '@/utils/value-render.ts';
+import {
+  pastelHumidityGradient,
+  vividTemperatureGradient,
+} from '@/components/charts/gradients.ts';
 
 const props = defineProps<{temperature: Timeseries, humidity: Timeseries}>();
 
-const tempColorStops: ColorStop[] = [
-  {
-    atValue: 10, // °C
-    color: '#8ab6d6',
-  },
-  {
-    atValue: 16, // °C
-    color: '#a9d6e2',
-  },
-  {
-    atValue: 26, // °C
-    color: '#d5e8d4',
-  },
-  {
-    atValue: 35, // °C
-    color: '#f6d6c9',
-  },
-  {
-    atValue: 40, // °C
-    color: '#f29595',
-  },
-];
 const tempGradient = ref<Gradient>({
   chartWidth: undefined,
   chartHeight: undefined,
@@ -63,32 +45,6 @@ const tempYLimit = [
   40,
 ] as [number, number];
 
-const humidColorStops: ColorStop[] = [
-  {
-    atValue: 0, // %
-    color: '#f29595',
-  },
-  {
-    atValue: 25, // %
-    color: '#f29595',
-  },
-  {
-    atValue: 30, // %
-    color: '#d5e8d4',
-  },
-  {
-    atValue: 67, // %
-    color: '#d5e8d4',
-  },
-  {
-    atValue: 75, // %
-    color: '#8ab6d6',
-  },
-  {
-    atValue: 100, // %
-    color: '#8ab6d6',
-  },
-];
 const humidGradient = ref<Gradient>({
   chartWidth: undefined,
   chartHeight: undefined,
@@ -100,6 +56,9 @@ const humidYLimit = [
 ] as [number, number];
 
 const chartData = computed(() => {
+  const tempColor = borderColor(tempGradient.value, tempYLimit, vividTemperatureGradient);
+  const humidColor = borderColor(humidGradient.value, humidYLimit, pastelHumidityGradient);
+
   return {
     datasets: [
       {
@@ -109,7 +68,8 @@ const chartData = computed(() => {
           y: props.temperature.values[index],
         })),
         borderWidth: 2,
-        borderColor: borderColor(tempGradient.value, tempYLimit, tempColorStops),
+        backgroundColor: tempColor,
+        borderColor: tempColor,
         pointStyle: false,
         yAxisID: 'temp',
       },
@@ -120,7 +80,8 @@ const chartData = computed(() => {
           y: props.humidity.values[index],
         })),
         borderWidth: 3,
-        borderColor: borderColor(humidGradient.value, humidYLimit, humidColorStops),
+        backgroundColor: humidColor,
+        borderColor: humidColor,
         borderDash: [
           2,
           4,
