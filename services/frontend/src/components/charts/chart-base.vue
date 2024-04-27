@@ -19,11 +19,16 @@ import {
   ScaleOptionsByType,
   ChartTypeRegistry,
 } from 'chart.js';
+import {
+  deepUnion,
+} from '@/utils/object.ts';
 
 const props = defineProps<{
   chartData: ChartData,
   yAxes: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales']> },
 }>();
+
+type AxisProps = { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales']> }
 
 const chartData = computed<ChartData>(() => props.chartData);
 const chartOptions = computed<ChartOptions>(() => {
@@ -32,7 +37,7 @@ const chartOptions = computed<ChartOptions>(() => {
   const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
   const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-  const xAxis: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales']> } = {
+  const xAxis: AxisProps = {
     x: {
       type: 'time',
       time: {
@@ -47,10 +52,12 @@ const chartOptions = computed<ChartOptions>(() => {
     },
   };
   // explicitly set the color of the ticks and grid lines if not set in the props
-  const yAxis: typeof props.yAxes = {};
+  const yAxis: AxisProps = {};
   Object.keys(props.yAxes).forEach((key, index) => {
-    yAxis[key] = {
-      ...props.yAxes[key],
+    const yAxisOverwrite: AxisProps[string] = {
+      title: {
+        color: textColor,
+      },
       ticks: {
         color: textColorSecondary,
       },
@@ -59,6 +66,8 @@ const chartOptions = computed<ChartOptions>(() => {
         color: surfaceBorder,
       },
     };
+
+    yAxis[key] = deepUnion(props.yAxes[key], yAxisOverwrite);
   });
 
   return {

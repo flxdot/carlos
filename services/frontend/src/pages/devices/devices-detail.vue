@@ -32,6 +32,12 @@
     </card>
     <card>
       <template #content>
+        <message
+          severity="warn"
+          :closable="false"
+        >
+          The shown data is for presentation pruposes only. The real data is not yet connected.
+        </message>
         <chart-temp-humi
           :temperature="temperatureTs"
           :humidity="humidityTs"
@@ -51,6 +57,7 @@ import {
   useRoute,
 } from 'vue-router';
 import Card from 'primevue/card';
+import Message from 'primevue/message';
 import {
   getDeviceDetail, TGetDeviceDetailResponse,
 } from '@/api/devices.ts';
@@ -103,8 +110,8 @@ onMounted(() => {
   intervalId = setInterval(updateDevice, UPDATE_INTERVAL);
 
   const timestamps = generateChartTimestamps(7, 1);
-  const temperature = generateSinWaveFromTimestamps(timestamps, 5, 20, 0);
-  const humidity = generateSinWaveFromTimestamps(timestamps, 6, 40, 1);
+  const temperature = generateSinWaveFromTimestamps(timestamps, 40, 20, 0);
+  const humidity = generateSinWaveFromTimestamps(timestamps, 100, 50, 1);
 
   temperatureTs.value.timestamps = timestamps;
   temperatureTs.value.values = temperature;

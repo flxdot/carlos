@@ -9,17 +9,91 @@
 import {
   defineProps,
   computed,
+  ref,
 } from 'vue';
 import {
-  ChartArea,
-  ChartTypeRegistry, ScaleOptionsByType, ScriptableChartContext,
+  ChartTypeRegistry,
+  ScaleOptionsByType,
 } from 'chart.js';
 import ChartBase from '@/components/charts/chart-base.vue';
 import {
   Timeseries,
 } from '@/components/charts/chart-types.ts';
+import {
+  borderColor,
+  Gradient,
+  ColorStop, setConstantTicks,
+} from '@/components/charts/chart-utils.ts';
 
 const props = defineProps<{temperature: Timeseries, humidity: Timeseries}>();
+
+const tempColorStops: ColorStop[] = [
+  {
+    atValue: 10, // °C
+    color: '#8ab6d6',
+  },
+  {
+    atValue: 16, // °C
+    color: '#a9d6e2',
+  },
+  {
+    atValue: 26, // °C
+    color: '#d5e8d4',
+  },
+  {
+    atValue: 35, // °C
+    color: '#f6d6c9',
+  },
+  {
+    atValue: 40, // °C
+    color: '#f29595',
+  },
+];
+const tempGradient = ref<Gradient>({
+  chartWidth: undefined,
+  chartHeight: undefined,
+  gradient: undefined,
+});
+const tempYLimit = [
+  0,
+  40,
+] as [number, number];
+
+const humidColorStops: ColorStop[] = [
+  {
+    atValue: 0, // %
+    color: '#f29595',
+  },
+  {
+    atValue: 25, // %
+    color: '#f29595',
+  },
+  {
+    atValue: 30, // %
+    color: '#d5e8d4',
+  },
+  {
+    atValue: 67, // %
+    color: '#d5e8d4',
+  },
+  {
+    atValue: 75, // %
+    color: '#8ab6d6',
+  },
+  {
+    atValue: 100, // %
+    color: '#8ab6d6',
+  },
+];
+const humidGradient = ref<Gradient>({
+  chartWidth: undefined,
+  chartHeight: undefined,
+  gradient: undefined,
+});
+const humidYLimit = [
+  0,
+  100,
+] as [number, number];
 
 const chartData = computed(() => {
   return {
@@ -30,17 +104,7 @@ const chartData = computed(() => {
           x: timestamp,
           y: props.temperature.values[index],
         })),
-        borderColor(context: ScriptableChartContext) {
-          const {
-            ctx, chartArea,
-          } = context.chart;
-
-          if (!chartArea) {
-          // This case happens on initial chart load
-            return;
-          }
-          return getTemperatureGradient(ctx, chartArea);
-        },
+        borderColor: borderColor(tempGradient.value, tempYLimit, tempColorStops),
         pointStyle: false,
         yAxisID: 'temp',
       },
@@ -50,17 +114,7 @@ const chartData = computed(() => {
           x: timestamp,
           y: props.humidity.values[index],
         })),
-        borderColor(context: ScriptableChartContext) {
-          const {
-            ctx, chartArea,
-          } = context.chart;
-
-          if (!chartArea) {
-          // This case happens on initial chart load
-            return;
-          }
-          return getHumidityGradient(ctx, chartArea);
-        },
+        borderColor: borderColor(humidGradient.value, humidYLimit, humidColorStops),
         borderDash: [
           2,
           4,
@@ -72,51 +126,9 @@ const chartData = computed(() => {
   };
 });
 
-let tempChartWidth: number | undefined;
-let tempChartheight: number | undefined;
-let tempGradient: CanvasGradient | undefined;
-function getTemperatureGradient(ctx: CanvasRenderingContext2D, chartArea: ChartArea): CanvasGradient {
-  const chartWidth = chartArea.right - chartArea.left;
-  const chartHeight = chartArea.bottom - chartArea.top;
-  if (!tempGradient || tempChartWidth !== chartWidth || tempChartheight !== chartHeight) {
-    // Create the gradient because this is either the first render
-    // or the size of the chart has changed
-    tempChartWidth = chartWidth;
-    tempChartheight = chartHeight;
-    tempGradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-    tempGradient!.addColorStop(0.01, '#8ab6d6');
-    tempGradient!.addColorStop(0.25, '#a9d6e2');
-    tempGradient!.addColorStop(0.50, '#d5e8d4');
-    tempGradient!.addColorStop(0.75, '#f6d6c9');
-    tempGradient!.addColorStop(0.99, '#f29595');
-    tempGradient!.addColorStop(1.00, '#f29595');
-  }
-
-  return tempGradient;
-}
-
-let humidChartWidth: number | undefined;
-let humidChartheight: number | undefined;
-let humidGradient: CanvasGradient | undefined;
-function getHumidityGradient(ctx: CanvasRenderingContext2D, chartArea: ChartArea): CanvasGradient {
-  const chartWidth = chartArea.right - chartArea.left;
-  const chartHeight = chartArea.bottom - chartArea.top;
-  if (!humidGradient || humidChartWidth !== chartWidth || humidChartheight !== chartHeight) {
-    // Create the gradient because this is either the first render
-    // or the size of the chart has changed
-    humidChartWidth = chartWidth;
-    humidChartheight = chartHeight;
-    humidGradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-    humidGradient!.addColorStop(0.00, '#f29595');
-    humidGradient!.addColorStop(0.25, '#f29595');
-    humidGradient!.addColorStop(0.35, '#d5e8d4');
-    humidGradient!.addColorStop(0.65, '#d5e8d4');
-    humidGradient!.addColorStop(0.75, '#8ab6d6');
-    humidGradient!.addColorStop(1.00, '#8ab6d6');
-  }
-
-  return humidGradient;
-}
+// Tomatoes: Tomatoes prefer temperatures between 70°F to 85°F (21°C to 29°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night for optimal growth and fruit production.
+// Peppers (Paprika): Peppers, including paprika, also prefer temperatures similar to tomatoes. They grow best in temperatures around 70°F to 85°F (21°C to 29°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night.
+// Zucchini: Zucchini plants prefer slightly warmer temperatures compared to tomatoes and peppers. They grow best in temperatures around 70°F to 90°F (21°C to 32°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night.
 
 const yAxes: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales']> } = {
   temp: {
@@ -127,17 +139,15 @@ const yAxes: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales
       display: true,
       text: 'Temperature in °C',
     },
-    min: -5,
-    max: 45,
-    afterBuildTicks: (axis) => axis.ticks = [
+    min: tempYLimit[0],
+    max: tempYLimit[1],
+    afterBuildTicks: setConstantTicks([
       0,
       10,
       20,
       30,
       40,
-    ].map((v) => ({
-      value: v,
-    })),
+    ]),
   },
   humid: {
     type: 'linear',
@@ -147,22 +157,16 @@ const yAxes: { [p: string]: ScaleOptionsByType<ChartTypeRegistry['line']['scales
       display: true,
       text: 'Humidity in %',
     },
-    min: -12.5,
-    max: 112.5,
-    afterBuildTicks: (axis) => axis.ticks = [
+    min: humidYLimit[0],
+    max: humidYLimit[1],
+    afterBuildTicks: setConstantTicks([
       0,
       25,
       50,
       75,
       100,
-    ].map((v) => ({
-      value: v,
-    })),
+    ]),
   },
 };
 
 </script>
-
-<style scoped lang="scss">
-
-</style>

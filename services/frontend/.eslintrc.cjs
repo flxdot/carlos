@@ -6,6 +6,7 @@ module.exports = {
     '**/*.scss',
   ],
   rules: {
+    'no-mixed-operators': 'off',
     'no-plusplus': 'off',
     'no-underscore-dangle': [
       'error',
