@@ -2,7 +2,7 @@
   "name": "Carlos",
   "scope": "/",
   "display": "standalone",
-  "start_url": "./index.html",
+  "start_url": "./",
   "icons": [
     {
       "src": "icons/carlos-icon-512.png",
