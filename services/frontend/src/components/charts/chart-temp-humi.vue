@@ -95,13 +95,15 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
 });
 
 function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: TAxisLimit, ticks: number[], tickPrefix: (arg0: number) => string): TLineAxisProps[string] {
+  const mediaSize = getMediaCategory();
+
   return {
     // @ts-ignore - unsure why the types do not match
     type: 'linear',
     display: true,
     position,
     title: {
-      display: getMediaCategory() >= MediaSize.DESKTOP,
+      display: mediaSize >= MediaSize.DESKTOP,
       text: i18n.global.t('data.labelWithUnit', {
         label: timeseries.label,
         unit: timeseries.unitSymbol,
@@ -111,7 +113,6 @@ function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: 
     max: limits[1],
     ticks: {
       callback: (value: number) => {
-        const mediaSize = getMediaCategory();
         if (mediaSize >= MediaSize.DESKTOP) {
           return `${tickPrefix(value)} ${value} ${timeseries.unitSymbol}`;
         }
