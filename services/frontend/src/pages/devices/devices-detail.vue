@@ -60,7 +60,7 @@
           :closable="false"
           style="margin-top: 0"
         >
-          The shown data is for presentation purposes only. The real data is not yet connected.
+          {{ i18n.global.t('device.warning.dummyData') }}
         </message>
         <chart-temp-humi
           :temperature="temperatureTs"

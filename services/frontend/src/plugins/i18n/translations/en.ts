@@ -14,6 +14,9 @@ const device = {
     offlineSince: 'Offline since {time}',
     disconnected: 'Disconnected',
   },
+  warning: {
+    dummyData: 'The shown data is for presentation purposes only. The real data is not yet connected.',
+  },
 };
 
 const error = {

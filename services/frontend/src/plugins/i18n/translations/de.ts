@@ -14,6 +14,9 @@ const device = {
     offlineSince: 'Offline set {time}',
     disconnected: 'Getrennt',
   },
+  warning: {
+    dummyData: 'Die gezeigten Daten sind nur für Präsentationszwecke. Die echten Daten sind noch nicht verbunden.',
+  },
 };
 
 const error = {
