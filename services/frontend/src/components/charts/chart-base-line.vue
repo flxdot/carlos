@@ -35,7 +35,6 @@ const props = defineProps<{
 const chartData = computed<DeepPartial<TLineChartData>>(() => props.chartData);
 const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   const documentStyle = getComputedStyle(document.documentElement);
-  const textColor = documentStyle.getPropertyValue('--text-color');
   const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
   const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
@@ -59,7 +58,7 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   Object.keys(props.yAxes).forEach((key, index) => {
     const yAxisOverwrite: TLineAxisProps[string] = {
       title: {
-        color: textColor,
+        color: textColorSecondary,
       },
       ticks: {
         color: textColorSecondary,
@@ -75,10 +74,8 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
 
   return {
     stacked: false,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     aspectRatio: 3,
-    responsive: true,
-    resizeDelay: 350,
     animation: {
       duration: 0,
     },

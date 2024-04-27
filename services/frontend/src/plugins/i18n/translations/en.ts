@@ -7,6 +7,10 @@ const authentication = {
   logout: 'Logout',
 };
 
+const data = {
+  labelWithUnit: '{label} in {unit}',
+};
+
 const device = {
   status: {
     online: 'Online',
@@ -39,6 +43,7 @@ const pages = {
 
 export default {
   authentication,
+  data,
   device,
   error,
   navbar,

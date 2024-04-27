@@ -37,6 +37,10 @@ import {
 import {
   DeepPartial,
 } from '@/utils/types.ts';
+import {
+  getMediaCategory, MediaSize,
+} from '@/utils/window.ts';
+import i18n from '@/plugins/i18n';
 
 const props = defineProps<{temperature: ITimeseries, humidity: ITimeseries}>();
 
@@ -89,42 +93,41 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
   } as DeepPartial<TLineChartData>;
 });
 
-const yAxes = computed<TLineAxisProps>(() => {
-  const tempAxis = {
-    type: 'linear',
-    display: true,
-    position: 'left',
-    title: {
-      display: true,
-      text: 'Temperature in °C',
-    },
-    min: tempYLimit.value[0],
-    max: tempYLimit.value[1],
-    ticks: {
-      callback: (value: number) => `${tempEmojis(value)} ${value} °C`,
-    },
-    afterBuildTicks: setConstantTicks(tempTicks),
-  };
-
-  const humidAxis = {
-    type: 'linear',
-    display: true,
-    position: 'right',
-    title: {
-      display: true,
-      text: 'Humidity in %',
-    },
-    min: humidYLimit.value[0],
-    max: humidYLimit.value[1],
-    ticks: {
-      callback: (value: number) => `${humidEmojis(value)} ${value} %`,
-    },
-    afterBuildTicks: setConstantTicks(humidityTicks),
-  };
-
+function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: TAxisLimit, ticks: number[], tickPrefix: (arg0: number) => string): TLineAxisProps[string] {
   return {
-    temp: tempAxis,
-    humid: humidAxis,
+    // @ts-ignore - unsure why the types do not match
+    type: 'linear',
+    display: true,
+    position,
+    title: {
+      display: getMediaCategory() >= MediaSize.DESKTOP,
+      text: i18n.global.t('data.labelWithUnit', {
+        label: timeseries.label,
+        unit: timeseries.unitSymbol,
+      }),
+    },
+    min: limits[0],
+    max: limits[1],
+    ticks: {
+      callback: (value: number) => {
+        const mediaSize = getMediaCategory();
+        if (mediaSize >= MediaSize.DESKTOP) {
+          return `${tickPrefix(value)} ${value} ${timeseries.unitSymbol}`;
+        }
+        if (mediaSize >= MediaSize.TABLET) {
+          return `${value} ${timeseries.unitSymbol}`;
+        }
+        return '';
+      },
+    },
+    afterBuildTicks: setConstantTicks(ticks),
+  };
+}
+
+const yAxes = computed<TLineAxisProps>(() => {
+  return {
+    temp: buildAxis('left', props.temperature, tempYLimit.value, tempTicks, tempEmojis),
+    humid: buildAxis('right', props.humidity, humidYLimit.value, humidityTicks, humidEmojis),
   } as TLineAxisProps;
 });
 
