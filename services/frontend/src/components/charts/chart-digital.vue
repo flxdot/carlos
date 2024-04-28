@@ -15,13 +15,11 @@ import {
 } from 'vue';
 import ChartBaseLine from '@/components/charts/chart-base-line.vue';
 import {
-  TAxisLimit,
   TLineAxisProps,
   TLineChartData,
 } from '@/components/charts/chart-types.ts';
 import {
   chartJsGradient,
-  getSuitableLimit,
   buildAxis,
 } from '@/components/charts/chart-utils.ts';
 import {
@@ -43,12 +41,14 @@ import {
 
 interface IChartAnalogProps {
   timeseries: ITimeseries;
-  limits: TAxisLimit;
-  ticks: number[];
   color: string | GradientDefinition | DiscreteGradientDefinition;
   height?: string;
-  tickStepSize?: number;
 }
+
+const limits: [number, number] = [
+  0,
+  1,
+];
 
 const props = withDefaults(defineProps<IChartAnalogProps>(), {
   height: '10rem',
@@ -65,9 +65,6 @@ const LineBgGradient = ref<GradientCache>({
   chartHeight: undefined,
   gradient: undefined,
 });
-const actualLimits = computed<TAxisLimit>(
-  () => getSuitableLimit(props.limits, props.timeseries.values, props.tickStepSize),
-);
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => {
   let gradient: GradientDefinition | DiscreteGradientDefinition;
@@ -77,8 +74,8 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
     gradient = props.color;
   }
 
-  const borderColor = chartJsGradient(lineGradient.value, gradient, actualLimits.value);
-  const backgroundColor = chartJsGradient(LineBgGradient.value, gradient, actualLimits.value, true);
+  const borderColor = chartJsGradient(lineGradient.value, gradient, limits);
+  const backgroundColor = chartJsGradient(LineBgGradient.value, gradient, limits, true);
 
   return {
     datasets: [
@@ -89,6 +86,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
         borderColor,
         backgroundColor,
         fill: true,
+        stepped: true,
         pointStyle: false,
         yAxisID: props.timeseries.displayName,
         // The tension helps to smooth the line in case of oversampling
@@ -103,8 +101,8 @@ const yAxes = computed<TLineAxisProps>(() => {
     [props.timeseries.displayName]: buildAxis(
       'left',
       props.timeseries,
-      actualLimits.value,
-      props.ticks,
+      limits,
+      limits,
       tempEmojis,
     ),
   } as TLineAxisProps;

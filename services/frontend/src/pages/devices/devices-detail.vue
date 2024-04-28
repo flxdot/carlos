@@ -68,15 +68,26 @@
         />
         <chart-analog
           :timeseries="temperatureTs"
-          color="#98b274"
+          :color="outdoorTemperatureGradientCelsius"
           :ticks="tempTicks"
           :limits="tempLimits"
+        />
+        <chart-analog
+          :timeseries="humidityTs"
+          :color="pastelHumidityGradient"
+          :ticks="humidityTicks"
+          :limits="humidityLimits"
         />
         <chart-analog
           :timeseries="humidityTs"
           color="#acf9ea"
           :ticks="humidityTicks"
           :limits="humidityLimits"
+        />
+        <chart-digital
+          :timeseries="valveTs"
+          color="#98b274"
+          height="5rem"
         />
       </template>
     </card>
@@ -126,6 +137,11 @@ import {
 import {
   ITimeseries,
 } from '@/components/charts/timeseries.ts';
+import {
+  outdoorTemperatureGradientCelsius,
+  pastelHumidityGradient,
+} from '@/components/charts/gradients.ts';
+import ChartDigital from "@/components/charts/chart-digital.vue";
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -143,6 +159,12 @@ const temperatureTs = ref<ITimeseries>({
 const humidityTs = ref<ITimeseries>({
   displayName: 'Humidity',
   unitSymbol: '%',
+  timestamps: [],
+  values: [],
+});
+const valveTs = ref<ITimeseries>({
+  displayName: 'Valve',
+  unitSymbol: '',
   timestamps: [],
   values: [],
 });
@@ -195,9 +217,10 @@ onMounted(() => {
   intervalId = setInterval(updateDevice, UPDATE_INTERVAL);
 
   // Some representative data to showcase the full spectrum of the chart
-  const timestamps = generateChartTimestamps(7, 1);
+  const timestamps = generateChartTimestamps(7, 60);
   temperatureTs.value.timestamps = timestamps;
   humidityTs.value.timestamps = timestamps;
+  valveTs.value.timestamps = timestamps;
 
   const dailyTemp = generateSinWaveFromTimestamps(timestamps, 8, 0, 0);
   const weeklyTemp = generateSinWaveFromTimestamps(timestamps, 32, 20, 1, 1 / 7);
@@ -206,6 +229,14 @@ onMounted(() => {
   const dailyHumid = generateSinWaveFromTimestamps(timestamps, 7.3, 0, 0);
   const weeklyHumid = generateSinWaveFromTimestamps(timestamps, 90, 50, 3, 1 / 7);
   humidityTs.value.values = dailyHumid.map((daily, index) => daily + weeklyHumid[index]);
+
+  const dailyValve = generateSinWaveFromTimestamps(timestamps, 1, 0, 10, 10);
+  const weeklyValve = generateSinWaveFromTimestamps(timestamps, 1, 0, 3, 3);
+  const combinedValve = dailyValve.map((daily, index) => daily * weeklyValve[index]);
+  const maxValve = Math.max(...combinedValve);
+  const minValve = Math.min(...combinedValve);
+  const normalizedValve = combinedValve.map((valve) => Math.round((valve - minValve) / (maxValve - minValve)));
+  valveTs.value.values = normalizedValve;
 });
 
 onBeforeUnmount(() => {

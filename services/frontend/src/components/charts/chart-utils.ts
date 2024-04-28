@@ -162,10 +162,10 @@ export function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, l
     position,
     title: {
       display: mediaSize >= MediaSize.DESKTOP,
-      text: i18n.global.t('data.labelWithUnit', {
+      text: timeseries.unitSymbol ? i18n.global.t('data.labelWithUnit', {
         label: timeseries.displayName,
         unit: timeseries.unitSymbol,
-      }),
+      }) : timeseries.displayName,
     },
     min: limits[0],
     max: limits[1],
