@@ -2,6 +2,7 @@
   <chart-base-line
     :chart-data="chartData"
     :y-axes="yAxes"
+    height="10rem"
   />
 </template>
 
@@ -14,26 +15,24 @@ import {
 import ChartBaseLine from '@/components/charts/chart-base-line.vue';
 import {
   TAxisLimit,
-  ITimeseries, TLineAxisProps, TLineChartData,
+  TLineAxisProps, TLineChartData,
 } from '@/components/charts/chart-types.ts';
 import {
-  borderColor,
-  Gradient,
+  chartJsGradient,
   getSuitableLimit,
-  setConstantTicks,
+  buildAxis,
   toPoints,
 } from '@/components/charts/chart-utils.ts';
 import {
   pastelHumidityGradient,
-  vividTemperatureGradient,
+  outdoorTemperatureGradientCelsius, GradientCache,
 } from '@/components/charts/gradients.ts';
 import {
   humidEmojis, tempEmojis,
 } from '@/utils/value-render.ts';
 import {
-  DASHED,
   humidityLimits,
-  humidityTicks,
+  humidityTicks, LineWidth,
   tempLimits,
   tempTicks,
 } from '@/components/charts/constants.ts';
@@ -41,20 +40,29 @@ import {
   DeepPartial,
 } from '@/utils/types.ts';
 import {
-  getMediaCategory, MediaSize,
-} from '@/utils/window.ts';
-import i18n from '@/plugins/i18n';
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
 
 const props = defineProps<{temperature: ITimeseries, humidity: ITimeseries}>();
 
-const tempGradient = ref<Gradient>({
+const tempGradient = ref<GradientCache>({
+  chartWidth: undefined,
+  chartHeight: undefined,
+  gradient: undefined,
+});
+const tempBgGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
 const tempYLimit = computed<TAxisLimit>(() => getSuitableLimit(tempLimits, props.temperature.values));
 
-const humidGradient = ref<Gradient>({
+const humidGradient = ref<GradientCache>({
+  chartWidth: undefined,
+  chartHeight: undefined,
+  gradient: undefined,
+});
+const humidBgGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
@@ -62,17 +70,23 @@ const humidGradient = ref<Gradient>({
 const humidYLimit = computed<TAxisLimit>(() => getSuitableLimit(humidityLimits, props.humidity.values));
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => {
-  const tempColor = borderColor(tempGradient.value, tempYLimit.value, vividTemperatureGradient);
-  const humidColor = borderColor(humidGradient.value, humidYLimit.value, pastelHumidityGradient);
+  const tempColor = chartJsGradient(tempGradient.value, outdoorTemperatureGradientCelsius, tempYLimit.value);
+  const tempBgColor = chartJsGradient(tempBgGradient.value, outdoorTemperatureGradientCelsius, tempYLimit.value, true);
+  const humidColor = chartJsGradient(humidGradient.value, pastelHumidityGradient, humidYLimit.value);
+  const humidBgColor = chartJsGradient(humidBgGradient.value, pastelHumidityGradient, humidYLimit.value, true);
 
   return {
     datasets: [
       {
         label: 'Temperature',
         data: toPoints(props.temperature),
-        borderWidth: 2,
-        backgroundColor: tempColor,
+        borderWidth: LineWidth,
         borderColor: tempColor,
+        backgroundColor: tempBgColor,
+        pointHoverBackgroundColor: tempColor,
+        pointHoverRadius: 5,
+        pointRadius: 0,
+        fill: true,
         pointStyle: false,
         yAxisID: 'temp',
         // The tension helps to smooth the line in case of oversampling
@@ -81,10 +95,10 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
       {
         label: 'Humidity',
         data: toPoints(props.humidity),
-        borderWidth: 3,
-        backgroundColor: humidColor,
+        borderWidth: LineWidth,
         borderColor: humidColor,
-        borderDash: DASHED,
+        backgroundColor: humidBgColor,
+        fill: true,
         pointStyle: false,
         yAxisID: 'humid',
         // The tension helps to smooth the line in case of oversampling
@@ -93,37 +107,6 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
     ],
   } as DeepPartial<TLineChartData>;
 });
-
-function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: TAxisLimit, ticks: number[], tickPrefix: (arg0: number) => string): TLineAxisProps[string] {
-  return {
-    // @ts-ignore - unsure why the types do not match
-    type: 'linear',
-    display: true,
-    position,
-    title: {
-      display: getMediaCategory() >= MediaSize.DESKTOP,
-      text: i18n.global.t('data.labelWithUnit', {
-        label: timeseries.label,
-        unit: timeseries.unitSymbol,
-      }),
-    },
-    min: limits[0],
-    max: limits[1],
-    ticks: {
-      callback: (value: number) => {
-        const mediaSize = getMediaCategory();
-        if (mediaSize >= MediaSize.DESKTOP) {
-          return `${tickPrefix(value)} ${value} ${timeseries.unitSymbol}`;
-        }
-        if (mediaSize >= MediaSize.TABLET) {
-          return `${value} ${timeseries.unitSymbol}`;
-        }
-        return `${value}`;
-      },
-    },
-    afterBuildTicks: setConstantTicks(ticks),
-  };
-}
 
 const yAxes = computed<TLineAxisProps>(() => {
   return {

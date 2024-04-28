@@ -1,75 +1,191 @@
 import {
-  ColorStop,
-} from '@/components/charts/chart-utils.ts';
+  ChartArea,
+} from 'chart.js';
+import Color from 'colorjs.io';
 
-// Tomatoes: Tomatoes prefer temperatures between 70°F to 85°F (21°C to 29°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night for optimal growth and fruit production.
-// Peppers (Paprika): Peppers, including paprika, also prefer temperatures similar to tomatoes. They grow best in temperatures around 70°F to 85°F (21°C to 29°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night.
-// Zucchini: Zucchini plants prefer slightly warmer temperatures compared to tomatoes and peppers. They grow best in temperatures around 70°F to 90°F (21°C to 32°C) during the day and slightly cooler temperatures around 60°F to 70°F (15°C to 21°C) during the night.
-export const pastelTemperatureGradient: ColorStop[] = [
-  {
-    atValue: 10, // °C
-    color: '#8ab6d6',
-  },
-  {
-    atValue: 16, // °C
-    color: '#a9d6e2',
-  },
-  {
-    atValue: 26, // °C
-    color: '#d5e8d4',
-  },
-  {
-    atValue: 35, // °C
-    color: '#f6d6c9',
-  },
-  {
-    atValue: 40, // °C
-    color: '#f29595',
-  },
-];
+/**
+ * Holds the calculated gradient for a chart.
+ *
+ * This is dpne to reduce the number of calculations needed to render the chart,
+ * as the gradient is only needs to be changed in case the size of the chart changes.
+ */
+export interface GradientCache {
+  chartWidth: number | undefined;
+  chartHeight: number | undefined;
+  gradient: CanvasGradient | undefined;
+}
 
-export const vividTemperatureGradient: ColorStop[] = [
+/**
+ * Represents a single color stop in a gradient.
+ *
+ * @property position - The position of the color stop in the gradient.
+ *    This is a value between 0 and 1.
+ * @property color - The color of the color stop.
+ */
+export interface ColorStop {
+  position: number,
+  color: string,
+}
+
+export type GradientDefinition = ColorStop[];
+
+/**
+ * Converts a single color to a gradient definitions with two color stops at 0.0 and 1.0.
+ *
+ * @param color - The color to convert to a gradient.
+ */
+export function colorToColorStop(color: string): GradientDefinition {
+  return [
+    {
+      position: 0.0,
+      color,
+    },
+    {
+      position: 1.0,
+      color,
+    },
+  ];
+}
+
+/**
+ * Difference to the ColorStop is that this gradient stop defines colors for actual
+ * values of the graph.
+ *
+ * @property atValue - The value at which the color should be applied.
+ * @property color - The color to apply at the value.
+ */
+export interface DiscreteColorStop {
+  atValue: number,
+  color: string,
+}
+
+export type DiscreteGradientDefinition = DiscreteColorStop[];
+
+export function convertDiscreteToColorStops(
+  discreteColorStops: DiscreteColorStop[],
+  axisLimits: [number, number],
+): GradientDefinition {
+  return discreteColorStops.map((discreteColorStop) => ({
+    position: (discreteColorStop.atValue - axisLimits[0]) / (axisLimits[1] - axisLimits[0]),
+    color: discreteColorStop.color,
+  }));
+}
+
+/**
+ * Represents a single alpha stop in a gradient.
+ *
+ * @property position - The position of the alpha stop in the gradient.
+ *    This is a value between 0 and 1.
+ * @property alpha - The alpha of the alpha stop. This is a value between 0 and 1.
+ */
+export interface AlphaStop {
+  position: number,
+  alpha: number,
+}
+
+/**
+ * Interpolates the alpha value for a given position based on the given alpha stops.
+ *
+ * @param alphaStops - The alpha stops to use for the interpolation.
+ * @param position - The position to interpolate the alpha for.
+ */
+export function interpolateAlpha(alphaStops: AlphaStop[], position: number): number {
+  if (alphaStops.length === 0) {
+    throw new Error('Alpha stops array is empty');
+  }
+  if (alphaStops.length === 1) {
+    return alphaStops[0].alpha;
+  }
+
+  alphaStops.sort((a, b) => a.position - b.position);
+  const posCapped = Math.min(Math.max(position, 0), 1);
+
+  if (posCapped <= alphaStops[0].position) {
+    return alphaStops[0].alpha;
+  }
+
+  for (let i = 1; i < alphaStops.length; i++) {
+    if (posCapped < alphaStops[i].position) {
+      const m = (alphaStops[i].alpha - alphaStops[i - 1].alpha) / (alphaStops[i].position - alphaStops[i - 1].position);
+      const x = (posCapped - alphaStops[i - 1].position);
+      const b = alphaStops[i - 1].alpha;
+      return (m * x) + b;
+    }
+  }
+
+  return alphaStops[alphaStops.length - 1].alpha;
+}
+
+/**
+ * Creates a new canvas gradient from the given color stops.
+ *
+ * @param ctx - The canvas rendering context.
+ * @param chartArea - The area of the chart to apply the gradient to.
+ * @param colorStops - The color stops to use for the gradient.
+ * @param alphaStops - The alpha stops to use for the gradient.
+ */
+export function buildGradient(
+  ctx: CanvasRenderingContext2D,
+  chartArea: ChartArea,
+  colorStops: GradientDefinition,
+  alphaStops: AlphaStop[] = [],
+): CanvasGradient {
+  const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+
+  for (const colorStop of colorStops) {
+    const color = new Color(colorStop.color);
+    if (alphaStops.length > 0) {
+      color.alpha = interpolateAlpha(alphaStops, colorStop.position);
+    }
+
+    gradient.addColorStop(Math.min(Math.max(colorStop.position, 0), 1), color.toString({
+      format: 'hex',
+    }));
+  }
+  return gradient;
+}
+
+/**
+ * A nice vivid gradient to be used for outdoor temperatures
+ */
+export const outdoorTemperatureGradientCelsius: DiscreteGradientDefinition = [
   {
     atValue: -16, // °C
-    color: '#366DEA',
+    color: '#366dea',
   },
   {
     atValue: -6, // °C
-    color: '#56A2F5',
+    color: '#56a2f5',
   },
   {
     atValue: 5, // °C
-    color: '#7DCCE1',
+    color: '#7dcce1',
   },
   {
     atValue: 11, // °C
-    color: '#8AD1C0',
+    color: '#8ad1c0',
   },
   {
     atValue: 16, // °C
-    color: '#BCCF71',
+    color: '#bccf71',
   },
   {
     atValue: 21, // °C
-    color: '#F0CE47',
+    color: '#f0ce47',
   },
   {
     atValue: 38, // °C
-    color: '#C73E2F',
+    color: '#c73e2f',
   },
   {
     atValue: 43, // °C
-    color: '#AB3124',
+    color: '#ab3124',
   },
 ];
 
-export const pastelHumidityGradient: ColorStop[] = [
+export const pastelHumidityGradient: DiscreteGradientDefinition = [
   {
     atValue: 0, // %
-    color: '#f29595',
-  },
-  {
-    atValue: 25, // %
     color: '#f29595',
   },
   {
@@ -81,38 +197,37 @@ export const pastelHumidityGradient: ColorStop[] = [
     color: '#d5e8d4',
   },
   {
-    atValue: 75, // %
-    color: '#8ab6d6',
-  },
-  {
     atValue: 100, // %
     color: '#8ab6d6',
   },
 ];
 
-export const vividHumidityGradient: ColorStop[] = [
+export const xTicksGradient: GradientDefinition = [
   {
-    atValue: 0, // %
-    color: '#56A2F5',
+    position: 0,
+    color: '#64748b',
   },
   {
-    atValue: 10, // %
-    color: '#56A2F5',
+    position: 0.6,
+    color: '#64748b',
   },
   {
-    atValue: 30, // %
-    color: '#65DB7C',
+    position: 0.9,
+    color: '#1f2128',
+  },
+];
+
+export const carlosPalettePrimary = colorToColorStop('#98b274');
+export const carlosPaletteBrown = colorToColorStop('#f4fec1');
+export const carlosPaletteSand = colorToColorStop('#f4d35e');
+export const carlosPaletteBlue = colorToColorStop('#acf9ea');
+export const lineBackgroundFade: AlphaStop[] = [
+  {
+    position: 0.1,
+    alpha: 0.0,
   },
   {
-    atValue: 70, // %
-    color: '#65DB7C',
-  },
-  {
-    atValue: 90, // %
-    color: '#F0CE47',
-  },
-  {
-    atValue: 100, // %
-    color: '#F0CE47',
+    position: 1.0,
+    alpha: 0.5,
   },
 ];

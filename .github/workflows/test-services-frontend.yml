@@ -67,6 +67,11 @@ jobs:
         working-directory: services/frontend
         run: yarn lint
 
+      - name: Unittest services/frontend
+        if: ${{ !cancelled() }}
+        working-directory: services/frontend
+        run: yarn test:unit
+
       - name: build workspace
         if: ${{ !cancelled() }}
         working-directory: .

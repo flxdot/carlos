@@ -56,7 +56,7 @@
       </template>
       <template #content>
         <message
-          severity="warn"
+          severity="def"
           :closable="false"
           style="margin-top: 0"
         >
@@ -65,6 +65,31 @@
         <chart-temp-humi
           :temperature="temperatureTs"
           :humidity="humidityTs"
+        />
+        <chart-analog
+          :timeseries="temperatureTs"
+          :color="outdoorTemperatureGradientCelsius"
+          :ticks="tempTicks"
+          :limits="tempLimits"
+          :show-x-ticks="false"
+        />
+        <chart-analog
+          :timeseries="humidityTs"
+          :color="pastelHumidityGradient"
+          :ticks="humidityTicks"
+          :limits="humidityLimits"
+          :show-x-ticks="false"
+        />
+        <chart-digital
+          :timeseries="valveTs"
+          color="#98b274"
+          height="3rem"
+          :show-x-ticks="false"
+        />
+        <chart-digital
+          :timeseries="valveTs"
+          color="#acf9ea"
+          height="4rem"
         />
       </template>
     </card>
@@ -96,9 +121,6 @@ import i18n from '@/plugins/i18n';
 import DeviceStatusBadge from '@/components/device/device-status-badge.vue';
 import ChartTempHumi from '@/components/charts/chart-temp-humi.vue';
 import {
-  ITimeseries,
-} from '@/components/charts/chart-types.ts';
-import {
   generateChartTimestamps,
   generateSinWaveFromTimestamps,
 } from '@/components/charts/chart-utils.ts';
@@ -107,6 +129,21 @@ import {
   humidEmojis,
 } from '@/utils/value-render.ts';
 import MarkdownText from '@/components/markdown-text/markdown-text.vue';
+import ChartAnalog from '@/components/charts/chart-analog.vue';
+import {
+  humidityLimits,
+  humidityTicks,
+  tempLimits,
+  tempTicks,
+} from '@/components/charts/constants.ts';
+import {
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
+import {
+  outdoorTemperatureGradientCelsius,
+  pastelHumidityGradient,
+} from '@/components/charts/gradients.ts';
+import ChartDigital from '@/components/charts/chart-digital.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -116,14 +153,20 @@ const route = useRoute();
 const deviceDetails = ref<TGetDeviceDetailResponse | undefined>(undefined);
 
 const temperatureTs = ref<ITimeseries>({
-  label: 'Temperature',
+  displayName: 'Temperature',
   unitSymbol: '°C',
   timestamps: [],
   values: [],
 });
 const humidityTs = ref<ITimeseries>({
-  label: 'Humidity',
+  displayName: 'Humidity',
   unitSymbol: '%',
+  timestamps: [],
+  values: [],
+});
+const valveTs = ref<ITimeseries>({
+  displayName: 'Valve',
+  unitSymbol: '',
   timestamps: [],
   values: [],
 });
@@ -155,7 +198,7 @@ function renderTimeseriesAsString(ts: ITimeseries, suffix: ((num: number) => str
     rendered += ` ${suffix(value)}`;
   }
   if (showLabel) {
-    rendered = `${ts.label}: ${rendered}`;
+    rendered = `${ts.displayName}: ${rendered}`;
   }
 
   return rendered;
@@ -176,9 +219,10 @@ onMounted(() => {
   intervalId = setInterval(updateDevice, UPDATE_INTERVAL);
 
   // Some representative data to showcase the full spectrum of the chart
-  const timestamps = generateChartTimestamps(7, 1);
-  humidityTs.value.timestamps = timestamps;
+  const timestamps = generateChartTimestamps(7, 60);
   temperatureTs.value.timestamps = timestamps;
+  humidityTs.value.timestamps = timestamps;
+  valveTs.value.timestamps = timestamps;
 
   const dailyTemp = generateSinWaveFromTimestamps(timestamps, 8, 0, 0);
   const weeklyTemp = generateSinWaveFromTimestamps(timestamps, 32, 20, 1, 1 / 7);
@@ -187,6 +231,14 @@ onMounted(() => {
   const dailyHumid = generateSinWaveFromTimestamps(timestamps, 7.3, 0, 0);
   const weeklyHumid = generateSinWaveFromTimestamps(timestamps, 90, 50, 3, 1 / 7);
   humidityTs.value.values = dailyHumid.map((daily, index) => daily + weeklyHumid[index]);
+
+  const dailyValve = generateSinWaveFromTimestamps(timestamps, 1, 0, 10, 10);
+  const weeklyValve = generateSinWaveFromTimestamps(timestamps, 1, 0, 3, 3);
+  const combinedValve = dailyValve.map((daily, index) => daily * weeklyValve[index]);
+  const maxValve = Math.max(...combinedValve);
+  const minValve = Math.min(...combinedValve);
+  const normalizedValve = combinedValve.map((valve) => Math.round((valve - minValve) / (maxValve - minValve)));
+  valveTs.value.values = normalizedValve;
 });
 
 onBeforeUnmount(() => {
@@ -196,6 +248,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+.p-card {
+  background: var(--carlos-bg-color);
+  color: var(--carlos-text-color);
+}
 
 .card-title {
   display: flex;

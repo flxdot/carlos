@@ -3,6 +3,7 @@
     type="line"
     :data="chartData"
     :options="chartOptions"
+    :plugins="[crosshair]"
     :style="{ height: props.height || '20rem' }"
   />
 </template>
@@ -12,9 +13,13 @@ import Chart from 'primevue/chart';
 
 import {
   computed,
+  ref,
+  withDefaults,
+  defineProps,
 } from 'vue';
 import {
   ChartOptions,
+  Scale,
 } from 'chart.js';
 import {
   deepUnion,
@@ -27,18 +32,50 @@ import {
 import {
   DeepPartial,
 } from '@/utils/types.ts';
+import {
+  chartJsGradient,
+} from '@/components/charts/chart-utils.ts';
+import {
+  GradientCache,
+  xTicksGradient,
+} from '@/components/charts/gradients.ts';
+import crosshair from '@/components/charts/crosshair.ts';
 
-const props = defineProps<{
-  chartData: DeepPartial<TLineChartData>,
-  yAxes: TLineAxisProps,
-  height?: string,
-}>();
+interface IChartBaseLineProps {
+  chartData: DeepPartial<TLineChartData>;
+  yAxes: TLineAxisProps;
+  height?: string;
+  showXTicks?: boolean;
+}
+
+const props = withDefaults(
+  defineProps<IChartBaseLineProps>(),
+  {
+    height: '10rem',
+    showXTicks: true,
+  },
+);
+
+const ticksGradient = ref<GradientCache>({
+  chartWidth: undefined,
+  chartHeight: undefined,
+  gradient: undefined,
+});
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => props.chartData);
 const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   const documentStyle = getComputedStyle(document.documentElement);
-  const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-  const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+  const color = documentStyle.getPropertyValue('--carlos-bg-text--dark');
+  // const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+  const tickColor = chartJsGradient(
+    ticksGradient.value,
+    xTicksGradient,
+    [
+      0,
+      1,
+    ],
+  );
 
   const xAxis: TTimeAxisProps = {
     x: {
@@ -48,26 +85,49 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         unit: 'day',
       },
       ticks: {
-        color: textColorSecondary,
+        display: props.showXTicks,
+        color,
+      },
+      border: {
+        display: false,
+        color,
       },
       grid: {
-        color: surfaceBorder,
+        display: true,
+        drawOnChartArea: true,
+        drawTicks: true,
+        color: tickColor,
+        tickColor,
       },
     },
   };
   // explicitly set the color of the ticks and grid lines if not set in the props
   const yAxis: TLineAxisProps = {};
-  Object.keys(props.yAxes).forEach((key, index) => {
+  Object.keys(props.yAxes).forEach((key) => {
     const yAxisOverwrite: TLineAxisProps[string] = {
       title: {
-        color: textColorSecondary,
+        display: true,
+        color,
       },
       ticks: {
-        color: textColorSecondary,
+        display: true,
+        color,
+      },
+      border: {
+        display: false,
+        color,
       },
       grid: {
-        drawOnChartArea: index === 0,
-        color: surfaceBorder,
+        display: false,
+        drawOnChartArea: true,
+        drawTicks: true,
+        color,
+        tickColor: color,
+      },
+      afterFit: (scale: Scale) => {
+        // This line ensures that all Y axis have the same width and
+        // therefore all charts are synchronized
+        scale.width = 60; // eslint-disable-line no-param-reassign
       },
     };
 
@@ -81,7 +141,21 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
     animation: {
       duration: 0,
     },
+    layout: {
+      padding: 0,
+    },
+    interaction: {
+      mode: 'x',
+      intersect: false,
+    },
+    hover: {
+      mode: 'x',
+      intersect: false,
+    },
     plugins: {
+      tooltip: {
+        enabled: false,
+      },
       legend: {
         display: false,
       },

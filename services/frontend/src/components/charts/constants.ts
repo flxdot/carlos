@@ -2,6 +2,8 @@ import {
   TAxisLimit,
 } from '@/components/charts/chart-types.ts';
 
+export const LineWidth = 2;
+
 export const DASHED = [
   10,
   10,

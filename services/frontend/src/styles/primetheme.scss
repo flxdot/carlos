@@ -267,3 +267,36 @@
       border: none;
     }
   }
+
+/* Original values from Lara Theme. But Primevue seems to overwrite
+ them again
+ */
+.p-tag.p-tag-success {
+  background-color: #22c55e;
+  color: #fff;
+}
+
+.p-tag.p-tag-info {
+  background-color: #0ea5e9;
+  color: #fff;
+}
+
+.p-tag.p-tag-warning {
+  background-color: #f97316;
+  color: #fff;
+}
+
+.p-tag.p-tag-danger {
+  background-color: var(--carlos-danger-color);
+  color: #fff;
+}
+
+.p-tag.p-tag-secondary {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.p-tag.p-tag-contrast {
+  background-color: #020617;
+  color: #fff;
+}

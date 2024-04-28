@@ -3,8 +3,20 @@ import {
   ChartArea, Scale, ScriptableChartContext,
 } from 'chart.js';
 import {
-  ITimeseries,
+  TAxisLimit, TLineAxisProps,
 } from '@/components/charts/chart-types.ts';
+import {
+  getMediaCategory, MediaSize,
+} from '@/utils/window.ts';
+import i18n from '@/plugins/i18n';
+import {
+  buildGradient, convertDiscreteToColorStops, DiscreteGradientDefinition,
+  GradientCache,
+  GradientDefinition, lineBackgroundFade,
+} from '@/components/charts/gradients.ts';
+import {
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
 
 export function generateChartTimestamps(days: number, minutesBetweenSamples: number): string[] {
   const timestamps: string[] = [];
@@ -47,47 +59,47 @@ export function generateSinWaveFromTimestamps(timestamps: string[], amplitude: n
   return sinWave;
 }
 
-export type Gradient = {
-  chartWidth: number | undefined;
-  chartHeight: number | undefined;
-  gradient: CanvasGradient | undefined;
-}
-
-export type ColorStop = {
-  atValue: number,
-  color: string,
-}
-
 export function updateGradient(
-  gradient: Gradient,
+  gradient: GradientCache,
   ctx: CanvasRenderingContext2D,
   chartArea: ChartArea,
-  yLim: [number, number],
-  colorStops: ColorStop[],
-): Gradient {
+  limits: [number, number],
+  colorStops: GradientDefinition | DiscreteGradientDefinition,
+  alphaGradient: boolean = false,
+): GradientCache {
   const chartWidth = chartArea.right - chartArea.left;
   const chartHeight = chartArea.bottom - chartArea.top;
 
   // Create the gradient because this is either the first render or the size of the chart has changed
   if (!gradient.gradient || gradient.chartWidth !== chartWidth || gradient.chartHeight !== chartHeight) {
-    // eslint-disable-next-line no-param-reassign
+    /* eslint-disable no-param-reassign */
     gradient.chartWidth = chartWidth;
-    // eslint-disable-next-line no-param-reassign
     gradient.chartHeight = chartHeight;
-    // eslint-disable-next-line no-param-reassign
-    gradient.gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-    for (const colorStop of colorStops) {
-      const relativeY = (colorStop.atValue - yLim[0]) / (yLim[1] - yLim[0]);
-      if (relativeY >= 0 && relativeY <= 1) {
-        gradient.gradient.addColorStop(relativeY, colorStop.color);
-      }
+
+    if (Object.prototype.hasOwnProperty.call(colorStops[0], 'atValue')) {
+      colorStops = convertDiscreteToColorStops(colorStops as DiscreteGradientDefinition, limits);
     }
+
+    gradient.gradient = buildGradient(
+      ctx,
+      chartArea,
+      colorStops as GradientDefinition,
+      alphaGradient ? lineBackgroundFade : [],
+    );
   }
 
   return gradient;
 }
 
-export function borderColor(gradient: Gradient, yLim: [number, number], colorStops: ColorStop[]) {
+export function chartJsGradient(
+  gradient: GradientCache,
+  colorStops: GradientDefinition | DiscreteGradientDefinition,
+  limits: [number, number] = [
+    0,
+    1,
+  ],
+  alphaGradient: boolean = false,
+) {
   return (context: ScriptableChartContext) => {
     const {
       ctx, chartArea,
@@ -98,7 +110,14 @@ export function borderColor(gradient: Gradient, yLim: [number, number], colorSto
       return undefined;
     }
 
-    return updateGradient(gradient, ctx, chartArea, yLim, colorStops).gradient;
+    return updateGradient(
+      gradient,
+      ctx,
+      chartArea,
+      limits,
+      colorStops,
+      alphaGradient,
+    ).gradient;
   };
 }
 
@@ -131,4 +150,37 @@ export function toPoints(timeseries: ITimeseries): {x: string, y: number}[] {
     x: timestamp,
     y: timeseries.values[index],
   }));
+}
+
+export function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: TAxisLimit, ticks: number[], tickPrefix: (arg0: number) => string): TLineAxisProps[string] {
+  const mediaSize = getMediaCategory();
+
+  return {
+    // @ts-ignore - unsure why the types do not match
+    type: 'linear',
+    display: true,
+    position,
+    title: {
+      display: mediaSize >= MediaSize.DESKTOP,
+      text: timeseries.unitSymbol ? i18n.global.t('data.labelWithUnit', {
+        label: timeseries.displayName,
+        unit: timeseries.unitSymbol,
+      }) : timeseries.displayName,
+    },
+    min: limits[0],
+    max: limits[1],
+    ticks: {
+      callback: (value: number) => {
+        return `${value}`;
+        if (mediaSize >= MediaSize.DESKTOP) {
+          return `${tickPrefix(value)} ${value} ${timeseries.unitSymbol}`;
+        }
+        if (mediaSize >= MediaSize.TABLET) {
+          return `${value} ${timeseries.unitSymbol}`;
+        }
+        return `${value}`;
+      },
+    },
+    afterBuildTicks: setConstantTicks(ticks),
+  };
 }
