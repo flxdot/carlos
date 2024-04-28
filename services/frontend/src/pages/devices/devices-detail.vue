@@ -80,17 +80,16 @@
           :limits="humidityLimits"
           :show-x-ticks="false"
         />
-        <chart-analog
-          :timeseries="humidityTs"
-          color="#acf9ea"
-          :ticks="humidityTicks"
-          :limits="humidityLimits"
+        <chart-digital
+          :timeseries="valveTs"
+          color="#98b274"
+          height="3rem"
           :show-x-ticks="false"
         />
         <chart-digital
           :timeseries="valveTs"
-          color="#98b274"
-          height="5rem"
+          color="#acf9ea"
+          height="4rem"
         />
       </template>
     </card>

@@ -104,7 +104,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
 const yAxes = computed<TLineAxisProps>(() => {
   return {
     [props.timeseries.displayName]: buildAxis(
-      'left',
+      'right',
       props.timeseries,
       actualLimits.value,
       props.ticks,
