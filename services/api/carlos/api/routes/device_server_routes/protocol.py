@@ -5,13 +5,19 @@ from carlos.edge.interface import (
     EdgeConnectionDisconnected,
     EdgeProtocol,
 )
+from carlos.edge.interface.protocol import EdgeProtocolCallback
 from starlette.websockets import WebSocket, WebSocketDisconnect, WebSocketState
 
 
 class WebsocketProtocol(EdgeProtocol):
     """A websocket implementation of the EdgeProtocol."""
 
-    def __init__(self, websocket: WebSocket):
+    def __init__(
+        self, websocket: WebSocket, on_connect: EdgeProtocolCallback | None = None
+    ):
+
+        super().__init__(on_connect=on_connect)
+
         self._websocket = websocket
 
     async def send(self, message: CarlosMessage) -> None:
@@ -45,6 +51,9 @@ class WebsocketProtocol(EdgeProtocol):
 
         :raises EdgeConnectionFailed: If the connection attempt fails."""
         await self._websocket.accept()
+
+        if self.on_connect:
+            await self.on_connect(self)
 
     async def disconnect(self):
         """Called when the connection is disconnected."""

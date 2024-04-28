@@ -6,6 +6,7 @@ __all__ = [
     "EdgeConnectionDisconnected",
     "EdgeConnectionFailed",
     "EdgeProtocol",
+    "EdgeProtocolCallback",
     "MessageHandler",
     "PING",
     "PONG",
@@ -14,7 +15,7 @@ __all__ = [
 import inspect
 from abc import ABC, abstractmethod
 from asyncio import sleep
-from typing import Protocol, runtime_checkable
+from typing import Awaitable, Callable, Protocol, runtime_checkable
 
 from loguru import logger
 
@@ -30,9 +31,15 @@ class EdgeConnectionFailed(Exception):
     """Raised when the connection attempt fails."""
 
 
+EdgeProtocolCallback = Callable[["EdgeProtocol"], Awaitable[None]]
+
+
 class EdgeProtocol(ABC):
     """An abstract protocol that defines the necessary operations to be implemented
     by the server and client."""
+
+    def __init__(self, on_connect: EdgeProtocolCallback | None = None):
+        self.on_connect = on_connect
 
     @abstractmethod
     async def send(self, message: CarlosMessage) -> None:
@@ -128,8 +135,8 @@ class EdgeCommunicationHandler:
 
             if handler_params != expected_function_params:
                 raise TypeError(
-                    f"Handler {handler} for message type {message_type} does not have the "
-                    f"correct signature."
+                    f"Handler {handler} for message type {message_type} "
+                    f"does not have the correct signature."
                 )
 
         self._handlers.update(handlers)

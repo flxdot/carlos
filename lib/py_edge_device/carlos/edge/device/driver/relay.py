@@ -7,6 +7,8 @@ from carlos.edge.interface.device import (
     DriverFactory,
     GpioDriverConfig,
 )
+from carlos.edge.interface.device.driver_config import DriverSignal
+from carlos.edge.interface.units import UnitOfMeasurement
 from pydantic import Field
 
 from carlos.edge.device.protocol import GPIO
@@ -20,10 +22,22 @@ class RelayConfig(GpioDriverConfig):
 class Relay(DigitalOutput, DigitalInput):
     """Relay."""
 
+    _STATE_SIGNAL_ID = "state"
+
     def __init__(self, config: RelayConfig):
         super().__init__(config=config)
 
         self._state = False
+
+    def signals(self) -> list[DriverSignal]:
+        """Returns the signals of the DHT sensor."""
+
+        return [
+            DriverSignal(
+                signal_identifier=self._STATE_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.UNIT_LESS,
+            ),
+        ]
 
     def setup(self):
 
@@ -42,7 +56,7 @@ class Relay(DigitalOutput, DigitalInput):
     def read(self) -> dict[str, bool]:
         """Reads the value of the relay."""
 
-        return {"state": self._state}
+        return {self._STATE_SIGNAL_ID: self._state}
 
     def test(self):
         """Tests the relay by reading the value."""
@@ -50,19 +64,19 @@ class Relay(DigitalOutput, DigitalInput):
         self.set(False)
         time.sleep(0.01)
         state = self.read()
-        if state["state"]:
+        if state[self._STATE_SIGNAL_ID]:
             raise ValueError(f"Value of relay was not set to false. Got: {state}")
 
         self.set(True)
         time.sleep(1)
         state = self.read()
-        if not state["state"]:
+        if not state[self._STATE_SIGNAL_ID]:
             raise ValueError(f"Value of relay was not set to true. Got: {state}")
 
         self.set(False)
         time.sleep(0.01)
         state = self.read()
-        if state["state"]:
+        if state[self._STATE_SIGNAL_ID]:
             raise ValueError(f"Value of relay was not set to false. Got: {state}")
 
 

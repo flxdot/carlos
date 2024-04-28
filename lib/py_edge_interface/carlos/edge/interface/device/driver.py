@@ -21,6 +21,7 @@ from .driver_config import (
     DirectionMixin,
     DriverConfig,
     DriverDirection,
+    DriverSignal,
     GpioDriverConfig,
     I2cDriverConfig,
 )
@@ -45,6 +46,27 @@ class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
     @property
     def identifier(self):
         return self.config.identifier
+
+    @property
+    def direction(self) -> DriverDirection:
+        if isinstance(self.config, DirectionMixin):
+            return self.config.direction
+
+        is_input = isinstance(self, InputDriver)
+        is_output = isinstance(self, OutputDriver)
+
+        if is_input and is_output:
+            return DriverDirection.BIDIRECTIONAL
+
+        if is_input:
+            return DriverDirection.INPUT
+
+        return DriverDirection.OUTPUT
+
+    @abstractmethod
+    def signals(self) -> list[DriverSignal]:
+        """Returns the signals of the peripheral."""
+        pass
 
     @abstractmethod
     def setup(self) -> Self:

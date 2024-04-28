@@ -1,17 +1,22 @@
 __all__ = [
+    "DRIVER_IDENTIFIER_LENGTH",
     "DirectionMixin",
     "DriverConfig",
     "DriverDirection",
+    "DriverMetadata",
+    "DriverSignal",
     "GpioDriverConfig",
     "I2cDriverConfig",
-    "DRIVER_IDENTIFIER_LENGTH",
 ]
 
 import importlib
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, computed_field, field_validator
+
+from carlos.edge.interface.types import CarlosSchema
+from carlos.edge.interface.units import PhysicalQuantity, UnitOfMeasurement
 
 # Pin layout
 #   5V, 5V, GND,  14, 15, 18, GND, 23,   24, GND, 25,  8,   7, ID EEPROM, GND, 12, GND, 16, 20,  21 # Outer pins # noqa
@@ -20,7 +25,7 @@ from pydantic import BaseModel, Field, field_validator
 DRIVER_IDENTIFIER_LENGTH = 64
 
 
-class DriverConfig(BaseModel):
+class _DriverConfigMixin(CarlosSchema):
     """Common base class for all driver_module configurations."""
 
     identifier: str = Field(
@@ -38,6 +43,10 @@ class DriverConfig(BaseModel):
         "must make a call to the DriverFactory.register method to register"
         "itself.",
     )
+
+
+class DriverConfig(_DriverConfigMixin):
+    """Common base class for all driver_module configurations."""
 
     @field_validator("driver_module", mode="after")
     def _validate_driver_module(cls, value):
@@ -141,3 +150,32 @@ class I2cDriverConfig(DriverConfig, DirectionMixin):
     def address_int(self):
         """Returns the I2C address as an integer."""
         return int(self.address, 16)
+
+
+class DriverSignal(CarlosSchema):
+    """Defines the signals that the driver provides."""
+
+    signal_identifier: str = Field(
+        ...,
+        description="A unique identifier of the signal within the context of a driver.",
+    )
+
+    unit_of_measurement: UnitOfMeasurement = Field(
+        ...,
+        description="The unit of measurement of the signal.",
+    )
+
+    @computed_field  # type: ignore
+    @property
+    def physical_quantity(self) -> PhysicalQuantity:  # pragma: no cover
+        """Returns the physical quantity of this signal."""
+        return self.unit_of_measurement.physical_quantity
+
+
+class DriverMetadata(_DriverConfigMixin, DirectionMixin):
+    """Provides the metadata for the driver."""
+
+    signals: list[DriverSignal] = Field(
+        ...,
+        description="The signals that the driver provides.",
+    )

@@ -5,7 +5,10 @@ from asyncio import Queue, QueueEmpty, sleep
 import pytest
 
 from carlos.edge.interface import CarlosMessage, EdgeProtocol
-from carlos.edge.interface.protocol import EdgeConnectionDisconnected
+from carlos.edge.interface.protocol import (
+    EdgeConnectionDisconnected,
+    EdgeProtocolCallback,
+)
 
 
 class EdgeProtocolTestingConnection(EdgeProtocol):
@@ -13,7 +16,14 @@ class EdgeProtocolTestingConnection(EdgeProtocol):
     utilizing an async FIFO queue to simulate the communication between the server
     and the client. This is useful for testing purposes."""
 
-    def __init__(self, send_queue: Queue[str], receive_queue: Queue[str]):
+    def __init__(
+        self,
+        send_queue: Queue[str],
+        receive_queue: Queue[str],
+        on_connect: EdgeProtocolCallback | None = None,
+    ):
+
+        super().__init__(on_connect=on_connect)
 
         self._send_queue = send_queue
         self._receive_queue = receive_queue
@@ -36,6 +46,9 @@ class EdgeProtocolTestingConnection(EdgeProtocol):
 
         :raises EdgeConnectionFailed: If the connection attempt fails."""
         self._is_connected = True
+
+        if self.on_connect:
+            self.on_connect(self)
 
     async def send(self, message: CarlosMessage) -> None:
         """Send data to the other end of the connection.

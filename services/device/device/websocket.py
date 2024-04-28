@@ -15,7 +15,8 @@ from carlos.edge.device.storage.api_token import (
 )
 from carlos.edge.device.storage.connection import get_storage_engine
 from carlos.edge.interface import CarlosMessage, EdgeProtocol
-from carlos.edge.interface.protocol import EdgeConnectionDisconnected
+from carlos.edge.interface.protocol import EdgeConnectionDisconnected, \
+    EdgeProtocolCallback
 from httpx import AsyncClient
 from loguru import logger
 
@@ -25,11 +26,14 @@ from .connection import ConnectionSettings
 # can only be tested in integration tests
 class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
 
-    def __init__(self, settings: ConnectionSettings):
+    def __init__(self, settings: ConnectionSettings, on_connect: EdgeProtocolCallback | None = None):
         """Initializes the websocket client.
 
         :param settings: The settings of the websocket connection.
         """
+
+        super().__init__(on_connect=on_connect)
+
         self._settings = settings
 
         self._connection: websockets.WebSocketClientProtocol | None = None
@@ -53,6 +57,9 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         self._connection = await connection_strategy.execute(
             func=self._do_connect, expected_exceptions=(Exception,)
         )
+
+        if self.on_connect:
+            await self.on_connect(self)
 
         logger.info(f"Connected to the server: {self._settings.server_url}")
 
