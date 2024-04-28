@@ -1,9 +1,14 @@
 <template>
-  <chart-base-line
-    :chart-data="chartData"
-    :y-axes="yAxes"
-    height="10rem"
-  />
+  <div>
+    <pre>
+      {{ props.timeseries.displayName }}
+    </pre>
+    <chart-base-line
+      :chart-data="chartData"
+      :y-axes="yAxes"
+      height="10rem"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -15,54 +20,63 @@ import {
 import ChartBaseLine from '@/components/charts/chart-base-line.vue';
 import {
   TAxisLimit,
-  ITimeseries, TLineAxisProps, TLineChartData,
+  TLineAxisProps,
+  TLineChartData,
 } from '@/components/charts/chart-types.ts';
 import {
-  borderColor,
-  Gradient,
+  chartJsGradient,
   getSuitableLimit,
-  toPoints, buildAxis,
+  buildAxis,
 } from '@/components/charts/chart-utils.ts';
 import {
-  carlosPalettePrimary,
+  carlosPalettePrimary, DiscreteGradientDefinition,
+  GradientCache, GradientDefinition,
 } from '@/components/charts/gradients.ts';
 import {
   tempEmojis,
 } from '@/utils/value-render.ts';
 import {
   LineWidth,
-  tempLimits,
-  tempTicks,
 } from '@/components/charts/constants.ts';
 import {
   DeepPartial,
 } from '@/utils/types.ts';
+import {
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
 
-const props = defineProps<{temperature: ITimeseries}>();
+const props = defineProps<{
+  timeseries: ITimeseries,
+  limits: TAxisLimit,
+  ticks: number[],
+  color: string | GradientDefinition | DiscreteGradientDefinition
+}>();
 
-const tempGradient = ref<Gradient>({
+const lineGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
-const tempBgGradient = ref<Gradient>({
+const LineBgGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
-const tempYLimit = computed<TAxisLimit>(() => getSuitableLimit(tempLimits, props.temperature.values));
+const actualLimits = computed<TAxisLimit>(
+  () => getSuitableLimit(props.limits, props.timeseries.samples.map((x) => x.y)),
+);
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => {
-  const tempColor = borderColor(tempGradient.value, tempYLimit.value, carlosPalettePrimary);
-  const tempBgColor = borderColor(tempBgGradient.value, tempYLimit.value, carlosPalettePrimary, 0.5, true);
+  const tempColor = chartJsGradient(lineGradient.value, actualLimits.value, carlosPalettePrimary);
+  const tempBgColor = chartJsGradient(LineBgGradient.value, actualLimits.value, carlosPalettePrimary, true);
 
   return {
     datasets: [
       {
         label: 'Temperature',
-        data: toPoints(props.temperature),
+        data: props.timeseries.samples,
         borderWidth: LineWidth,
-        borderColor: tempColor,
+        chartJsGradient: tempColor,
         backgroundColor: tempBgColor,
         fill: true,
         pointStyle: false,
@@ -76,7 +90,13 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
 
 const yAxes = computed<TLineAxisProps>(() => {
   return {
-    temp: buildAxis('left', props.temperature, tempYLimit.value, tempTicks, tempEmojis),
+    temp: buildAxis(
+      'left',
+      props.timeseries,
+      actualLimits.value,
+      props.ticks,
+      tempEmojis,
+    ),
   } as TLineAxisProps;
 });
 

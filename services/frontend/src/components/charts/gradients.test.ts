@@ -1,7 +1,6 @@
 import {
   expect, test,
 } from 'vitest';
-import Color from 'colorjs.io';
 import {
   AlphaStop, ColorStop, convertDiscreteToColorStops, DiscreteColorStop,
   interpolateAlpha,

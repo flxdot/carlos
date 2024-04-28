@@ -137,7 +137,10 @@ export function buildGradient(
     if (alphaStops.length > 0) {
       color.alpha = interpolateAlpha(alphaStops, colorStop.position);
     }
-    gradient.addColorStop(Math.min(Math.max(colorStop.position, 0), 1), color.toString());
+
+    gradient.addColorStop(Math.min(Math.max(colorStop.position, 0), 1), color.toString({
+      format: 'hex',
+    }));
   }
   return gradient;
 }
@@ -145,7 +148,7 @@ export function buildGradient(
 /**
  * A nice vivid gradient to be used for outdoor temperatures
  */
-export const outdoorTemperatureGradientCelsius: DiscreteColorStop[] = [
+export const outdoorTemperatureGradientCelsius: DiscreteGradientDefinition = [
   {
     atValue: -16, // °C
     color: '#366dea',
@@ -180,7 +183,7 @@ export const outdoorTemperatureGradientCelsius: DiscreteColorStop[] = [
   },
 ];
 
-export const pastelHumidityGradient: DiscreteColorStop[] = [
+export const pastelHumidityGradient: DiscreteGradientDefinition = [
   {
     atValue: 0, // %
     color: '#f29595',
@@ -199,7 +202,7 @@ export const pastelHumidityGradient: DiscreteColorStop[] = [
   },
 ];
 
-export const xTicksGradient: ColorStop[] = [
+export const xTicksGradient: GradientDefinition = [
   {
     position: 0,
     color: '#64748b',

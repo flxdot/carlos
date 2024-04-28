@@ -3,7 +3,7 @@ import {
   ChartArea, Scale, ScriptableChartContext,
 } from 'chart.js';
 import {
-  ITimeseries, TAxisLimit, TLineAxisProps,
+  TAxisLimit, TLineAxisProps,
 } from '@/components/charts/chart-types.ts';
 import {
   getMediaCategory, MediaSize,
@@ -14,6 +14,7 @@ import {
   GradientCache,
   GradientDefinition, lineBackgroundFade,
 } from '@/components/charts/gradients.ts';
+import {ITimeseries} from "@/components/charts/timeseries.ts";
 
 export function generateChartTimestamps(days: number, minutesBetweenSamples: number): string[] {
   const timestamps: string[] = [];
@@ -62,7 +63,6 @@ export function updateGradient(
   chartArea: ChartArea,
   yLim: [number, number],
   colorStops: GradientDefinition | DiscreteGradientDefinition,
-  alpha: number = 1,
   alphaGradient: boolean = false,
 ): GradientCache {
   const chartWidth = chartArea.right - chartArea.left;
@@ -89,7 +89,12 @@ export function updateGradient(
   return gradient;
 }
 
-export function borderColor(gradient: GradientCache, yLim: [number, number], colorStops: GradientDefinition, alpha: number = 1, alphaGradient: boolean = false) {
+export function chartJsGradient(
+  gradient: GradientCache,
+  yLim: [number, number],
+  colorStops: GradientDefinition | DiscreteGradientDefinition,
+  alphaGradient: boolean = false,
+) {
   return (context: ScriptableChartContext) => {
     const {
       ctx, chartArea,
@@ -100,7 +105,14 @@ export function borderColor(gradient: GradientCache, yLim: [number, number], col
       return undefined;
     }
 
-    return updateGradient(gradient, ctx, chartArea, yLim, colorStops, alpha, alphaGradient).gradient;
+    return updateGradient(
+      gradient,
+      ctx,
+      chartArea,
+      yLim,
+      colorStops,
+      alphaGradient,
+    ).gradient;
   };
 }
 

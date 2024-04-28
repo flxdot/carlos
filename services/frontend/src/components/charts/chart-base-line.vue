@@ -30,7 +30,7 @@ import {
   DeepPartial,
 } from '@/utils/types.ts';
 import {
-  borderColor, Gradient,
+  chartJsGradient, Gradient,
 } from '@/components/charts/chart-utils.ts';
 import {
   xTicksGradient,
@@ -74,11 +74,11 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         display: true,
         drawOnChartArea: true,
         drawTicks: true,
-        color: borderColor(humidGradient.value, [
+        color: chartJsGradient(humidGradient.value, [
           0,
           1,
         ], xTicksGradient),
-        tickColor: borderColor(humidGradient.value, [
+        tickColor: chartJsGradient(humidGradient.value, [
           0,
           1,
         ], xTicksGradient),

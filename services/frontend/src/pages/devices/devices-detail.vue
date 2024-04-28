@@ -66,15 +66,11 @@
           :temperature="temperatureTs"
           :humidity="humidityTs"
         />
-        <chart-temp-humi-two
-          :temperature="temperatureTs"
-          :humidity="humidityTs"
-        />
-        <chart-temp
-          :temperature="temperatureTs"
-        />
-        <chart-humi
-          :humidity="humidityTs"
+        <chart-analog
+          :timeseries="temperatureTs"
+          color="#98b274"
+          :ticks="tempTicks"
+          :limits="tempLimits"
         />
       </template>
     </card>
@@ -106,9 +102,6 @@ import i18n from '@/plugins/i18n';
 import DeviceStatusBadge from '@/components/device/device-status-badge.vue';
 import ChartTempHumi from '@/components/charts/chart-temp-humi.vue';
 import {
-  ITimeseries,
-} from '@/components/charts/chart-types.ts';
-import {
   generateChartTimestamps,
   generateSinWaveFromTimestamps,
 } from '@/components/charts/chart-utils.ts';
@@ -117,9 +110,14 @@ import {
   humidEmojis,
 } from '@/utils/value-render.ts';
 import MarkdownText from '@/components/markdown-text/markdown-text.vue';
-import ChartTemp from '@/components/charts/chart-temp.vue';
-import ChartHumi from '@/components/charts/chart-humi.vue';
-import ChartTempHumiTwo from '@/components/charts/chart-temp-humi-two.vue';
+import ChartAnalog from '@/components/charts/chart-analog.vue';
+import {
+  tempTicks,
+} from '@/components/charts/constants.ts';
+import {
+  ETimeseriesValueType,
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -129,21 +127,21 @@ const route = useRoute();
 const deviceDetails = ref<TGetDeviceDetailResponse | undefined>(undefined);
 
 const temperatureTs = ref<ITimeseries>({
-  label: 'Temperature',
+  displayName: 'Temperature',
   unitSymbol: '°C',
-  timestamps: [],
-  values: [],
+  samples: [],
+  valueType: ETimeseriesValueType.ANALOG,
 });
 const humidityTs = ref<ITimeseries>({
-  label: 'Humidity',
+  displayName: 'Humidity',
   unitSymbol: '%',
-  timestamps: [],
-  values: [],
+  samples: [],
+  valueType: ETimeseriesValueType.ANALOG,
 });
 
 const lastDataAt = computed<Dayjs | undefined>(() => {
-  const lastTempAt = temperatureTs.value.timestamps[temperatureTs.value.timestamps.length - 1];
-  const lastHumidAt = humidityTs.value.timestamps[humidityTs.value.timestamps.length - 1];
+  const lastTempAt = temperatureTs.value.samples[temperatureTs.value.samples.length - 1];
+  const lastHumidAt = humidityTs.value.samples[humidityTs.value.samples.length - 1];
 
   if (lastTempAt === undefined && lastHumidAt === undefined) {
     return undefined;
@@ -161,14 +159,14 @@ const dataAge = computed<string | undefined>(() => {
 });
 
 function renderTimeseriesAsString(ts: ITimeseries, suffix: ((num: number) => string) | undefined = undefined, showLabel: boolean = true): string {
-  const value = ts.values[ts.values.length - 1];
+  const value = ts.samples[ts.samples.length - 1].y;
   let rendered = `${value !== undefined ? value.toFixed(1) : '-'} ${ts.unitSymbol}`;
 
   if (suffix !== undefined) {
     rendered += ` ${suffix(value)}`;
   }
   if (showLabel) {
-    rendered = `${ts.label}: ${rendered}`;
+    rendered = `${ts.displayName}: ${rendered}`;
   }
 
   return rendered;
@@ -190,16 +188,14 @@ onMounted(() => {
 
   // Some representative data to showcase the full spectrum of the chart
   const timestamps = generateChartTimestamps(7, 1);
-  humidityTs.value.timestamps = timestamps;
-  temperatureTs.value.timestamps = timestamps;
 
   const dailyTemp = generateSinWaveFromTimestamps(timestamps, 8, 0, 0);
   const weeklyTemp = generateSinWaveFromTimestamps(timestamps, 32, 20, 1, 1 / 7);
-  temperatureTs.value.values = dailyTemp.map((daily, index) => daily + weeklyTemp[index]);
+  const temperatures = dailyTemp.map((daily, index) => daily + weeklyTemp[index]);
 
   const dailyHumid = generateSinWaveFromTimestamps(timestamps, 7.3, 0, 0);
   const weeklyHumid = generateSinWaveFromTimestamps(timestamps, 90, 50, 3, 1 / 7);
-  humidityTs.value.values = dailyHumid.map((daily, index) => daily + weeklyHumid[index]);
+  const humidity = dailyHumid.map((daily, index) => daily + weeklyHumid[index]);
 });
 
 onBeforeUnmount(() => {

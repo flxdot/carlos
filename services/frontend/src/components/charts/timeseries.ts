@@ -5,7 +5,7 @@
  * - `DISCRETE` - The timeseries contains discrete values. Changes the chart to a step chart.
  * - `BOOLEAN` - Special case of discrete values where the values are either `0` or `1`.
  */
-export enum ITimeseriesValueType {
+export enum ETimeseriesValueType {
     ANALOG = 'analog',
     DISCRETE = 'discrete',
     BOOLEAN = 'boolean',
@@ -14,12 +14,12 @@ export enum ITimeseriesValueType {
 /**
  * Represents a single sample in a timeseries.
  *
- * @property ts - The timestamp of the sample. Value needs to be representable by dayjs.
- * @property value - The value of the sample.
+ * @property x - The timestamp of the sample. Value needs to be representable by dayjs.
+ * @property y - The value of the sample.
  */
 export interface ITimeseriesSample {
-    ts: string;
-    value: number;
+    x: string;
+    y: number;
 }
 
 /**

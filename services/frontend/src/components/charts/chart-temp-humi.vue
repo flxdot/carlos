@@ -18,15 +18,14 @@ import {
   ITimeseries, TLineAxisProps, TLineChartData,
 } from '@/components/charts/chart-types.ts';
 import {
-  borderColor,
-  Gradient,
+  chartJsGradient,
   getSuitableLimit,
   buildAxis,
   toPoints,
 } from '@/components/charts/chart-utils.ts';
 import {
   pastelHumidityGradient,
-  outdoorTemperatureGradientCelsius,
+  outdoorTemperatureGradientCelsius, GradientCache,
 } from '@/components/charts/gradients.ts';
 import {
   humidEmojis, tempEmojis,
@@ -43,24 +42,24 @@ import {
 
 const props = defineProps<{temperature: ITimeseries, humidity: ITimeseries}>();
 
-const tempGradient = ref<Gradient>({
+const tempGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
-const tempBgGradient = ref<Gradient>({
+const tempBgGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
 const tempYLimit = computed<TAxisLimit>(() => getSuitableLimit(tempLimits, props.temperature.values));
 
-const humidGradient = ref<Gradient>({
+const humidGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
 });
-const humidBgGradient = ref<Gradient>({
+const humidBgGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
@@ -68,10 +67,10 @@ const humidBgGradient = ref<Gradient>({
 const humidYLimit = computed<TAxisLimit>(() => getSuitableLimit(humidityLimits, props.humidity.values));
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => {
-  const tempColor = borderColor(tempGradient.value, tempYLimit.value, outdoorTemperatureGradientCelsius);
-  const tempBgColor = borderColor(tempBgGradient.value, tempYLimit.value, outdoorTemperatureGradientCelsius, 0.5, true);
-  const humidColor = borderColor(humidGradient.value, humidYLimit.value, pastelHumidityGradient);
-  const humidBgColor = borderColor(humidBgGradient.value, humidYLimit.value, pastelHumidityGradient, 0.5, true);
+  const tempColor = chartJsGradient(tempGradient.value, tempYLimit.value, outdoorTemperatureGradientCelsius);
+  const tempBgColor = chartJsGradient(tempBgGradient.value, tempYLimit.value, outdoorTemperatureGradientCelsius, true);
+  const humidColor = chartJsGradient(humidGradient.value, humidYLimit.value, pastelHumidityGradient);
+  const humidBgColor = chartJsGradient(humidBgGradient.value, humidYLimit.value, pastelHumidityGradient, true);
 
   return {
     datasets: [
