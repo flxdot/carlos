@@ -7,6 +7,8 @@ from carlos.edge.interface.device import (
     DriverFactory,
     I2cDriverConfig,
 )
+from carlos.edge.interface.device.driver_config import DriverSignal
+from carlos.edge.interface.units import UnitOfMeasurement
 from pydantic import Field
 
 from carlos.edge.device.protocol import I2C
@@ -21,6 +23,12 @@ class Si1145Config(I2cDriverConfig):
 
 class SI1145(AnalogInput):
 
+    _VISUAL_LIGHT_SIGNAL_ID = "visual-light"
+    _VISUAL_LIGHT_RAW_SIGNAL_ID = "visual-light-raw"
+    _INFRARED_LIGHT_SIGNAL_ID = "infrared-light"
+    _INFRARED_LIGHT_RAW_SIGNAL_ID = "infrared-light-raw"
+    _UV_INDEX_SIGNAL_ID = "uv-index"
+
     def __init__(self, config: Si1145Config):
 
         if config.address_int != SDL_Pi_SI1145.ADDR:
@@ -31,6 +39,32 @@ class SI1145(AnalogInput):
         super().__init__(config=config)
 
         self._si1145: SDL_Pi_SI1145 | None = None
+
+    def signals(self) -> list[DriverSignal]:
+        """Returns the signals of the DHT sensor."""
+
+        return [
+            DriverSignal(
+                signal_identifier=self._VISUAL_LIGHT_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.LUX,
+            ),
+            DriverSignal(
+                signal_identifier=self._VISUAL_LIGHT_RAW_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.UNIT_LESS,
+            ),
+            DriverSignal(
+                signal_identifier=self._INFRARED_LIGHT_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.LUX,
+            ),
+            DriverSignal(
+                signal_identifier=self._INFRARED_LIGHT_RAW_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.UNIT_LESS,
+            ),
+            DriverSignal(
+                signal_identifier=self._UV_INDEX_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.UNIT_LESS,
+            ),
+        ]
 
     def setup(self):
 
@@ -48,11 +82,11 @@ class SI1145(AnalogInput):
         uv_idx = self._si1145.read_uv_index()
 
         return {
-            "visual-light-raw": float(vis_raw),
-            "visual-light": float(vis_lux),
-            "infrared-light-raw": float(ir_raw),
-            "infrared-light": float(ir_lux),
-            "uv-index": float(uv_idx),
+            self._VISUAL_LIGHT_RAW_SIGNAL_ID: float(vis_raw),
+            self._VISUAL_LIGHT_SIGNAL_ID: float(vis_lux),
+            self._INFRARED_LIGHT_RAW_SIGNAL_ID: float(ir_raw),
+            self._INFRARED_LIGHT_SIGNAL_ID: float(ir_lux),
+            self._UV_INDEX_SIGNAL_ID: float(uv_idx),
         }
 
 

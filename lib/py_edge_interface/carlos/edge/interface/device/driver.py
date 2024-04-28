@@ -20,12 +20,14 @@ from typing import Any, Callable, Generic, Iterable, Self, TypeVar
 from .driver_config import (
     DirectionMixin,
     DriverConfig,
+    DriverConfigWithDirection,
     DriverDirection,
+    DriverSignal,
     GpioDriverConfig,
     I2cDriverConfig,
 )
 
-DriverConfigTypeVar = TypeVar("DriverConfigTypeVar", bound=DriverConfig)
+DriverConfigTypeVar = TypeVar("DriverConfigTypeVar", bound=DriverConfigWithDirection)
 
 
 DRIVER_THREAD_POOL = concurrent.futures.ThreadPoolExecutor(
@@ -45,6 +47,15 @@ class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
     @property
     def identifier(self):
         return self.config.identifier
+
+    @property
+    def direction(self) -> DriverDirection:
+        return self.config.direction
+
+    @abstractmethod
+    def signals(self) -> list[DriverSignal]:
+        """Returns the signals of the peripheral."""
+        pass
 
     @abstractmethod
     def setup(self) -> Self:

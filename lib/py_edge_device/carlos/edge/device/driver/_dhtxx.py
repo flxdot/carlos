@@ -5,6 +5,8 @@ from enum import StrEnum
 from time import sleep
 
 from carlos.edge.interface.device import AnalogInput, DriverDirection, GpioDriverConfig
+from carlos.edge.interface.device.driver_config import DriverSignal
+from carlos.edge.interface.units import UnitOfMeasurement
 from pydantic import Field
 
 from carlos.edge.device.protocol import GPIO
@@ -124,12 +126,29 @@ class DHT:
 class DHTXX(AnalogInput, ABC):
     """DHTXX Temperature and Humidity Sensor."""
 
+    TEMP_SIGNAL_ID = "temperature"
+    HUMIDITY_SIGNAL_ID = "humidity"
+
     def __init__(self, config: GpioDriverConfig):
 
         super().__init__(config=config)
 
         self._dht: DHT | None = None
         self._dht_type: DHTType | None = None
+
+    def signals(self) -> list[DriverSignal]:
+        """Returns the signals of the DHT sensor."""
+
+        return [
+            DriverSignal(
+                signal_identifier=self.TEMP_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.CELSIUS,
+            ),
+            DriverSignal(
+                signal_identifier=self.HUMIDITY_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.HUMIDITY_PERCENTAGE,
+            ),
+        ]
 
     def setup(self):
         """Sets up the DHT11 sensor."""
@@ -148,8 +167,8 @@ class DHTXX(AnalogInput, ABC):
             try:
                 temperature, humidity = self._dht.read()
                 return {
-                    "temperature": temperature,
-                    "humidity": humidity,
+                    self.TEMP_SIGNAL_ID: temperature,
+                    self.HUMIDITY_SIGNAL_ID: humidity,
                 }
             except RuntimeError as ex:
                 last_error = ex

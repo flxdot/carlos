@@ -4,9 +4,10 @@ Carlos Edge device."""
 __all__ = [
     "CarlosMessage",
     "CarlosPayload",
+    "DeviceConfigPayload",
     "DriverDataPayload",
-    "EdgeVersionPayload",
     "DriverTimeseries",
+    "EdgeVersionPayload",
     "MessageType",
     "PingMessage",
     "PongMessage",
@@ -19,6 +20,7 @@ from enum import Enum
 
 from pydantic import Field, ValidationError, model_validator
 
+from carlos.edge.interface.device.driver_config import DriverMetadata
 from carlos.edge.interface.types import CarlosSchema
 
 
@@ -36,6 +38,12 @@ class MessageType(str, Enum):
     EDGE_VERSION = "edge_version"
     """Requests the communication partner to respond with the version of the Carlos Edge
     device. This is used to determine if a Carlos Edge device requires an update."""
+
+    DEVICE_CONFIG = "device_config"
+    """Send by the client after successfully connecting to the server.
+    This message contains the device config. It is used by the server to create the
+    required data structures to store the devices data and to know which data can be
+    received from and by the device."""
 
     DRIVER_DATA = "driver_data"
     """Send by the device. This message contains a collection of samples measured 
@@ -218,10 +226,23 @@ class DriverDataAckPayload(CarlosPayloadBase):
     )
 
 
+class DeviceConfigPayload(CarlosPayloadBase):
+    """Send by the client after successfully connecting to the server.
+    This message contains the device config. It is used by the server to create the
+    required data structures to store the devices data and to know which data can be
+    received from and by the device."""
+
+    drivers: list[DriverMetadata] = Field(
+        ...,
+        description="The driver configuration for the device.",
+    )
+
+
 MESSAGE_TYPE_TO_MODEL: dict[MessageType, type[CarlosPayloadBase] | None] = {
     MessageType.PING: PingMessage,
     MessageType.PONG: PongMessage,
     MessageType.EDGE_VERSION: EdgeVersionPayload,
+    MessageType.DEVICE_CONFIG: DeviceConfigPayload,
     MessageType.DRIVER_DATA: DriverDataPayload,
     MessageType.DRIVER_DATA_ACK: DriverDataAckPayload,
 }

@@ -4,6 +4,7 @@ the API."""
 __all__ = ["device_server_router"]
 
 import warnings
+from functools import partial
 
 from carlos.database.context import RequestContext
 from carlos.database.device import ensure_device_exists, set_device_seen
@@ -96,9 +97,11 @@ async def device_server_websocket(
 
     await set_device_seen(context=context, device_id=device_id)
 
-    protocol = WebsocketProtocol(websocket)
+    protocol = WebsocketProtocol(
+        websocket,
+        on_connect=partial(DEVICE_CONNECTION_MANAGER.add_device, device_id=device_id),
+    )
     await protocol.connect()  # accepts the connection
-    await DEVICE_CONNECTION_MANAGER.add_device(device_id=device_id, protocol=protocol)
 
     try:
         await ServerEdgeCommunicationHandler(

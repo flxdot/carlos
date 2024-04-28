@@ -7,6 +7,8 @@ from carlos.edge.interface.device import (
     DriverFactory,
     I2cDriverConfig,
 )
+from carlos.edge.interface.device.driver_config import DriverSignal
+from carlos.edge.interface.units import UnitOfMeasurement
 from pydantic import Field
 
 from carlos.edge.device.protocol import I2C
@@ -37,6 +39,9 @@ class SHT30(AnalogInput):
     PARAM_HIGH_REPEATABLITY = 0x06
     """Marks the measurement as high repeatability."""
 
+    _TEMPERATURE_SIGNAL_ID = "temperature"
+    _HUMIDITY_SIGNAL_ID = "humidity"
+
     def __init__(self, config: SHT30Config):
         if config.address_int not in SHT30.I2C_ADDRESSES:
             raise ValueError(
@@ -48,6 +53,20 @@ class SHT30(AnalogInput):
 
         self._i2c: I2C | None = None
 
+    def signals(self) -> list[DriverSignal]:
+        """Returns the signals of the DHT sensor."""
+
+        return [
+            DriverSignal(
+                signal_identifier=self._TEMPERATURE_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.CELSIUS,
+            ),
+            DriverSignal(
+                signal_identifier=self._HUMIDITY_SIGNAL_ID,
+                unit_of_measurement=UnitOfMeasurement.HUMIDITY_PERCENTAGE,
+            ),
+        ]
+
     def setup(self):
         self._i2c = I2C(address=self.config.address_int)
 
@@ -57,8 +76,8 @@ class SHT30(AnalogInput):
         read_delay_ms = 100
         humidity, temperature = self._get_measurement(read_delay_ms=read_delay_ms)
         return {
-            "temperature": float(temperature),
-            "humidity": float(humidity),
+            self._TEMPERATURE_SIGNAL_ID: float(temperature),
+            self._HUMIDITY_SIGNAL_ID: float(humidity),
         }
 
     def _get_measurement(self, read_delay_ms: int = 100) -> tuple[float, float]:

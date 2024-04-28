@@ -1,5 +1,6 @@
 __all__ = [
     "CarlosMessage",
+    "DeviceConfigPayload",
     "DeviceId",
     "EdgeCommunicationHandler",
     "EdgeConnectionDisconnected",
@@ -8,6 +9,8 @@ __all__ = [
     "EdgeVersionPayload",
     "MessageHandler",
     "MessageType",
+    "PING",
+    "PONG",
     "PingMessage",
     "PongMessage",
     "get_websocket_endpoint",
@@ -17,12 +20,15 @@ __all__ = [
 from .endpoint import get_websocket_endpoint, get_websocket_token_endpoint
 from .messages import (
     CarlosMessage,
+    DeviceConfigPayload,
     EdgeVersionPayload,
     MessageType,
     PingMessage,
     PongMessage,
 )
 from .protocol import (
+    PING,
+    PONG,
     EdgeCommunicationHandler,
     EdgeConnectionDisconnected,
     EdgeConnectionFailed,
