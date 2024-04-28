@@ -5,6 +5,7 @@ from typing import Self
 import pytest
 from pydantic import BaseModel
 
+from ..units import UnitOfMeasurement
 from .driver import (
     AnalogInput,
     CarlosDriver,
@@ -12,7 +13,12 @@ from .driver import (
     DriverFactory,
     validate_device_address_space,
 )
-from .driver_config import GpioDriverConfig, I2cDriverConfig
+from .driver_config import (
+    DriverDirection,
+    DriverSignal,
+    GpioDriverConfig,
+    I2cDriverConfig,
+)
 
 DRIVER_MODULE = __name__
 
@@ -32,6 +38,14 @@ DIGITAL_OUTPUT_CONFIG = GpioDriverConfig(
 
 
 class AnalogInputTest(AnalogInput):
+
+    def signals(self) -> list[DriverSignal]:
+        return [
+            DriverSignal(
+                signal_identifier=key, unit_of_measurement=UnitOfMeasurement.UNIT_LESS
+            )
+            for key in ANALOG_INPUT_VALUE.keys()
+        ]
 
     def setup(self):
         pass
@@ -56,6 +70,8 @@ def test_analog_input():
     """This test tests the AnalogInput Interface bia the AnalogInputTest class."""
     analog_input = AnalogInputTest(config=ANALOG_INPUT_CONFIG)
 
+    assert analog_input.direction == DriverDirection.INPUT, "Direction should be INPUT."
+
     assert (
         analog_input.test() == ANALOG_INPUT_VALUE
     ), "Test function should return a reading."
@@ -77,12 +93,20 @@ async def test_async_analog_input():
 
 class DigitalOutputTest(DigitalOutput):
 
+    def signals(self) -> list[DriverSignal]:
+        return [
+            DriverSignal(
+                signal_identifier="state",
+                unit_of_measurement=UnitOfMeasurement.UNIT_LESS,
+            )
+        ]
+
     def setup(self) -> Self:
         self.pytest_state = None
         return self
 
-    def read(self) -> bool:
-        return self.pytest_state
+    def read(self) -> dict[str, float]:
+        return {"state": self.pytest_state}
 
     def set(self, value: bool):
         self.pytest_state = value
@@ -92,12 +116,16 @@ def test_digital_output():
     """This test tests the DigitalOutput Interface via the DigitalOutputTest class."""
     digital_output = DigitalOutputTest(config=DIGITAL_OUTPUT_CONFIG).setup()
 
-    assert digital_output.read() is None, "Initial state should be None."
+    assert (
+        digital_output.direction == DriverDirection.OUTPUT
+    ), "Direction should be OUTPUT."
+
+    assert digital_output.read()["state"] is None, "Initial state should be None."
 
     digital_output.test()
 
     assert (
-        digital_output.read() is not None
+        digital_output.read()["state"] is not None
     ), "State should be set to a value after running the test."
 
     # using input config for output should raise an error

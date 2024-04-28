@@ -26,7 +26,12 @@ from .driver_config import (
     I2cDriverConfig,
 )
 
-DriverConfigTypeVar = TypeVar("DriverConfigTypeVar", bound=DriverConfig)
+
+class DriverConfigWithDirection(DriverConfig, DirectionMixin):
+    pass
+
+
+DriverConfigTypeVar = TypeVar("DriverConfigTypeVar", bound=DriverConfigWithDirection)
 
 
 DRIVER_THREAD_POOL = concurrent.futures.ThreadPoolExecutor(
@@ -49,19 +54,7 @@ class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
 
     @property
     def direction(self) -> DriverDirection:
-        if isinstance(self.config, DirectionMixin):
-            return self.config.direction
-
-        is_input = isinstance(self, InputDriver)
-        is_output = isinstance(self, OutputDriver)
-
-        if is_input and is_output:
-            return DriverDirection.BIDIRECTIONAL
-
-        if is_input:
-            return DriverDirection.INPUT
-
-        return DriverDirection.OUTPUT
+        return self.config.direction
 
     @abstractmethod
     def signals(self) -> list[DriverSignal]:

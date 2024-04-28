@@ -48,7 +48,7 @@ class EdgeProtocolTestingConnection(EdgeProtocol):
         self._is_connected = True
 
         if self.on_connect:
-            self.on_connect(self)
+            self.on_connect(self)  # pragma: no cover
 
     async def send(self, message: CarlosMessage) -> None:
         """Send data to the other end of the connection.
