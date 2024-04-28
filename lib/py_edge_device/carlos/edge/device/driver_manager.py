@@ -14,11 +14,9 @@ from carlos.edge.device.config import load_drivers
 from carlos.edge.device.storage.blackbox import Blackbox
 from carlos.edge.device.storage.connection import get_async_storage_engine
 
-
-
-
 INPUT_SAMPLE_INTERVAL = 2.5 * 60  # 2.5 minutes
 """The time between two consecutive samples of the input devices in seconds."""
+
 
 class DriverManager:  # pragma: no cover
 
