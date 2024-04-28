@@ -26,7 +26,7 @@ import {
 } from '@/components/charts/chart-utils.ts';
 import {
   pastelHumidityGradient,
-  vividTemperatureGradient,
+  outdoorTemperatureGradientCelsius,
 } from '@/components/charts/gradients.ts';
 import {
   humidEmojis, tempEmojis,
@@ -68,8 +68,8 @@ const humidBgGradient = ref<Gradient>({
 const humidYLimit = computed<TAxisLimit>(() => getSuitableLimit(humidityLimits, props.humidity.values));
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => {
-  const tempColor = borderColor(tempGradient.value, tempYLimit.value, vividTemperatureGradient);
-  const tempBgColor = borderColor(tempBgGradient.value, tempYLimit.value, vividTemperatureGradient, 0.5, true);
+  const tempColor = borderColor(tempGradient.value, tempYLimit.value, outdoorTemperatureGradientCelsius);
+  const tempBgColor = borderColor(tempBgGradient.value, tempYLimit.value, outdoorTemperatureGradientCelsius, 0.5, true);
   const humidColor = borderColor(humidGradient.value, humidYLimit.value, pastelHumidityGradient);
   const humidBgColor = borderColor(humidBgGradient.value, humidYLimit.value, pastelHumidityGradient, 0.5, true);
 

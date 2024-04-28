@@ -9,6 +9,11 @@ import {
   getMediaCategory, MediaSize,
 } from '@/utils/window.ts';
 import i18n from '@/plugins/i18n';
+import {
+  buildGradient, convertDiscreteToColorStops, DiscreteGradientDefinition,
+  GradientCache,
+  GradientDefinition, lineBackgroundFade,
+} from '@/components/charts/gradients.ts';
 
 export function generateChartTimestamps(days: number, minutesBetweenSamples: number): string[] {
   const timestamps: string[] = [];
@@ -51,51 +56,40 @@ export function generateSinWaveFromTimestamps(timestamps: string[], amplitude: n
   return sinWave;
 }
 
-export type Gradient = {
-  chartWidth: number | undefined;
-  chartHeight: number | undefined;
-  gradient: CanvasGradient | undefined;
-}
-
-export type ColorStop = {
-  atValue: number,
-  color: string,
-}
-
 export function updateGradient(
-  gradient: Gradient,
+  gradient: GradientCache,
   ctx: CanvasRenderingContext2D,
   chartArea: ChartArea,
   yLim: [number, number],
-  colorStops: ColorStop[],
+  colorStops: GradientDefinition | DiscreteGradientDefinition,
   alpha: number = 1,
   alphaGradient: boolean = false,
-): Gradient {
+): GradientCache {
   const chartWidth = chartArea.right - chartArea.left;
   const chartHeight = chartArea.bottom - chartArea.top;
 
   // Create the gradient because this is either the first render or the size of the chart has changed
   if (!gradient.gradient || gradient.chartWidth !== chartWidth || gradient.chartHeight !== chartHeight) {
-    // eslint-disable-next-line no-param-reassign
+    /* eslint-disable no-param-reassign */
     gradient.chartWidth = chartWidth;
-    // eslint-disable-next-line no-param-reassign
     gradient.chartHeight = chartHeight;
-    // eslint-disable-next-line no-param-reassign
-    gradient.gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-    for (const colorStop of colorStops) {
-      const relativeY = (colorStop.atValue - yLim[0]) / (yLim[1] - yLim[0]);
-      if (relativeY >= 0 && relativeY <= 1) {
-        const totalAlpha = alphaGradient ? alpha * (relativeY - 0.15) : alpha;
-        const alphaHex = Math.round(255 * Math.min(1, Math.max(0, totalAlpha))).toString(16).padStart(2, '0');
-        gradient.gradient.addColorStop(relativeY, colorStop.color + alphaHex);
-      }
+
+    if ('atValue' in colorStops[0]) {
+      colorStops = convertDiscreteToColorStops(colorStops as DiscreteGradientDefinition, yLim);
     }
+
+    gradient.gradient = buildGradient(
+      ctx,
+      chartArea,
+      colorStops as GradientDefinition,
+      alphaGradient ? lineBackgroundFade : [],
+    );
   }
 
   return gradient;
 }
 
-export function borderColor(gradient: Gradient, yLim: [number, number], colorStops: ColorStop[], alpha: number = 1, alphaGradient: boolean = false) {
+export function borderColor(gradient: GradientCache, yLim: [number, number], colorStops: GradientDefinition, alpha: number = 1, alphaGradient: boolean = false) {
   return (context: ScriptableChartContext) => {
     const {
       ctx, chartArea,

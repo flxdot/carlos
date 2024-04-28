@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest watch",
     "tsc": "vue-tsc",
     "lint": "yarn lint:js && yarn lint:css",
     "lint:fix": "yarn lint:js:fix && yarn lint:css:fix",
@@ -22,6 +24,7 @@
     "axios-jwt": "^4.0.2",
     "chart.js": "^4.4.2",
     "chartjs-adapter-dayjs-4": "^1.0.4",
+    "colorjs.io": "^0.5.0",
     "dayjs": "^1.11.10",
     "markdown-it": "^14.1.0",
     "path": "^0.12.7",
@@ -53,6 +56,7 @@
     "vite": "^5.2.0",
     "vite-raw-plugin": "^1.0.2",
     "vite-svg-loader": "^5.1.0",
+    "vitest": "^1.5.2",
     "vue-i18n": "^9.11.0",
     "vue-tsc": "^2.0.6"
   }
