@@ -12,7 +12,10 @@
 import Chart from 'primevue/chart';
 
 import {
-  computed, ref,
+  computed,
+  ref,
+  withDefaults,
+  defineProps,
 } from 'vue';
 import {
   ChartOptions,
@@ -38,11 +41,20 @@ import {
 } from '@/components/charts/gradients.ts';
 import crosshair from '@/components/charts/crosshair.ts';
 
-const props = defineProps<{
-  chartData: DeepPartial<TLineChartData>,
-  yAxes: TLineAxisProps,
-  height?: string,
-}>();
+interface IChartBaseLineProps {
+  chartData: DeepPartial<TLineChartData>;
+  yAxes: TLineAxisProps;
+  height?: string;
+  showXTicks?: boolean;
+}
+
+const props = withDefaults(
+  defineProps<IChartBaseLineProps>(),
+  {
+    height: '10rem',
+    showXTicks: true,
+  },
+);
 
 const ticksGradient = ref<GradientCache>({
   chartWidth: undefined,
@@ -73,7 +85,7 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         unit: 'day',
       },
       ticks: {
-        display: true,
+        display: props.showXTicks,
         color,
       },
       border: {

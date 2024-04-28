@@ -7,6 +7,13 @@ const authentication = {
   logout: 'Logout',
 };
 
+const chart = {
+  boolean: {
+    high: 'On',
+    low: 'Off',
+  },
+};
+
 const data = {
   labelWithUnit: '{label} in {unit}',
 };
@@ -43,6 +50,7 @@ const pages = {
 
 export default {
   authentication,
+  chart,
   data,
   device,
   error,

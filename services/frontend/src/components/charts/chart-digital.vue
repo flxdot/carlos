@@ -3,6 +3,7 @@
     :chart-data="chartData"
     :y-axes="yAxes"
     :height="props.height"
+    :show-x-ticks="props.showXTicks"
   />
 </template>
 
@@ -38,22 +39,25 @@ import {
 import {
   ITimeseries, toChartJsData,
 } from '@/components/charts/timeseries.ts';
+import i18n from '@/plugins/i18n';
 
 interface IChartAnalogProps {
   timeseries: ITimeseries;
   color: string | GradientDefinition | DiscreteGradientDefinition;
   height?: string;
+  showXTicks?: boolean;
 }
+
+const props = withDefaults(defineProps<IChartAnalogProps>(), {
+  height: '10rem',
+  tickStepSize: 5,
+  showXTicks: true,
+});
 
 const limits: [number, number] = [
   0,
   1,
 ];
-
-const props = withDefaults(defineProps<IChartAnalogProps>(), {
-  height: '10rem',
-  tickStepSize: 5,
-});
 
 const lineGradient = ref<GradientCache>({
   chartWidth: undefined,
@@ -97,14 +101,20 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
 });
 
 const yAxes = computed<TLineAxisProps>(() => {
+  const axis = buildAxis(
+    'left',
+    props.timeseries,
+    limits,
+    limits,
+    tempEmojis,
+  );
+
+  axis.ticks!.callback = (value: number) => {
+    return value > 0.5 ? i18n.global.t('chart.boolean.high') : i18n.global.t('chart.boolean.low');
+  };
+
   return {
-    [props.timeseries.displayName]: buildAxis(
-      'left',
-      props.timeseries,
-      limits,
-      limits,
-      tempEmojis,
-    ),
+    [props.timeseries.displayName]: axis,
   } as TLineAxisProps;
 });
 

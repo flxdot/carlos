@@ -3,6 +3,7 @@
     :chart-data="chartData"
     :y-axes="yAxes"
     :height="props.height"
+    :show-x-ticks="props.showXTicks"
   />
 </template>
 
@@ -48,11 +49,13 @@ interface IChartAnalogProps {
   color: string | GradientDefinition | DiscreteGradientDefinition;
   height?: string;
   tickStepSize?: number;
+  showXTicks?: boolean;
 }
 
 const props = withDefaults(defineProps<IChartAnalogProps>(), {
   height: '10rem',
   tickStepSize: 5,
+  showXTicks: true,
 });
 
 const lineGradient = ref<GradientCache>({

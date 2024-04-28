@@ -71,18 +71,21 @@
           :color="outdoorTemperatureGradientCelsius"
           :ticks="tempTicks"
           :limits="tempLimits"
+          :show-x-ticks="false"
         />
         <chart-analog
           :timeseries="humidityTs"
           :color="pastelHumidityGradient"
           :ticks="humidityTicks"
           :limits="humidityLimits"
+          :show-x-ticks="false"
         />
         <chart-analog
           :timeseries="humidityTs"
           color="#acf9ea"
           :ticks="humidityTicks"
           :limits="humidityLimits"
+          :show-x-ticks="false"
         />
         <chart-digital
           :timeseries="valveTs"
