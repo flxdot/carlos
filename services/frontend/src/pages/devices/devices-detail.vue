@@ -72,6 +72,12 @@
           :ticks="tempTicks"
           :limits="tempLimits"
         />
+        <chart-analog
+          :timeseries="humidityTs"
+          color="#acf9ea"
+          :ticks="humidityTicks"
+          :limits="humidityLimits"
+        />
       </template>
     </card>
   </div>
@@ -112,10 +118,12 @@ import {
 import MarkdownText from '@/components/markdown-text/markdown-text.vue';
 import ChartAnalog from '@/components/charts/chart-analog.vue';
 import {
+  humidityLimits,
+  humidityTicks,
+  tempLimits,
   tempTicks,
 } from '@/components/charts/constants.ts';
 import {
-  ETimeseriesValueType,
   ITimeseries,
 } from '@/components/charts/timeseries.ts';
 
@@ -129,19 +137,19 @@ const deviceDetails = ref<TGetDeviceDetailResponse | undefined>(undefined);
 const temperatureTs = ref<ITimeseries>({
   displayName: 'Temperature',
   unitSymbol: '°C',
-  samples: [],
-  valueType: ETimeseriesValueType.ANALOG,
+  timestamps: [],
+  values: [],
 });
 const humidityTs = ref<ITimeseries>({
   displayName: 'Humidity',
   unitSymbol: '%',
-  samples: [],
-  valueType: ETimeseriesValueType.ANALOG,
+  timestamps: [],
+  values: [],
 });
 
 const lastDataAt = computed<Dayjs | undefined>(() => {
-  const lastTempAt = temperatureTs.value.samples[temperatureTs.value.samples.length - 1];
-  const lastHumidAt = humidityTs.value.samples[humidityTs.value.samples.length - 1];
+  const lastTempAt = temperatureTs.value.timestamps[temperatureTs.value.timestamps.length - 1];
+  const lastHumidAt = humidityTs.value.timestamps[humidityTs.value.timestamps.length - 1];
 
   if (lastTempAt === undefined && lastHumidAt === undefined) {
     return undefined;
@@ -159,7 +167,7 @@ const dataAge = computed<string | undefined>(() => {
 });
 
 function renderTimeseriesAsString(ts: ITimeseries, suffix: ((num: number) => string) | undefined = undefined, showLabel: boolean = true): string {
-  const value = ts.samples[ts.samples.length - 1].y;
+  const value = ts.values[ts.values.length - 1];
   let rendered = `${value !== undefined ? value.toFixed(1) : '-'} ${ts.unitSymbol}`;
 
   if (suffix !== undefined) {
@@ -188,14 +196,16 @@ onMounted(() => {
 
   // Some representative data to showcase the full spectrum of the chart
   const timestamps = generateChartTimestamps(7, 1);
+  temperatureTs.value.timestamps = timestamps;
+  humidityTs.value.timestamps = timestamps;
 
   const dailyTemp = generateSinWaveFromTimestamps(timestamps, 8, 0, 0);
   const weeklyTemp = generateSinWaveFromTimestamps(timestamps, 32, 20, 1, 1 / 7);
-  const temperatures = dailyTemp.map((daily, index) => daily + weeklyTemp[index]);
+  temperatureTs.value.values = dailyTemp.map((daily, index) => daily + weeklyTemp[index]);
 
   const dailyHumid = generateSinWaveFromTimestamps(timestamps, 7.3, 0, 0);
   const weeklyHumid = generateSinWaveFromTimestamps(timestamps, 90, 50, 3, 1 / 7);
-  const humidity = dailyHumid.map((daily, index) => daily + weeklyHumid[index]);
+  humidityTs.value.values = dailyHumid.map((daily, index) => daily + weeklyHumid[index]);
 });
 
 onBeforeUnmount(() => {

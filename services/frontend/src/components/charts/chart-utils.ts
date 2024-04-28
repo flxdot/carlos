@@ -14,7 +14,9 @@ import {
   GradientCache,
   GradientDefinition, lineBackgroundFade,
 } from '@/components/charts/gradients.ts';
-import {ITimeseries} from "@/components/charts/timeseries.ts";
+import {
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
 
 export function generateChartTimestamps(days: number, minutesBetweenSamples: number): string[] {
   const timestamps: string[] = [];
@@ -61,7 +63,7 @@ export function updateGradient(
   gradient: GradientCache,
   ctx: CanvasRenderingContext2D,
   chartArea: ChartArea,
-  yLim: [number, number],
+  limits: [number, number],
   colorStops: GradientDefinition | DiscreteGradientDefinition,
   alphaGradient: boolean = false,
 ): GradientCache {
@@ -74,8 +76,8 @@ export function updateGradient(
     gradient.chartWidth = chartWidth;
     gradient.chartHeight = chartHeight;
 
-    if ('atValue' in colorStops[0]) {
-      colorStops = convertDiscreteToColorStops(colorStops as DiscreteGradientDefinition, yLim);
+    if (Object.prototype.hasOwnProperty.call(colorStops[0], 'atValue')) {
+      colorStops = convertDiscreteToColorStops(colorStops as DiscreteGradientDefinition, limits);
     }
 
     gradient.gradient = buildGradient(
@@ -91,8 +93,11 @@ export function updateGradient(
 
 export function chartJsGradient(
   gradient: GradientCache,
-  yLim: [number, number],
   colorStops: GradientDefinition | DiscreteGradientDefinition,
+  limits: [number, number] = [
+    0,
+    1,
+  ],
   alphaGradient: boolean = false,
 ) {
   return (context: ScriptableChartContext) => {
@@ -109,7 +114,7 @@ export function chartJsGradient(
       gradient,
       ctx,
       chartArea,
-      yLim,
+      limits,
       colorStops,
       alphaGradient,
     ).gradient;
@@ -158,7 +163,7 @@ export function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, l
     title: {
       display: mediaSize >= MediaSize.DESKTOP,
       text: i18n.global.t('data.labelWithUnit', {
-        label: timeseries.label,
+        label: timeseries.displayName,
         unit: timeseries.unitSymbol,
       }),
     },

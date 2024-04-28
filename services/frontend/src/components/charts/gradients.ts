@@ -220,6 +220,7 @@ export const xTicksGradient: GradientDefinition = [
 export const carlosPalettePrimary = colorToColorStop('#98b274');
 export const carlosPaletteBrown = colorToColorStop('#f4fec1');
 export const carlosPaletteSand = colorToColorStop('#f4d35e');
+export const carlosPaletteBlue = colorToColorStop('#acf9ea');
 export const lineBackgroundFade: AlphaStop[] = [
   {
     position: 0.1,

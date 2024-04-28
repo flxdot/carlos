@@ -15,7 +15,7 @@ import {
 import ChartBaseLine from '@/components/charts/chart-base-line.vue';
 import {
   TAxisLimit,
-  ITimeseries, TLineAxisProps, TLineChartData,
+  TLineAxisProps, TLineChartData,
 } from '@/components/charts/chart-types.ts';
 import {
   chartJsGradient,
@@ -39,6 +39,9 @@ import {
 import {
   DeepPartial,
 } from '@/utils/types.ts';
+import {
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
 
 const props = defineProps<{temperature: ITimeseries, humidity: ITimeseries}>();
 
@@ -67,10 +70,10 @@ const humidBgGradient = ref<GradientCache>({
 const humidYLimit = computed<TAxisLimit>(() => getSuitableLimit(humidityLimits, props.humidity.values));
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => {
-  const tempColor = chartJsGradient(tempGradient.value, tempYLimit.value, outdoorTemperatureGradientCelsius);
-  const tempBgColor = chartJsGradient(tempBgGradient.value, tempYLimit.value, outdoorTemperatureGradientCelsius, true);
-  const humidColor = chartJsGradient(humidGradient.value, humidYLimit.value, pastelHumidityGradient);
-  const humidBgColor = chartJsGradient(humidBgGradient.value, humidYLimit.value, pastelHumidityGradient, true);
+  const tempColor = chartJsGradient(tempGradient.value, outdoorTemperatureGradientCelsius, tempYLimit.value);
+  const tempBgColor = chartJsGradient(tempBgGradient.value, outdoorTemperatureGradientCelsius, tempYLimit.value, true);
+  const humidColor = chartJsGradient(humidGradient.value, pastelHumidityGradient, humidYLimit.value);
+  const humidBgColor = chartJsGradient(humidBgGradient.value, pastelHumidityGradient, humidYLimit.value, true);
 
   return {
     datasets: [

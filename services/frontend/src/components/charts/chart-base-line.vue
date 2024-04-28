@@ -30,9 +30,10 @@ import {
   DeepPartial,
 } from '@/utils/types.ts';
 import {
-  chartJsGradient, Gradient,
+  chartJsGradient,
 } from '@/components/charts/chart-utils.ts';
 import {
+  GradientCache,
   xTicksGradient,
 } from '@/components/charts/gradients.ts';
 import crosshair from '@/components/charts/crosshair.ts';
@@ -43,7 +44,7 @@ const props = defineProps<{
   height?: string,
 }>();
 
-const humidGradient = ref<Gradient>({
+const ticksGradient = ref<GradientCache>({
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
@@ -54,6 +55,15 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
   const documentStyle = getComputedStyle(document.documentElement);
   const color = documentStyle.getPropertyValue('--carlos-bg-text--dark');
   // const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+  const tickColor = chartJsGradient(
+    ticksGradient.value,
+    xTicksGradient,
+    [
+      0,
+      1,
+    ],
+  );
 
   const xAxis: TTimeAxisProps = {
     x: {
@@ -74,14 +84,8 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         display: true,
         drawOnChartArea: true,
         drawTicks: true,
-        color: chartJsGradient(humidGradient.value, [
-          0,
-          1,
-        ], xTicksGradient),
-        tickColor: chartJsGradient(humidGradient.value, [
-          0,
-          1,
-        ], xTicksGradient),
+        color: tickColor,
+        tickColor,
       },
     },
   };

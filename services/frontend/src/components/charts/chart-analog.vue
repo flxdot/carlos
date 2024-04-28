@@ -1,7 +1,12 @@
 <template>
   <div>
     <pre>
-      {{ props.timeseries.displayName }}
+      <span>
+        {{ props.timeseries.displayName }}
+      </span>
+      <span>
+        {{ props.timeseries.values[props.timeseries.values.length - 1] }} {{ props.timeseries.unitSymbol }}
+      </span>
     </pre>
     <chart-base-line
       :chart-data="chartData"
@@ -29,7 +34,7 @@ import {
   buildAxis,
 } from '@/components/charts/chart-utils.ts';
 import {
-  carlosPalettePrimary, DiscreteGradientDefinition,
+  colorToColorStop, DiscreteGradientDefinition,
   GradientCache, GradientDefinition,
 } from '@/components/charts/gradients.ts';
 import {
@@ -42,7 +47,7 @@ import {
   DeepPartial,
 } from '@/utils/types.ts';
 import {
-  ITimeseries,
+  ITimeseries, toChartJsData,
 } from '@/components/charts/timeseries.ts';
 
 const props = defineProps<{
@@ -63,24 +68,31 @@ const LineBgGradient = ref<GradientCache>({
   gradient: undefined,
 });
 const actualLimits = computed<TAxisLimit>(
-  () => getSuitableLimit(props.limits, props.timeseries.samples.map((x) => x.y)),
+  () => getSuitableLimit(props.limits, props.timeseries.values),
 );
 
 const chartData = computed<DeepPartial<TLineChartData>>(() => {
-  const tempColor = chartJsGradient(lineGradient.value, actualLimits.value, carlosPalettePrimary);
-  const tempBgColor = chartJsGradient(LineBgGradient.value, actualLimits.value, carlosPalettePrimary, true);
+  let gradient: GradientDefinition | DiscreteGradientDefinition;
+  if (typeof props.color === 'string') {
+    gradient = colorToColorStop(props.color);
+  } else {
+    gradient = props.color;
+  }
+
+  const borderColor = chartJsGradient(lineGradient.value, gradient, actualLimits.value);
+  const backgroundColor = chartJsGradient(LineBgGradient.value, gradient, actualLimits.value, true);
 
   return {
     datasets: [
       {
         label: 'Temperature',
-        data: props.timeseries.samples,
+        data: toChartJsData(props.timeseries),
         borderWidth: LineWidth,
-        chartJsGradient: tempColor,
-        backgroundColor: tempBgColor,
+        borderColor,
+        backgroundColor,
         fill: true,
         pointStyle: false,
-        yAxisID: 'temp',
+        yAxisID: props.timeseries.displayName,
         // The tension helps to smooth the line in case of oversampling
         tension: 0.1,
       },
@@ -90,7 +102,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
 
 const yAxes = computed<TLineAxisProps>(() => {
   return {
-    temp: buildAxis(
+    [props.timeseries.displayName]: buildAxis(
       'left',
       props.timeseries,
       actualLimits.value,

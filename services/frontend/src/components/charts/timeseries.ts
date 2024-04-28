@@ -12,27 +12,30 @@ export enum ETimeseriesValueType {
 }
 
 /**
- * Represents a single sample in a timeseries.
- *
- * @property x - The timestamp of the sample. Value needs to be representable by dayjs.
- * @property y - The value of the sample.
- */
-export interface ITimeseriesSample {
-    x: string;
-    y: number;
-}
-
-/**
  * Defines a timeseries with all information required to render it.
  *
  * @property displayName - The name of the timeseries - this is used as the label plot.
  * @property unitSymbol - The unit symbol of the timeseries values. If undefined, no unit is displayed.
  * @property samples - The samples of the timeseries.
- * @property valueType - The type of values in the timeseries. This determines how the timeseries is rendered.
  */
 export interface ITimeseries {
     displayName: string;
     unitSymbol?: string;
-    samples: ITimeseriesSample[];
-    valueType: ETimeseriesValueType;
+    timestamps: string[];
+    values: number[];
+}
+
+export interface ITimeseriesSample {
+    x: string;
+    y: number;
+}
+
+export function toChartJsData(timeseries: ITimeseries): ITimeseriesSample[] {
+  return timeseries.timestamps.map(
+    (timestamp, index) => ({
+      x: timestamp,
+      y: timeseries.values[index],
+    }
+    ),
+  );
 }

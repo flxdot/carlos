@@ -2,13 +2,14 @@ import {
   Chart,
 } from 'chart.js';
 import {
-  Gradient, updateGradient,
+  updateGradient,
 } from '@/components/charts/chart-utils.ts';
 import {
+  GradientCache,
   xTicksGradient,
 } from '@/components/charts/gradients.ts';
 
-const crossHairGrad: Gradient = {
+const crossHairGrad: GradientCache = {
   chartWidth: undefined,
   chartHeight: undefined,
   gradient: undefined,
@@ -59,10 +60,16 @@ export default {
       return;
     }
 
-    updateGradient(crossHairGrad, ctx, chartArea, [
-      0,
-      1,
-    ], xTicksGradient);
+    updateGradient(
+      crossHairGrad,
+      ctx,
+      chartArea,
+      [
+        0,
+        1,
+      ],
+      xTicksGradient,
+    );
 
     ctx.save();
 
