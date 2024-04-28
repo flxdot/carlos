@@ -34,5 +34,5 @@ export interface ITimeseries {
     displayName: string;
     unitSymbol?: string;
     samples: ITimeseriesSample[];
-    valueType: ITimeseriesValueType;
+    valueType: ETimeseriesValueType;
 }
