@@ -147,10 +147,6 @@ class DeviceRuntime:  # pragma: no cover
         pass
 
 
-INPUT_SAMPLE_INTERVAL = 2.5 * 60  # 2.5 minutes
-"""The time between two consecutive samples of the input devices in seconds."""
-
-
 async def send_ping(
     communication_handler: ClientEdgeCommunicationHandler,
 ):  # pragma: no cover
