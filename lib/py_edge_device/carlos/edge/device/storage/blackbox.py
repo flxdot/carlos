@@ -32,10 +32,9 @@ class Blackbox:
 
         async with self._engine.connect() as connection:
 
-            timeseries_id_to_value: dict[int, float] = {}
-
             await self._ensure_index_hydrated(connection, driver_identifier)
 
+            timeseries_id_to_value: dict[int, float] = {}
             for driver_signal, value in data.items():
                 timeseries_id = await self._get_timeseries_id(
                     connection=connection,
@@ -44,11 +43,12 @@ class Blackbox:
                 )
                 timeseries_id_to_value[timeseries_id] = value
 
-            ts_input = TimeseriesInput(
-                timestamp_utc=read_timestamp, values=timeseries_id_to_value
+            await add_timeseries_data(
+                connection=connection,
+                timeseries_input=TimeseriesInput(
+                    timestamp_utc=read_timestamp, values=timeseries_id_to_value
+                ),
             )
-
-            await add_timeseries_data(connection=connection, timeseries_input=ts_input)
 
             logger.debug(f"Recorded data from driver {driver_identifier}.")
 
@@ -60,15 +60,14 @@ class Blackbox:
         if driver_identifier in self._timeseries_id_index:
             return
 
-        self._timeseries_id_index[driver_identifier] = {}
-
         matching = await find_timeseries_index(
             connection=connection, driver_identifier=driver_identifier
         )
+
+        driver_index = {}
         for match in matching:
-            self._timeseries_id_index[driver_identifier][
-                match.driver_signal
-            ] = match.timeseries_id
+            driver_index[match.driver_signal] = match.timeseries_id
+        self._timeseries_id_index[driver_identifier] = driver_index
 
     async def _get_timeseries_id(
         self, connection: AsyncConnection, driver_identifier: str, driver_signal: str
@@ -83,7 +82,7 @@ class Blackbox:
         """
 
         try:
-            timeseries_id = self._timeseries_id_index[driver_identifier][driver_signal]
+            return self._timeseries_id_index[driver_identifier][driver_signal]
         except KeyError:
             created = await create_timeseries_index(
                 connection=connection,
@@ -92,7 +91,8 @@ class Blackbox:
                     driver_signal=driver_signal,
                 ),
             )
-            timeseries_id = created.timeseries_id
-            self._timeseries_id_index[driver_identifier][driver_signal] = timeseries_id
+            self._timeseries_id_index[driver_identifier][
+                driver_signal
+            ] = created.timeseries_id
 
-        return timeseries_id
+            return created.timeseries_id

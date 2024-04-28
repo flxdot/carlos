@@ -133,7 +133,7 @@ class DeviceRuntime:  # pragma: no cover
         pass
 
 
-INPUT_SAMPLE_INTERVAL = 60
+INPUT_SAMPLE_INTERVAL = 2.5 * 60  # 2.5 minutes
 """The time between two consecutive samples of the input devices in seconds."""
 
 
