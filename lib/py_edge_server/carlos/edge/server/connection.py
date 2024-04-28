@@ -21,12 +21,12 @@ class DeviceConnectionManager:
 
         return list(self._active_connections.keys())
 
-    async def add_device(self, device_id: DeviceId, protocol: EdgeProtocol):
+    async def add_device(self, protocol: EdgeProtocol, device_id: DeviceId):
         """Adds the given protocol to the active connections and sends
         the handshake messages.
 
-        :param device_id: The unique identifier of the device.
         :param protocol: The corresponding protocol of the device.
+        :param device_id: The unique identifier of the device.
         """
 
         # if a device with the same id is already connected, disconnect it
