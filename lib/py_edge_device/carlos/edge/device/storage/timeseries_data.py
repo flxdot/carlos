@@ -45,7 +45,7 @@ async def add_timeseries_data(
             {
                 "timeseries_id": timeseries_id,
                 "timestamp_utc": int(timeseries_input.timestamp_utc.timestamp()),
-                "value": value,
+                "value": float(value),
             }
             for timeseries_id, value in timeseries_input.values.items()
         ]
