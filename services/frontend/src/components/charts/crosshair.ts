@@ -1,5 +1,5 @@
 import {
-  Chart,
+  Chart, ChartEvent,
 } from 'chart.js';
 import {
   updateGradient,
@@ -23,12 +23,24 @@ type ChartWithCrosshair = Chart & {
   },
 };
 
+interface AfterEventArgs {
+  cancelable: boolean,
+  changed?: boolean,
+  event: ChartEvent;
+  inChartArea: boolean;
+  replay: boolean;
+}
+
+interface CrossHairOptions {
+    width: number;
+}
+
 export default {
   id: 'crosshair',
   defaults: {
     width: 1,
   },
-  afterInit: (chart: ChartWithCrosshair, args, opts) => {
+  afterInit: (chart: ChartWithCrosshair) => {
     // eslint-disable-next-line no-param-reassign
     chart.crosshair = {
       x: 0,
@@ -36,10 +48,14 @@ export default {
       draw: false,
     };
   },
-  afterEvent: (chart: ChartWithCrosshair, args) => {
+  afterEvent: (chart: ChartWithCrosshair, args: AfterEventArgs) => {
     const {
       x, y,
     } = args.event;
+
+    if (!x || !y) {
+      return;
+    }
 
     // eslint-disable-next-line no-param-reassign
     chart.crosshair = {
@@ -49,7 +65,7 @@ export default {
     };
     chart.draw();
   },
-  beforeDatasetsDraw: (chart: ChartWithCrosshair, args, opts) => {
+  beforeDatasetsDraw: (chart: ChartWithCrosshair, opts: CrossHairOptions) => {
     const {
       ctx, chartArea,
     } = chart;

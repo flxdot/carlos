@@ -141,7 +141,7 @@ import {
   outdoorTemperatureGradientCelsius,
   pastelHumidityGradient,
 } from '@/components/charts/gradients.ts';
-import ChartDigital from "@/components/charts/chart-digital.vue";
+import ChartDigital from '@/components/charts/chart-digital.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
