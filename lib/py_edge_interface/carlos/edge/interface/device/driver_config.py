@@ -2,6 +2,7 @@ __all__ = [
     "DRIVER_IDENTIFIER_LENGTH",
     "DirectionMixin",
     "DriverConfig",
+    "DriverConfigWithDirection",
     "DriverDirection",
     "DriverMetadata",
     "DriverSignal",
@@ -78,7 +79,11 @@ class DirectionMixin(BaseModel):
     direction: DriverDirection = Field(..., description="The direction of the IO.")
 
 
-class GpioDriverConfig(DriverConfig, DirectionMixin):
+class DriverConfigWithDirection(DriverConfig, DirectionMixin):
+    pass
+
+
+class GpioDriverConfig(DriverConfigWithDirection):
     """Defines a single input configuration."""
 
     protocol: Literal["gpio"] = Field(
@@ -116,7 +121,7 @@ class GpioDriverConfig(DriverConfig, DirectionMixin):
     ] = Field(..., description="The GPIO pin number.")
 
 
-class I2cDriverConfig(DriverConfig, DirectionMixin):
+class I2cDriverConfig(DriverConfigWithDirection):
     """Defines a single input configuration."""
 
     protocol: Literal["i2c"] = Field(

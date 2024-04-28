@@ -1,6 +1,9 @@
 import psutil
-from carlos.edge.interface.device import AnalogInput, DriverConfig, DriverFactory
-from carlos.edge.interface.device.driver_config import DriverSignal
+from carlos.edge.interface.device import AnalogInput, DriverFactory
+from carlos.edge.interface.device.driver_config import (
+    DriverConfigWithDirection,
+    DriverSignal,
+)
 from carlos.edge.interface.units import UnitOfMeasurement
 
 
@@ -12,7 +15,7 @@ class DeviceMetrics(AnalogInput):
     _MEMORY_USAGE_SIGNAL_ID = "memory.usage_percent"
     _DISK_USAGE_SIGNAL_ID = "disk.usage_percent"
 
-    def __init__(self, config: DriverConfig):
+    def __init__(self, config: DriverConfigWithDirection):
 
         super().__init__(config=config)
 
@@ -62,5 +65,5 @@ class DeviceMetrics(AnalogInput):
 
 
 DriverFactory().register(
-    driver_module=__name__, config=DriverConfig, factory=DeviceMetrics
+    driver_module=__name__, config=DriverConfigWithDirection, factory=DeviceMetrics
 )

@@ -11,7 +11,11 @@ from pathlib import Path
 from typing import TypeVar
 
 import yaml
-from carlos.edge.interface.device import CarlosDriver, DriverConfig, DriverFactory
+from carlos.edge.interface.device import CarlosDriver, DriverFactory
+from carlos.edge.interface.device.driver_config import (
+    DriverConfigWithDirection,
+    DriverDirection,
+)
 from loguru import logger
 from pydantic import BaseModel
 
@@ -65,9 +69,10 @@ def load_drivers(config_dir: Path | None = None) -> list[CarlosDriver]:
         driver_configs.insert(
             0,
             factory.build(
-                DriverConfig(
+                DriverConfigWithDirection(
                     identifier="__device_metrics__",
                     driver_module=DeviceMetrics.__module__,
+                    direction=DriverDirection.INPUT,
                 ).model_dump()
             ),
         )

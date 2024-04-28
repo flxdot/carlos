@@ -20,16 +20,12 @@ from typing import Any, Callable, Generic, Iterable, Self, TypeVar
 from .driver_config import (
     DirectionMixin,
     DriverConfig,
+    DriverConfigWithDirection,
     DriverDirection,
     DriverSignal,
     GpioDriverConfig,
     I2cDriverConfig,
 )
-
-
-class DriverConfigWithDirection(DriverConfig, DirectionMixin):
-    pass
-
 
 DriverConfigTypeVar = TypeVar("DriverConfigTypeVar", bound=DriverConfigWithDirection)
 
