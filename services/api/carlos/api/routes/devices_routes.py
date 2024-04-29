@@ -4,14 +4,22 @@ from carlos.database.context import RequestContext
 from carlos.database.device import (
     CarlosDevice,
     CarlosDeviceCreate,
+    CarlosDeviceDriver,
     CarlosDeviceUpdate,
     create_device,
     get_device,
+    get_device_drivers,
     list_devices,
     update_device,
+    update_device_driver,
+)
+from carlos.database.device.device_metadata import (
+    CarlosDeviceDriverUpdate,
+    CarlosDeviceSignal,
+    get_device_signals,
 )
 from carlos.edge.interface import DeviceId
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path
 
 from carlos.api.depends.context import request_context
 
@@ -63,3 +71,59 @@ async def update_device_route(
 ):
     """Update a device by its ID."""
     return await update_device(context=context, device_id=device_id, device=device)
+
+
+@devices_router.get(
+    "/{deviceId}/drivers",
+    summary="Get all drivers for a device.",
+    response_model=list[CarlosDeviceDriver],
+)
+async def get_device_drivers_route(
+    device_id: DeviceId = DEVICE_ID_PATH,
+    context: RequestContext = Depends(request_context),
+):
+    """Get all drivers for a device."""
+    return await get_device_drivers(context=context, device_id=device_id)
+
+
+DRIVER_IDENTIFIER_PATH: str = Path(
+    ...,
+    alias="driverIdentifier",
+    description="The unique identifier of the driver.",
+)
+
+
+@devices_router.put(
+    "/{deviceId}/drivers/{driverIdentifier}",
+    summary="Update a driver for a device.",
+    response_model=CarlosDeviceDriver,
+)
+async def update_device_driver_route(
+    driver: CarlosDeviceDriverUpdate = Body(),
+    device_id: DeviceId = DEVICE_ID_PATH,
+    driver_identifier: str = DRIVER_IDENTIFIER_PATH,
+    context: RequestContext = Depends(request_context),
+):
+    """Update a driver for a device."""
+    return await update_device_driver(
+        context=context,
+        device_id=device_id,
+        driver_identifier=driver_identifier,
+        driver=driver,
+    )
+
+
+@devices_router.get(
+    "/{deviceId}/drivers/{driverIdentifier}/signals",
+    summary="Get all signals for a driver.",
+    response_model=list[CarlosDeviceSignal],
+)
+async def get_device_signals_route(
+    device_id: DeviceId = DEVICE_ID_PATH,
+    driver_identifier: str = DRIVER_IDENTIFIER_PATH,
+    context: RequestContext = Depends(request_context),
+):
+    """Get all signals for a driver."""
+    return await get_device_signals(
+        context=context, device_id=device_id, driver_identifier=driver_identifier
+    )

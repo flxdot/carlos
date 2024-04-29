@@ -31,6 +31,7 @@ class _DriverConfigMixin(CarlosSchema):
 
     identifier: str = Field(
         ...,
+        min_length=1,
         max_length=DRIVER_IDENTIFIER_LENGTH,
         description="A unique identifier for the driver_module configuration. "
         "It is used to allow changing addresses, pins if required later.",
@@ -38,6 +39,7 @@ class _DriverConfigMixin(CarlosSchema):
 
     driver_module: str = Field(
         ...,
+        max_length=255,
         description="Refers to the module name that implements the IO driver_module. "
         "Built-in drivers located in carlos.edge.device.driver module "
         "don't need to specify the full path. Each driver_module module"

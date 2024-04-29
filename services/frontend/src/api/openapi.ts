@@ -29,6 +29,34 @@ export interface paths {
      */
     put: operations["updateDeviceRoute"];
   };
+  "/devices/{deviceId}/drivers": {
+    /**
+     * Get all drivers for a device.
+     * @description Get all drivers for a device.
+     */
+    get: operations["getDeviceDriversRoute"];
+  };
+  "/devices/{deviceId}/drivers/{driverIdentifier}": {
+    /**
+     * Update a driver for a device.
+     * @description Update a driver for a device.
+     */
+    put: operations["updateDeviceDriverRoute"];
+  };
+  "/devices/{deviceId}/drivers/{driverIdentifier}/signals": {
+    /**
+     * Get all signals for a driver.
+     * @description Get all signals for a driver.
+     */
+    get: operations["getDeviceSignalsRoute"];
+  };
+  "/signals/{timeseriesId}": {
+    /**
+     * Update a signal by its ID.
+     * @description Update a signal by its ID.
+     */
+    put: operations["updateDeviceSignalRoute"];
+  };
   "/health": {
     /**
      * Health
@@ -103,6 +131,105 @@ export interface components {
        */
       description?: string | null;
     };
+    /** CarlosDeviceDriver */
+    CarlosDeviceDriver: {
+      /**
+       * Displayname
+       * @description The name of the driver that is displayed in the UI.
+       */
+      displayName: string;
+      /**
+       * Isvisibleondashboard
+       * @description Whether the driver is visible on the dashboard.
+       */
+      isVisibleOnDashboard: boolean;
+      /**
+       * Driveridentifier
+       * @description The unique identifier of the driver in the context of the device.
+       */
+      driverIdentifier: string;
+      /** @description The direction of the IO. */
+      direction: components["schemas"]["DriverDirection"];
+      /**
+       * Drivermodule
+       * @description The module that implements the IO driver.
+       */
+      driverModule: string;
+      /**
+       * Deviceid
+       * Format: uuid
+       * @description The device the driver belongs to.
+       */
+      deviceId: string;
+    };
+    /**
+     * CarlosDeviceDriverUpdate
+     * @description The properties required to update a device.
+     */
+    CarlosDeviceDriverUpdate: {
+      /**
+       * Displayname
+       * @description The name of the driver that is displayed in the UI.
+       */
+      displayName: string;
+      /**
+       * Isvisibleondashboard
+       * @description Whether the driver is visible on the dashboard.
+       */
+      isVisibleOnDashboard: boolean;
+    };
+    /**
+     * CarlosDeviceSignal
+     * @description The properties of a device signal.
+     */
+    CarlosDeviceSignal: {
+      /**
+       * Displayname
+       * @description The name of the signal that is displayed in the UI.
+       */
+      displayName: string;
+      /** @description The unit of measurement of the signal. */
+      unitOfMeasurement: components["schemas"]["UnitOfMeasurement"];
+      /**
+       * Isvisibleondashboard
+       * @description Whether the signal is visible on the dashboard.
+       */
+      isVisibleOnDashboard: boolean;
+      /**
+       * Timeseriesid
+       * @description The unique identifier of the signal.
+       */
+      timeseriesId: number;
+      /**
+       * Deviceid
+       * Format: uuid
+       * @description The device the driver belongs to.
+       */
+      deviceId: string;
+      /**
+       * Driveridentifier
+       * @description The unique identifier of the driver in the context of the device.
+       */
+      driverIdentifier: string;
+    };
+    /**
+     * CarlosDeviceSignalUpdate
+     * @description The properties required to update a device signal.
+     */
+    CarlosDeviceSignalUpdate: {
+      /**
+       * Displayname
+       * @description The name of the signal that is displayed in the UI.
+       */
+      displayName: string;
+      /** @description The unit of measurement of the signal. */
+      unitOfMeasurement: components["schemas"]["UnitOfMeasurement"];
+      /**
+       * Isvisibleondashboard
+       * @description Whether the signal is visible on the dashboard.
+       */
+      isVisibleOnDashboard: boolean;
+    };
     /**
      * CarlosDeviceUpdate
      * @description Allows you to update the device information.
@@ -119,6 +246,12 @@ export interface components {
        */
       description?: string | null;
     };
+    /**
+     * DriverDirection
+     * @description Enum for the direction of the IO.
+     * @enum {string}
+     */
+    DriverDirection: "input" | "output" | "bidirectional";
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
@@ -142,6 +275,22 @@ export interface components {
      * @enum {string}
      */
     HealthStatus: "ok" | "no_db_connection" | "error";
+    /**
+     * UnitOfMeasurement
+     * @description An enumeration of supported units of measurement.
+     *
+     * The values of this enumeration are based on the PhysicalQuantity enumeration.
+     *
+     *
+     * - 0 = UNIT_LESS
+     * - 100 = PERCENTAGE
+     * - 200 = CELSIUS
+     * - 201 = FAHRENHEIT
+     * - 300 = HUMIDITY_PERCENTAGE
+     * - 400 = LUX
+     * @enum {integer}
+     */
+    UnitOfMeasurement: 0 | 100 | 200 | 201 | 300 | 400;
     /** ValidationError */
     ValidationError: {
       /** Location */
@@ -251,6 +400,124 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["CarlosDevice"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get all drivers for a device.
+   * @description Get all drivers for a device.
+   */
+  getDeviceDriversRoute: {
+    parameters: {
+      path: {
+        /** @description The unique identifier of the device. */
+        deviceId: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["CarlosDeviceDriver"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update a driver for a device.
+   * @description Update a driver for a device.
+   */
+  updateDeviceDriverRoute: {
+    parameters: {
+      path: {
+        /** @description The unique identifier of the device. */
+        deviceId: string;
+        /** @description The unique identifier of the driver. */
+        driverIdentifier: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CarlosDeviceDriverUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["CarlosDeviceDriver"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get all signals for a driver.
+   * @description Get all signals for a driver.
+   */
+  getDeviceSignalsRoute: {
+    parameters: {
+      path: {
+        /** @description The unique identifier of the device. */
+        deviceId: string;
+        /** @description The unique identifier of the driver. */
+        driverIdentifier: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["CarlosDeviceSignal"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update a signal by its ID.
+   * @description Update a signal by its ID.
+   */
+  updateDeviceSignalRoute: {
+    parameters: {
+      path: {
+        /** @description The unique identifier of the signal. */
+        timeseriesId: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CarlosDeviceSignalUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["CarlosDeviceSignal"];
         };
       };
       /** @description Validation Error */

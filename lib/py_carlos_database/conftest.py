@@ -1,8 +1,4 @@
-import asyncio
-from typing import Iterator
-
 import pytest
-from _pytest.fixtures import FixtureRequest
 
 from carlos.database.migration import downgrade_carlos_schema, setup_test_db_data
 from carlos.database.plugin_pytest import connection_settings
