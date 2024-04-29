@@ -176,10 +176,10 @@ async def create_device_driver(
         .returning(CarlosDeviceDriverOrm)
     )
 
-    driver = (await context.connection.execute(stmt)).one()
+    created = (await context.connection.execute(stmt)).one()
     await context.connection.commit()
 
-    return CarlosDeviceDriver.model_validate(driver)
+    return CarlosDeviceDriver.model_validate(created)
 
 
 async def update_device_driver(
@@ -211,14 +211,14 @@ async def update_device_driver(
     )
 
     try:
-        driver = (await context.connection.execute(stmt)).one()
+        updated = (await context.connection.execute(stmt)).one()
         await context.connection.commit()
     except NoResultFound:
         raise NotFound(
             f"Driver {driver_identifier=} does not exist for device {device_id=}."
         )
 
-    return CarlosDeviceDriver.model_validate(driver)
+    return CarlosDeviceDriver.model_validate(updated)
 
 
 async def delete_device_driver(
@@ -305,10 +305,10 @@ async def create_device_signals(
         .returning(CarlosDeviceSignalOrm)
     )
 
-    signals = (await context.connection.execute(stmt)).all()
+    created = (await context.connection.execute(stmt)).all()
     await context.connection.commit()
 
-    return [CarlosDeviceSignal.model_validate(signal) for signal in signals]
+    return [CarlosDeviceSignal.model_validate(signal) for signal in created]
 
 
 async def update_device_signal(
@@ -335,12 +335,12 @@ async def update_device_signal(
     )
 
     try:
-        signal = (await context.connection.execute(stmt)).one()
+        updated = (await context.connection.execute(stmt)).one()
         await context.connection.commit()
     except NoResultFound:
         raise NotFound(f"Signal {timeseries_id=} does not exist.")
 
-    return CarlosDeviceSignal.model_validate(signal)
+    return CarlosDeviceSignal.model_validate(updated)
 
 
 async def delete_device_signal(
