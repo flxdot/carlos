@@ -191,6 +191,259 @@
         }
       }
     },
+    "/devices/{deviceId}/drivers": {
+      "get": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Get all drivers for a device.",
+        "description": "Get all drivers for a device.",
+        "operationId": "getDeviceDriversRoute",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique identifier of the device.",
+              "title": "Deviceid"
+            },
+            "description": "The unique identifier of the device."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CarlosDeviceDriver"
+                  },
+                  "title": "Response Getdevicedriversroute"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/{deviceId}/drivers/{driverIdentifier}": {
+      "put": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Update a driver for a device.",
+        "description": "Update a driver for a device.",
+        "operationId": "updateDeviceDriverRoute",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique identifier of the device.",
+              "title": "Deviceid"
+            },
+            "description": "The unique identifier of the device."
+          },
+          {
+            "name": "driverIdentifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the driver.",
+              "title": "Driveridentifier"
+            },
+            "description": "The unique identifier of the driver."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarlosDeviceDriverUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarlosDeviceDriver"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/{deviceId}/drivers/{driverIdentifier}/signals": {
+      "get": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Get all signals for a driver.",
+        "description": "Get all signals for a driver.",
+        "operationId": "getDeviceSignalsRoute",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique identifier of the device.",
+              "title": "Deviceid"
+            },
+            "description": "The unique identifier of the device."
+          },
+          {
+            "name": "driverIdentifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the driver.",
+              "title": "Driveridentifier"
+            },
+            "description": "The unique identifier of the driver."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CarlosDeviceSignal"
+                  },
+                  "title": "Response Getdevicesignalsroute"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/signals/{timeseriesId}": {
+      "put": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Update a signal by its ID.",
+        "description": "Update a signal by its ID.",
+        "operationId": "updateDeviceSignalRoute",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "timeseriesId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "The unique identifier of the signal.",
+              "title": "Timeseriesid"
+            },
+            "description": "The unique identifier of the signal."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarlosDeviceSignalUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarlosDeviceSignal"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -361,6 +614,168 @@
         "title": "CarlosDeviceCreate",
         "description": "Allow you to create a new device."
       },
+      "CarlosDeviceDriver": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Displayname",
+            "description": "The name of the driver that is displayed in the UI."
+          },
+          "isVisibleOnDashboard": {
+            "type": "boolean",
+            "title": "Isvisibleondashboard",
+            "description": "Whether the driver is visible on the dashboard."
+          },
+          "driverIdentifier": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Driveridentifier",
+            "description": "The unique identifier of the driver in the context of the device."
+          },
+          "direction": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DriverDirection"
+              }
+            ],
+            "description": "The direction of the IO."
+          },
+          "driverModule": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Drivermodule",
+            "description": "The module that implements the IO driver."
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Deviceid",
+            "description": "The device the driver belongs to."
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName",
+          "isVisibleOnDashboard",
+          "driverIdentifier",
+          "direction",
+          "driverModule",
+          "deviceId"
+        ],
+        "title": "CarlosDeviceDriver"
+      },
+      "CarlosDeviceDriverUpdate": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Displayname",
+            "description": "The name of the driver that is displayed in the UI."
+          },
+          "isVisibleOnDashboard": {
+            "type": "boolean",
+            "title": "Isvisibleondashboard",
+            "description": "Whether the driver is visible on the dashboard."
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName",
+          "isVisibleOnDashboard"
+        ],
+        "title": "CarlosDeviceDriverUpdate",
+        "description": "The properties required to update a device."
+      },
+      "CarlosDeviceSignal": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Displayname",
+            "description": "The name of the signal that is displayed in the UI."
+          },
+          "unitOfMeasurement": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UnitOfMeasurement"
+              }
+            ],
+            "description": "The unit of measurement of the signal."
+          },
+          "isVisibleOnDashboard": {
+            "type": "boolean",
+            "title": "Isvisibleondashboard",
+            "description": "Whether the signal is visible on the dashboard."
+          },
+          "timeseriesId": {
+            "type": "integer",
+            "title": "Timeseriesid",
+            "description": "The unique identifier of the signal."
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Deviceid",
+            "description": "The device the driver belongs to."
+          },
+          "driverIdentifier": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Driveridentifier",
+            "description": "The unique identifier of the driver in the context of the device."
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName",
+          "unitOfMeasurement",
+          "isVisibleOnDashboard",
+          "timeseriesId",
+          "deviceId",
+          "driverIdentifier"
+        ],
+        "title": "CarlosDeviceSignal",
+        "description": "The properties of a device signal."
+      },
+      "CarlosDeviceSignalUpdate": {
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Displayname",
+            "description": "The name of the signal that is displayed in the UI."
+          },
+          "unitOfMeasurement": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UnitOfMeasurement"
+              }
+            ],
+            "description": "The unit of measurement of the signal."
+          },
+          "isVisibleOnDashboard": {
+            "type": "boolean",
+            "title": "Isvisibleondashboard",
+            "description": "Whether the signal is visible on the dashboard."
+          }
+        },
+        "type": "object",
+        "required": [
+          "displayName",
+          "unitOfMeasurement",
+          "isVisibleOnDashboard"
+        ],
+        "title": "CarlosDeviceSignalUpdate",
+        "description": "The properties required to update a device signal."
+      },
       "CarlosDeviceUpdate": {
         "properties": {
           "displayName": {
@@ -389,6 +804,16 @@
         ],
         "title": "CarlosDeviceUpdate",
         "description": "Allows you to update the device information."
+      },
+      "DriverDirection": {
+        "type": "string",
+        "enum": [
+          "input",
+          "output",
+          "bidirectional"
+        ],
+        "title": "DriverDirection",
+        "description": "Enum for the direction of the IO."
       },
       "HTTPValidationError": {
         "properties": {
@@ -431,6 +856,19 @@
         ],
         "title": "HealthStatus",
         "description": "The status of the API."
+      },
+      "UnitOfMeasurement": {
+        "type": "integer",
+        "enum": [
+          0,
+          100,
+          200,
+          201,
+          300,
+          400
+        ],
+        "title": "UnitOfMeasurement",
+        "description": "An enumeration of supported units of measurement.\n\nThe values of this enumeration are based on the PhysicalQuantity enumeration.\n\n\n- 0 = UNIT_LESS\n- 100 = PERCENTAGE\n- 200 = CELSIUS\n- 201 = FAHRENHEIT\n- 300 = HUMIDITY_PERCENTAGE\n- 400 = LUX"
       },
       "ValidationError": {
         "properties": {
