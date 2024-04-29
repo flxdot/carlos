@@ -9,7 +9,17 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
-from sqlalchemy import TEXT, TIMESTAMP, VARCHAR, text
+from sqlalchemy import (
+    BOOLEAN,
+    INTEGER,
+    SMALLINT,
+    TEXT,
+    TIMESTAMP,
+    VARCHAR,
+    ForeignKey,
+    ForeignKeyConstraint,
+    text,
+)
 from sqlalchemy.dialects.postgresql import UUID as SQLUUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -69,4 +79,97 @@ class CarlosDeviceOrm(CarlosModelBase):
         TIMESTAMP(timezone=True),
         nullable=True,
         comment="The date and time when the server last received data from the device.",
+    )
+
+
+class CarlosDeviceDriverOrm(CarlosModelBase):
+    """Contains the metadata for a given driver of a device."""
+
+    __tablename__ = "device_driver"
+    __table_args__ = {
+        "schema": CarlosDatabaseSchema.CARLOS.value,
+        "comment": _clean_doc(__doc__),
+    }
+
+    device_id: Mapped[UUID] = mapped_column(
+        SQLUUID(as_uuid=True),
+        ForeignKey(CarlosDeviceOrm.device_id, ondelete="CASCADE"),
+        primary_key=True,
+        comment="The device the driver belongs to.",
+    )
+    driver_identifier: Mapped[str] = mapped_column(
+        VARCHAR(64),
+        primary_key=True,
+        comment="The unique identifier of the driver in the context of the device.",
+    )
+    direction: Mapped[str] = mapped_column(
+        VARCHAR(32),
+        nullable=False,
+        comment="The direction of the IO.",
+    )
+    driver_module: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The module that implements the IO driver.",
+    )
+    display_name: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The name of the driver that is displayed in the UI.",
+    )
+    is_visible_on_dashboard: Mapped[bool] = mapped_column(
+        BOOLEAN,
+        nullable=False,
+        comment="Whether the driver is visible on the dashboard.",
+    )
+
+
+class CarlosDeviceSignalOrm(CarlosModelBase):
+    """Contains the metadata for a given signal of a driver."""
+
+    __tablename__ = "device_signal"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["device_id", "driver_identifier"],
+            [CarlosDeviceDriverOrm.device_id, CarlosDeviceDriverOrm.driver_identifier],
+            ondelete="CASCADE",
+        ),
+        {
+            "schema": CarlosDatabaseSchema.CARLOS.value,
+            "comment": _clean_doc(__doc__),
+        },
+    )
+
+    timeseries_id: Mapped[int] = mapped_column(
+        INTEGER,
+        primary_key=True,
+        autoincrement=True,
+        comment="The unique identifier of the signal.",
+    )
+    device_id: Mapped[UUID] = mapped_column(
+        SQLUUID(as_uuid=True),
+        comment="The device the signal belongs to.",
+    )
+    driver_identifier: Mapped[str] = mapped_column(
+        VARCHAR(64),
+        comment="The driver the signal belongs to.",
+    )
+    signal_identifier: Mapped[str] = mapped_column(
+        VARCHAR(64),
+        comment="The unique identifier of the signal in the context of the driver.",
+    )
+    display_name: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        nullable=False,
+        comment="The name of the signal that is displayed in the UI.",
+    )
+    unit_of_measurement: Mapped[int] = mapped_column(
+        SMALLINT,
+        nullable=False,
+        comment="The unit of measurement of the driver.",
+    )
+    is_visible_on_dashboard: Mapped[bool] = mapped_column(
+        BOOLEAN,
+        nullable=False,
+        comment="Whether the signal is visible on the dashboard.",
     )
