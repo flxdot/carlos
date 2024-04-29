@@ -1,5 +1,10 @@
 from uuid import uuid4
 
+from carlos.database.device import (
+    CarlosDeviceDriver,
+    CarlosDeviceDriverUpdate,
+    CarlosDeviceSignal,
+)
 from carlos.database.device.device_management import (
     CarlosDevice,
     CarlosDeviceCreate,
@@ -51,3 +56,43 @@ def test_devices_crud(client: TestClient):
     updated_device = CarlosDevice.model_validate_json(response.content)
     assert updated_device.display_name == "updated_device"
     assert updated_device.description == "updated"
+
+
+async def test_driver_routes(client: TestClient, driver: CarlosDeviceDriver):
+
+    response = client.get(f"/devices/{driver.device_id}/drivers")
+    assert response.is_success, response.text
+    drivers = TypeAdapter(list[CarlosDeviceDriver]).validate_json(response.content)
+    assert len(drivers) == 1, "One driver should be present"
+
+    # Update the device
+
+    to_update = CarlosDeviceDriverUpdate(
+        display_name="My Driver (Updated)",
+        is_visible_on_dashboard=False,
+    )
+    response = client.put(
+        f"/devices/{driver.device_id}/drivers/{driver.driver_identifier}",
+        content=to_update.model_dump_json(),
+    )
+    assert response.is_success, response.text
+    updated = CarlosDeviceDriver.model_validate_json(response.content)
+
+    assert updated.display_name == to_update.display_name
+    assert updated.is_visible_on_dashboard == to_update.is_visible_on_dashboard
+
+
+async def test_get_device_signals_route(
+    client: TestClient,
+    driver: CarlosDeviceDriver,
+    driver_signals: list[CarlosDeviceSignal],
+):
+
+    response = client.get(
+        f"/devices/{driver.device_id}/drivers/{driver.driver_identifier}/signals"
+    )
+    assert response.is_success, response.text
+    queried_signals = TypeAdapter(list[CarlosDeviceSignal]).validate_json(
+        response.content
+    )
+    assert len(queried_signals) == len(driver_signals), "All signals should be present"
