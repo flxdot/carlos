@@ -1,6 +1,8 @@
 __all__ = [
     "ALL_SCHEMA_NAMES",
+    "CarlosDeviceDriverOrm",
     "CarlosDeviceOrm",
+    "CarlosDeviceSignalOrm",
     "CarlosModelBase",
 ]
 
