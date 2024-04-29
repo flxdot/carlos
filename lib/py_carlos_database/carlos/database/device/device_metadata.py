@@ -148,9 +148,8 @@ async def get_device_drivers(
 
     drivers = (await context.connection.execute(query)).all()
 
-    if not drivers and await does_exist(
-        context, [CarlosDeviceOrm.device_id == device_id]
-    ):
+    device_exists = await does_exist(context, [CarlosDeviceOrm.device_id == device_id])
+    if not drivers and not device_exists:
         raise NotFound(f"Device {device_id} does not exist.")
 
     return [CarlosDeviceDriver.model_validate(driver) for driver in drivers]
@@ -158,11 +157,13 @@ async def get_device_drivers(
 
 async def create_device_driver(
     context: RequestContext,
+    device_id: DeviceId,
     driver: CarlosDeviceDriverCreate,
 ) -> CarlosDeviceDriver:
     """Creates a new driver for a given device.
 
     :param context: The request context.
+    :param device_id: The unique identifier of the device.
     :param driver: The properties of the driver to create.
     :return: The properties of the created driver.
     :raises NotFound: If the device does not exist.
@@ -171,6 +172,7 @@ async def create_device_driver(
     stmt = (
         insert(CarlosDeviceDriverOrm)
         .values(
+            device_id=device_id,
             **driver.model_dump(),
         )
         .returning(CarlosDeviceDriverOrm)
@@ -263,13 +265,14 @@ async def get_device_signals(
 
     signals = (await context.connection.execute(query)).all()
 
-    if not signals and await does_exist(
+    driver_exists = await does_exist(
         context,
         [
             CarlosDeviceDriverOrm.device_id == device_id,
             CarlosDeviceDriverOrm.driver_identifier == driver_identifier,
         ],
-    ):
+    )
+    if not signals and not driver_exists:
         raise NotFound(
             f"Driver {driver_identifier=} does not exist for device {device_id=}."
         )
@@ -345,16 +348,16 @@ async def update_device_signal(
 
 async def delete_device_signal(
     context: RequestContext,
-    time_series_id: int,
+    timeseries_id: int,
 ):
     """Deletes a signal for a given driver.
 
     :param context: The request context.
-    :param time_series_id: The unique identifier of the signal.
+    :param timeseries_id: The unique identifier of the signal.
     """
 
     stmt = delete(CarlosDeviceSignalOrm).where(
-        CarlosDeviceSignalOrm.timeseries_id == time_series_id
+        CarlosDeviceSignalOrm.timeseries_id == timeseries_id
     )
 
     await context.connection.execute(stmt)
