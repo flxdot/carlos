@@ -318,7 +318,7 @@ url = "../../lib/py_edge_interface"
 
 [[package]]
 name = "carlos-edge-server"
-version = "0.1.1"
+version = "0.1.2"
 description = "The library for the edge server of the carlos project."
 optional = false
 python-versions = ">=3.11,<3.12"

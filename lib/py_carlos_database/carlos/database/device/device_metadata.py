@@ -1,7 +1,10 @@
 __all__ = [
     "CarlosDeviceDriver",
+    "CarlosDeviceDriverCreate",
+    "CarlosDeviceDriverUpdate",
     "CarlosDeviceSignal",
-    "CarlosDeviceSignalMutation",
+    "CarlosDeviceSignalCreate",
+    "CarlosDeviceSignalUpdate",
     "create_device_driver",
     "create_device_signals",
     "delete_device_driver",
@@ -35,9 +38,23 @@ from carlos.database.schema import CarlosSchema
 from carlos.database.utils import does_exist
 
 
-class CarlosDeviceDriver(CarlosSchema):
+class _DriverMixin(CarlosSchema):
+    display_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=255,
+        description="The name of the driver that is displayed in the UI.",
+    )
 
-    device_id: UUID = Field(..., description="The device the driver belongs to.")
+    is_visible_on_dashboard: bool = Field(
+        ...,
+        description="Whether the driver is visible on the dashboard.",
+    )
+
+
+class CarlosDeviceDriverCreate(_DriverMixin):
+    """The properties required to create a device driver."""
+
     driver_identifier: str = Field(
         ...,
         min_length=1,
@@ -53,34 +70,19 @@ class CarlosDeviceDriver(CarlosSchema):
         description="The module that implements the IO driver.",
     )
 
-    display_name: str = Field(
-        ...,
-        min_length=1,
-        max_length=255,
-        description="The name of the driver that is displayed in the UI.",
-    )
 
-    is_visible_on_dashboard: bool = Field(
-        ...,
-        description="Whether the driver is visible on the dashboard.",
-    )
+class CarlosDeviceDriverUpdate(_DriverMixin):
+    """The properties required to update a device."""
+
+    pass
+
+
+class CarlosDeviceDriver(CarlosDeviceDriverCreate):
+
+    device_id: UUID = Field(..., description="The device the driver belongs to.")
 
 
 class _SignalMixin(CarlosSchema):
-
-    device_id: UUID = Field(..., description="The device the driver belongs to.")
-    driver_identifier: str = Field(
-        ...,
-        min_length=1,
-        max_length=DRIVER_IDENTIFIER_LENGTH,
-        description="The unique identifier of the driver in the context of the device.",
-    )
-    signal_identifier: str = Field(
-        ...,
-        min_length=1,
-        max_length=DRIVER_IDENTIFIER_LENGTH,
-        description="The unique identifier of the signal in the context of the driver.",
-    )
 
     display_name: str = Field(
         ...,
@@ -100,16 +102,32 @@ class _SignalMixin(CarlosSchema):
     )
 
 
-class CarlosDeviceSignalMutation(_SignalMixin):
+class CarlosDeviceSignalCreate(_SignalMixin):
     """The properties required to create or update a device signal."""
 
-    pass
+    signal_identifier: str = Field(
+        ...,
+        min_length=1,
+        max_length=DRIVER_IDENTIFIER_LENGTH,
+        description="The unique identifier of the signal in the context of the driver.",
+    )
+
+
+class CarlosDeviceSignalUpdate(_SignalMixin):
+    """The properties required to update a device signal."""
 
 
 class CarlosDeviceSignal(_SignalMixin):
     """The properties of a device signal."""
 
     timeseries_id: int = Field(..., description="The unique identifier of the signal.")
+    device_id: UUID = Field(..., description="The device the driver belongs to.")
+    driver_identifier: str = Field(
+        ...,
+        min_length=1,
+        max_length=DRIVER_IDENTIFIER_LENGTH,
+        description="The unique identifier of the driver in the context of the device.",
+    )
 
 
 async def get_device_drivers(
@@ -140,7 +158,7 @@ async def get_device_drivers(
 
 async def create_device_driver(
     context: RequestContext,
-    driver: CarlosDeviceDriver,
+    driver: CarlosDeviceDriverCreate,
 ) -> CarlosDeviceDriver:
     """Creates a new driver for a given device.
 
@@ -168,7 +186,7 @@ async def update_device_driver(
     context: RequestContext,
     device_id: DeviceId,
     driver_identifier: str,
-    driver: CarlosDeviceDriver,
+    driver: CarlosDeviceDriverUpdate,
 ) -> CarlosDeviceDriver:
     """Updates a driver for a given device.
 
@@ -261,11 +279,15 @@ async def get_device_signals(
 
 async def create_device_signals(
     context: RequestContext,
-    signals: list[CarlosDeviceSignalMutation],
+    device_id: DeviceId,
+    driver_identifier: str,
+    signals: list[CarlosDeviceSignalCreate],
 ) -> list[CarlosDeviceSignal]:
     """Creates new signals for a given driver.
 
     :param context: The request context.
+    :param device_id: The unique identifier of the device.
+    :param driver_identifier: The unique identifier of the driver.
     :param signals: The properties of the signals to create.
     :return: The properties of the created signals.
     :raises NotFound: If the device or driver does not exist.
@@ -273,7 +295,13 @@ async def create_device_signals(
 
     stmt = (
         insert(CarlosDeviceSignalOrm)
-        .values([signal.model_dump() for signal in signals])
+        .values(
+            [
+                signal.model_dump()
+                | {"device_id": device_id, "driver_identifier": driver_identifier}
+                for signal in signals
+            ]
+        )
         .returning(CarlosDeviceSignalOrm)
     )
 
@@ -285,13 +313,13 @@ async def create_device_signals(
 
 async def update_device_signal(
     context: RequestContext,
-    time_series_id: int,
-    signal: CarlosDeviceSignalMutation,
+    timeseries_id: int,
+    signal: CarlosDeviceSignalUpdate,
 ) -> CarlosDeviceSignal:
     """Updates a signal for a given driver.
 
     :param context: The request context.
-    :param time_series_id: The unique identifier of the signal.
+    :param timeseries_id: The unique identifier of the signal.
     :param signal: The properties of the signal to update.
     :return: The properties of the updated signal.
     :raises NotFound: If the device, driver, or signal does not exist.
@@ -299,7 +327,7 @@ async def update_device_signal(
 
     stmt = (
         update(CarlosDeviceSignalOrm)
-        .where(CarlosDeviceSignalOrm.timeseries_id == time_series_id)
+        .where(CarlosDeviceSignalOrm.timeseries_id == timeseries_id)
         .values(
             **signal.model_dump(),
         )
@@ -310,7 +338,7 @@ async def update_device_signal(
         signal = (await context.connection.execute(stmt)).one()
         await context.connection.commit()
     except NoResultFound:
-        raise NotFound(f"Signal {time_series_id=} does not exist.")
+        raise NotFound(f"Signal {timeseries_id=} does not exist.")
 
     return CarlosDeviceSignal.model_validate(signal)
 
