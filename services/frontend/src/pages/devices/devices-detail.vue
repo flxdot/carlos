@@ -43,18 +43,37 @@
         />
       </template>
     </card>
-    <card class="device-card">
-      <template #title>
-        <div class="card-title">
-          <span>{{ renderTimeseriesAsString(temperatureTs, tempEmojis) }}</span>
-          <span>{{ renderTimeseriesAsString(humidityTs, humidEmojis) }}</span>
-          <span
-            v-tooltip="lastDataAt !== undefined ? lastDataAt.format('lll') : ''"
-            class="card-title__sub"
-          >{{ dataAge }}</span>
-        </div>
-      </template>
-      <template #content>
+    <accordion
+      :active-index="0"
+    >
+      <accordion-tab
+        v-for="driver in deviceDriver"
+        :key="driver.driverIdentifier"
+      >
+        <template #header>
+          {{ driver.displayName }}
+        </template>
+        <pre>
+          {{ driver }}
+        </pre>
+        <pre
+          v-for="signal in deviceSignals.get(driver.driverIdentifier) || []"
+          :key="signal.signalIdentifier"
+        >
+          {{ signal }}
+        </pre>
+      </accordion-tab>
+      <accordion-tab>
+        <template #header>
+          <div class="card-title">
+            <span>{{ renderTimeseriesAsString(temperatureTs, tempEmojis) }}</span>
+            <span>{{ renderTimeseriesAsString(humidityTs, humidEmojis) }}</span>
+            <span
+              v-tooltip="lastDataAt !== undefined ? lastDataAt.format('lll') : ''"
+              class="card-title__sub"
+            >{{ dataAge }}</span>
+          </div>
+        </template>
         <message
           severity="def"
           :closable="false"
@@ -91,8 +110,8 @@
           color="#acf9ea"
           height="4rem"
         />
-      </template>
-    </card>
+      </accordion-tab>
+    </accordion>
   </div>
 </template>
 
@@ -105,6 +124,8 @@ import {
 import {
   useRoute,
 } from 'vue-router';
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
 import Skeleton from 'primevue/skeleton';
@@ -112,7 +133,10 @@ import dayjs, {
   Dayjs,
 } from 'dayjs';
 import {
-  getDeviceDetail, TGetDeviceDetailResponse,
+  getDeviceDetail,
+  TGetDeviceDetailResponse,
+  TGetDeviceDriversResponse,
+  TGetDeviceDriversSignalsResponse,
 } from '@/api/devices.ts';
 import {
   ERouteName,
@@ -144,13 +168,21 @@ import {
   pastelHumidityGradient,
 } from '@/components/charts/gradients.ts';
 import ChartDigital from '@/components/charts/chart-digital.vue';
+import {
+  useDevicesStore,
+} from '@/store/devices.ts';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
 
 const route = useRoute();
+const deviceStore = useDevicesStore();
 
-const deviceDetails = ref<TGetDeviceDetailResponse | undefined>(undefined);
+const currentDeviceId = computed<string>(() => route.params.deviceId as string);
+
+const deviceDetails = ref<TGetDeviceDetailResponse | undefined>();
+const deviceDriver = ref<TGetDeviceDriversResponse | undefined>();
+const deviceSignals = ref<Map<string, TGetDeviceDriversSignalsResponse | undefined>>(new Map());
 
 const temperatureTs = ref<ITimeseries>({
   displayName: 'Temperature',
@@ -207,10 +239,20 @@ function renderTimeseriesAsString(ts: ITimeseries, suffix: ((num: number) => str
 function updateDevice() {
   getDeviceDetail(
     {
-      deviceId: route.params.deviceId as string,
+      deviceId: currentDeviceId.value,
     },
   ).then((response) => {
     deviceDetails.value = response.data;
+  });
+
+  deviceStore.fetchDeviceDrivers(currentDeviceId.value).then((driverList) => {
+    deviceDriver.value = driverList;
+    for (const driver of (driverList || [])) {
+      deviceStore.fetchDeviceDriverSignals(currentDeviceId.value, driver.driverIdentifier)
+        .then((signalList) => {
+          deviceSignals.value.set(driver.driverIdentifier, signalList);
+        });
+    }
   });
 }
 
@@ -247,11 +289,20 @@ onBeforeUnmount(() => {
 
 </script>
 
-<style scoped lang="scss">
-.p-card {
+<style  lang="scss">
+.p-card,
+.p-accordion .p-accordion-tab .p-accordion-header a,
+.p-accordion .p-accordion-content{
   background: var(--carlos-bg-color);
   color: var(--carlos-text-color);
 }
+
+.p-card {
+  box-shadow: none;
+}
+</style>
+
+<style scoped lang="scss">
 
 .card-title {
   display: flex;
