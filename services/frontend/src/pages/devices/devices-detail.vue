@@ -45,7 +45,6 @@
     </card>
     <accordion
       :active-index="0"
-      unstyled
     >
       <accordion-tab
         v-for="driver in deviceDriver"
@@ -290,11 +289,20 @@ onBeforeUnmount(() => {
 
 </script>
 
-<style scoped lang="scss">
-.p-card {
+<style  lang="scss">
+.p-card,
+.p-accordion .p-accordion-tab .p-accordion-header a,
+.p-accordion .p-accordion-content{
   background: var(--carlos-bg-color);
   color: var(--carlos-text-color);
 }
+
+.p-card {
+  box-shadow: none;
+}
+</style>
+
+<style scoped lang="scss">
 
 .card-title {
   display: flex;
