@@ -117,7 +117,7 @@ class CarlosDeviceSignalUpdate(_SignalMixin):
     """The properties required to update a device signal."""
 
 
-class CarlosDeviceSignal(_SignalMixin):
+class CarlosDeviceSignal(CarlosDeviceSignalCreate):
     """The properties of a device signal."""
 
     timeseries_id: int = Field(..., description="The unique identifier of the signal.")
