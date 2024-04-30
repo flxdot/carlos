@@ -23,3 +23,19 @@ export async function getDeviceDetail(path: TGetDeviceDetailPathParams, abortSig
     signal: abortSignal,
   });
 }
+
+export type TGetDeviceDriversPathParams = paths[EOpenapiPath.DEVICE_DRIVERS_GET]['get']['parameters']['path'];
+export type TGetDeviceDriversResponse = paths[EOpenapiPath.DEVICE_DRIVERS_GET]['get']['responses']['200']['content']['application/json'];
+export async function getDeviceDrivers(path: TGetDeviceDriversPathParams, abortSignal?: AbortSignal): Promise<AxiosResponse<TGetDeviceDriversResponse>> {
+  return carlosApi.get(pathFactory[EOpenapiPath.DEVICE_DRIVERS_GET](path), {
+    signal: abortSignal,
+  });
+}
+
+export type TGetDeviceDriversSignalsPathParams = paths[EOpenapiPath.DEVICE_DRIVERS_SIGNALS_GET]['get']['parameters']['path'];
+export type TGetDeviceDriversSignalsResponse = paths[EOpenapiPath.DEVICE_DRIVERS_SIGNALS_GET]['get']['responses']['200']['content']['application/json'];
+export async function getDeviceDriversSignals(path: TGetDeviceDriversSignalsPathParams, abortSignal?: AbortSignal): Promise<AxiosResponse<TGetDeviceDriversSignalsResponse>> {
+  return carlosApi.get(pathFactory[EOpenapiPath.DEVICE_DRIVERS_SIGNALS_GET](path), {
+    signal: abortSignal,
+  });
+}
