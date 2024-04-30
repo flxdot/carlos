@@ -190,9 +190,9 @@ def remove_default_args(handler_params):
     default_params = []
     for param in handler_params.values():
         if param.default != inspect.Parameter.empty:
-            default_params.append(param.name)
+            default_params.append(param.name)  # pragma: no cover
     for default_param in default_params:
-        handler_params.pop(default_param, None)
+        handler_params.pop(default_param, None)  # pragma: no cover
 
 
 async def handle_ping(protocol: EdgeProtocol, message: CarlosMessage):
