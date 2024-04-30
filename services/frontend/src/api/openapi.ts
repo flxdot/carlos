@@ -196,6 +196,11 @@ export interface components {
        */
       isVisibleOnDashboard: boolean;
       /**
+       * Signalidentifier
+       * @description The unique identifier of the signal in the context of the driver.
+       */
+      signalIdentifier: string;
+      /**
        * Timeseriesid
        * @description The unique identifier of the signal.
        */
