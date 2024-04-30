@@ -133,6 +133,10 @@ class EdgeCommunicationHandler:
             handler_params = dict(inspect.signature(handler).parameters)
             handler_params.pop("self", None)
 
+            # remove default parameters
+            # They are often used to testing purposes and should not be required
+            remove_default_args(handler_params)
+
             if handler_params != expected_function_params:
                 raise TypeError(
                     f"Handler {handler} for message type {message_type} "
@@ -176,6 +180,19 @@ class EdgeCommunicationHandler:
         logger.warning(  # pragma: no cover
             f"No handler found for message type: {message.message_type}"
         )
+
+
+def remove_default_args(handler_params):
+    """Little helper function to remove function arguments with default values.
+
+    This kind of smells but, let's roll with it for now.
+    """
+    default_params = []
+    for param in handler_params.values():
+        if param.default != inspect.Parameter.empty:
+            default_params.append(param.name)
+    for default_param in default_params:
+        handler_params.pop(default_param, None)
 
 
 async def handle_ping(protocol: EdgeProtocol, message: CarlosMessage):

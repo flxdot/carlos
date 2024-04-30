@@ -5,6 +5,7 @@ __all__ = [
     "CarlosMessage",
     "CarlosPayload",
     "DeviceConfigPayload",
+    "DeviceConfigResponsePayload",
     "DriverDataPayload",
     "DriverTimeseries",
     "EdgeVersionPayload",
@@ -44,6 +45,10 @@ class MessageType(str, Enum):
     This message contains the device config. It is used by the server to create the
     required data structures to store the devices data and to know which data can be
     received from and by the device."""
+
+    DEVICE_CONFIG_RESPONSE = "device_config_response"
+    """Send by the server as a response to a DEVICE_CONFIG message. This message 
+    contains the timeseries ids for each driver and signal."""
 
     DRIVER_DATA = "driver_data"
     """Send by the device. This message contains a collection of samples measured 
@@ -238,11 +243,23 @@ class DeviceConfigPayload(CarlosPayloadBase):
     )
 
 
+class DeviceConfigResponsePayload(CarlosPayloadBase):
+    """Send by the server as a response to a DEVICE_CONFIG message. This message
+    contains the timeseries ids for each driver and signal."""
+
+    timeseries_index: dict[str, dict[str, int]] = Field(
+        ...,
+        description="A mapping of the driver identifier to a mapping of the signal "
+        "identifier to the timeseries id.",
+    )
+
+
 MESSAGE_TYPE_TO_MODEL: dict[MessageType, type[CarlosPayloadBase] | None] = {
     MessageType.PING: PingMessage,
     MessageType.PONG: PongMessage,
     MessageType.EDGE_VERSION: EdgeVersionPayload,
     MessageType.DEVICE_CONFIG: DeviceConfigPayload,
+    MessageType.DEVICE_CONFIG_RESPONSE: DeviceConfigResponsePayload,
     MessageType.DRIVER_DATA: DriverDataPayload,
     MessageType.DRIVER_DATA_ACK: DriverDataAckPayload,
 }

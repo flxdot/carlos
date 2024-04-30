@@ -1,7 +1,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from .conftest import TO_CREATE
+from conftest import TO_CREATE
+
 from .exceptions import NotFoundError
 from .timeseries_index import (
     TimeseriesIndex,
