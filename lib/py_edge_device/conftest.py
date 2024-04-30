@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Generator
+from typing import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
 from sqlalchemy import Connection, Engine
-from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
 
 from carlos.edge.device.storage.connection import (
     build_storage_url,
@@ -15,6 +15,12 @@ from carlos.edge.device.storage.migration import (
     alembic_downgrade,
     alembic_upgrade,
     build_alembic_config,
+)
+from carlos.edge.device.storage.timeseries_index import (
+    TimeseriesIndex,
+    TimeseriesIndexMutation,
+    create_timeseries_index,
+    delete_timeseries_index,
 )
 
 TEST_STORAGE_PATH = Path(__file__).parent / "tests" / "storage.db"
@@ -72,3 +78,26 @@ async def async_connection(
 
     async with async_engine.connect() as connection:
         yield connection
+
+
+TO_CREATE = TimeseriesIndexMutation(
+    driver_identifier="test_driver",
+    driver_signal="test_signal",
+)
+
+
+@pytest.fixture()
+async def temporary_timeseries_index(
+    async_connection: AsyncConnection,
+) -> AsyncGenerator[TimeseriesIndex, None]:
+    """Creates a temporary timeseries index for testing purposes."""
+
+    created = await create_timeseries_index(
+        connection=async_connection, timeseries_index=TO_CREATE
+    )
+
+    yield created
+
+    await delete_timeseries_index(
+        connection=async_connection, timeseries_id=created.timeseries_id
+    )
