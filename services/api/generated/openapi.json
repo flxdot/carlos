@@ -713,6 +713,13 @@
             "title": "Isvisibleondashboard",
             "description": "Whether the signal is visible on the dashboard."
           },
+          "signalIdentifier": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Signalidentifier",
+            "description": "The unique identifier of the signal in the context of the driver."
+          },
           "timeseriesId": {
             "type": "integer",
             "title": "Timeseriesid",
@@ -737,6 +744,7 @@
           "displayName",
           "unitOfMeasurement",
           "isVisibleOnDashboard",
+          "signalIdentifier",
           "timeseriesId",
           "deviceId",
           "driverIdentifier"
