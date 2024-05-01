@@ -6,10 +6,14 @@ from fastapi import Query
 
 def datetime_range(
     start_at_utc: datetime = Query(
-        ..., description="The start of range. Must be timezone aware."
+        ...,
+        alias="startAtUtc",
+        description="The start of range. Must be timezone aware.",
     ),
     end_at_utc: datetime = Query(
-        ..., description="The end of the range. Must be timezone aware."
+        ...,
+        alias="endAtUtc",
+        description="The end of the range. Must be timezone aware.",
     ),
 ) -> DatetimeRange:
     """Dependency to get the datetime range from the query parameters."""
