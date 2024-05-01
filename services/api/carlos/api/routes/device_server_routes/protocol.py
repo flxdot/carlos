@@ -1,13 +1,12 @@
 __all__ = ["WebsocketProtocol"]
 
-from loguru import logger
-
 from carlos.edge.interface import (
     CarlosMessage,
     EdgeConnectionDisconnected,
     EdgeProtocol,
 )
 from carlos.edge.interface.protocol import EdgeProtocolCallback
+from loguru import logger
 from starlette.websockets import WebSocket, WebSocketDisconnect, WebSocketState
 
 
