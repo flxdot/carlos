@@ -12,9 +12,13 @@ import config from '@/config';
 
 const carlosApi = axios.create({
   baseURL: config.VITE_APP_API_URL,
-  paramsSerializer: (params) => stringify(params, {
-    arrayFormat: 'repeat',
-  }),
+  paramsSerializer: {
+    serialize: (params) => {
+      return stringify(params, {
+        arrayFormat: 'repeat',
+      });
+    },
+  },
 });
 
 applyAuthTokenInterceptor(carlosApi, {

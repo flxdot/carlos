@@ -53,15 +53,11 @@
         <template #header>
           {{ driver.displayName }}
         </template>
-        <pre>
-          {{ driver }}
-        </pre>
-        <pre
-          v-for="signal in deviceSignals.get(driver.driverIdentifier) || []"
-          :key="signal.signalIdentifier"
-        >
-          {{ signal }}
-        </pre>
+        <driver-timeseries
+          v-if="deviceSignals.get(driver.driverIdentifier)  !== undefined"
+          :driver="driver"
+          :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
+        />
       </accordion-tab>
       <accordion-tab>
         <template #header>
@@ -118,6 +114,7 @@
 <script setup lang="ts">
 import {
   ref,
+  reactive,
   onMounted,
   onBeforeUnmount, computed,
 } from 'vue';
@@ -171,6 +168,7 @@ import ChartDigital from '@/components/charts/chart-digital.vue';
 import {
   useDevicesStore,
 } from '@/store/devices.ts';
+import DriverTimeseries from '@/components/driver/driver-timeseries.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -182,7 +180,7 @@ const currentDeviceId = computed<string>(() => route.params.deviceId as string);
 
 const deviceDetails = ref<TGetDeviceDetailResponse | undefined>();
 const deviceDriver = ref<TGetDeviceDriversResponse | undefined>();
-const deviceSignals = ref<Map<string, TGetDeviceDriversSignalsResponse | undefined>>(new Map());
+const deviceSignals = reactive<Map<string, TGetDeviceDriversSignalsResponse | undefined>>(new Map());
 
 const temperatureTs = ref<ITimeseries>({
   displayName: 'Temperature',
@@ -250,7 +248,7 @@ function updateDevice() {
     for (const driver of (driverList || [])) {
       deviceStore.fetchDeviceDriverSignals(currentDeviceId.value, driver.driverIdentifier)
         .then((signalList) => {
-          deviceSignals.value.set(driver.driverIdentifier, signalList);
+          deviceSignals.set(driver.driverIdentifier, signalList);
         });
     }
   });
