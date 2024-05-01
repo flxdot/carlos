@@ -136,7 +136,7 @@ class DHTXX(AnalogInput, ABC):
         self._dht: DHT | None = None
         self._dht_type: DHTType | None = None
 
-    def signals(self) -> list[DriverSignal]:
+    def get_signals(self) -> list[DriverSignal]:
         """Returns the signals of the DHT sensor."""
 
         return [

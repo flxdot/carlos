@@ -40,7 +40,7 @@ class SI1145(AnalogInput):
 
         self._si1145: SDL_Pi_SI1145 | None = None
 
-    def signals(self) -> list[DriverSignal]:
+    def get_signals(self) -> list[DriverSignal]:
         """Returns the signals of the DHT sensor."""
 
         return [

@@ -35,11 +35,13 @@ class WebsocketProtocol(EdgeProtocol):
         :raises EdgeConnectionDisconnected: If the connection is disconnected.
         """
         try:
-            return CarlosMessage.from_str(await self._websocket.receive_text())
+            raw_message = await self._websocket.receive_text()
         except WebSocketDisconnect as ex:
             raise EdgeConnectionDisconnected(
                 f"Connection was closed by the device (code: {ex.code}): {ex.reason}"
             ) from ex
+
+        return CarlosMessage.from_str(raw_message)  # pragma: no cover
 
     @property
     def is_connected(self) -> bool:
@@ -52,9 +54,10 @@ class WebsocketProtocol(EdgeProtocol):
         :raises EdgeConnectionFailed: If the connection attempt fails."""
         await self._websocket.accept()
 
-        if self.on_connect:
+        if self.on_connect and self.is_connected:
             await self.on_connect(self)
 
-    async def disconnect(self):
+    async def disconnect(self):  # pragma: no cover
         """Called when the connection is disconnected."""
-        await self._websocket.close()  # pragma: no cover
+        if self.is_connected:
+            await self._websocket.close()

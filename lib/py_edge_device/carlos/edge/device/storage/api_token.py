@@ -35,5 +35,6 @@ def write_api_token(connection: Connection, token: ApiToken) -> ApiToken:
     """Writes the API token to the storage."""
     connection.execute(delete(ApiTokenOrm))
     connection.execute(insert(ApiTokenOrm).values(**token.model_dump()))
+    connection.commit()
 
     return token

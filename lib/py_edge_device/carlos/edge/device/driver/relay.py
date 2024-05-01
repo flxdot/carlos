@@ -29,7 +29,7 @@ class Relay(DigitalOutput, DigitalInput):
 
         self._state = False
 
-    def signals(self) -> list[DriverSignal]:
+    def get_signals(self) -> list[DriverSignal]:
         """Returns the signals of the DHT sensor."""
 
         return [

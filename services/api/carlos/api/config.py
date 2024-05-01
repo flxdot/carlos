@@ -10,7 +10,7 @@ class CarlosAPISettings(BaseSettings):
     """Defines the settings that can be altered for the Carlos API."""
 
     LOG_LEVEL: int = Field(
-        logging.INFO,
+        logging.DEBUG,
         description=(
             "The logging level for the application, the log level is on an "
             "integer scale, see "

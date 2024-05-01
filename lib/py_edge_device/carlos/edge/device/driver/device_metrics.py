@@ -19,7 +19,7 @@ class DeviceMetrics(AnalogInput):
 
         super().__init__(config=config)
 
-    def signals(self) -> list[DriverSignal]:
+    def get_signals(self) -> list[DriverSignal]:
         """Returns the signals of the DHT sensor."""
 
         return [

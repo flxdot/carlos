@@ -100,7 +100,7 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
             headers={"Authorization": f"Bearer {auth0_token}"},
         )
         if not response.is_success:
-            raise ConnectionError("Failed to get the token.")
+            raise ConnectionError(f"Failed to get the token: {response.text}")
         token = response.text
         return token
 

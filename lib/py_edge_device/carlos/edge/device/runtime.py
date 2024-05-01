@@ -35,9 +35,11 @@ class DeviceRuntime:  # pragma: no cover
 
         self.device_id = device_id
 
+        protocol.on_connect = self.on_connect
         self.communication_handler = ClientEdgeCommunicationHandler(
             device_id=self.device_id, protocol=protocol
         )
+
         self.driver_manager = DriverManager()
 
         self.task_scheduler: AsyncScheduler | None = None

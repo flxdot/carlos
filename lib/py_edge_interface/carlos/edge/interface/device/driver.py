@@ -53,7 +53,7 @@ class CarlosDriverBase(ABC, Generic[DriverConfigTypeVar]):
         return self.config.direction
 
     @abstractmethod
-    def signals(self) -> list[DriverSignal]:
+    def get_signals(self) -> list[DriverSignal]:
         """Returns the signals of the peripheral."""
         pass
 
