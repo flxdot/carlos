@@ -99,6 +99,9 @@ async def stage_timeseries_data(
     )
     sample_ids = (await connection.execute(sample_ids_query)).scalars().all()
 
+    if not sample_ids:
+        return None
+
     stage_stmt = (
         update(TimeseriesDataOrm)
         .values(
@@ -121,9 +124,6 @@ async def stage_timeseries_data(
         .where(TimeseriesDataOrm.staging_id == payload.staging_id)
     )
     staged_rows = (await connection.execute(staged_query)).all()
-
-    if not staged_rows:
-        return None
 
     for row in staged_rows:
         if row.timeseries_id not in payload.data:

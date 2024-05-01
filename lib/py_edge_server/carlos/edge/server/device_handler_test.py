@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 import pytest
 from carlos.database.context import RequestContext
 from carlos.database.device import (
@@ -14,9 +16,12 @@ from carlos.edge.interface.device.driver_config import (
     DriverSignal,
 )
 from carlos.edge.interface.plugin_pytest import EdgeProtocolTestingConnection
+from carlos.edge.interface.units import UnitOfMeasurement
 
-from ..interface.units import UnitOfMeasurement
-from .device_handler import ServerEdgeCommunicationHandler
+from .device_handler import (
+    ServerEdgeCommunicationHandler,
+    convert_timestamps_to_datetime,
+)
 
 
 @pytest.fixture()
@@ -146,3 +151,19 @@ async def test_handle_device_config(
             device_id=driver.device_id,
             driver_identifier=driver.driver_identifier,
         )
+
+
+def test_convert_timestamps_to_datetime():
+    """Ensures that the convert_timestamps_to_datetime method works correctly."""
+
+    datetimes = [
+        datetime(2021, 1, 1, 0, 0, 0, tzinfo=UTC),
+        datetime(2021, 1, 2, 0, 0, 0, tzinfo=UTC),
+        datetime(2021, 1, 3, 0, 0, 0, tzinfo=UTC),
+    ]
+
+    utc_timestamps = [int(dt.timestamp()) for dt in datetimes]
+
+    converted_datetimes = convert_timestamps_to_datetime(utc_timestamps)
+
+    assert converted_datetimes == datetimes, "The conversion did not work as expected."

@@ -1,8 +1,10 @@
 __all__ = ["ServerEdgeCommunicationHandler"]
 
+from datetime import UTC, datetime
 
 from carlos.database.connection import get_async_carlos_db_connection
 from carlos.database.context import RequestContext
+from carlos.database.data.timeseries import add_timeseries
 from carlos.database.device import (
     CarlosDeviceDriverCreate,
     CarlosDeviceSignalCreate,
@@ -20,7 +22,11 @@ from carlos.edge.interface import (
     EdgeProtocol,
     MessageType,
 )
-from carlos.edge.interface.messages import DeviceConfigResponsePayload
+from carlos.edge.interface.messages import (
+    DeviceConfigResponsePayload,
+    DriverDataAckPayload,
+    DriverDataPayload,
+)
 
 from carlos.edge.server.constants import CLIENT_NAME
 
@@ -34,6 +40,7 @@ class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
         self.register_handlers(
             {
                 MessageType.DEVICE_CONFIG: self.handle_device_config,
+                MessageType.DRIVER_DATA: self.handle_driver_data,
             }
         )
 
@@ -152,3 +159,47 @@ class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
             message_type=MessageType.DEVICE_CONFIG_RESPONSE,
             payload=DeviceConfigResponsePayload(timeseries_index=timeseries_index),
         )
+
+    async def handle_driver_data(
+        self,
+        protocol: EdgeProtocol,
+        message: CarlosMessage,
+    ):  # pragma: no cover
+        """Handles the DRIVER_DATA message.
+
+        :param protocol: The protocol to use for communication.
+        :param message: The incoming message.
+        """
+
+        driver_data = DriverDataPayload.model_validate(message.payload)
+
+        async with get_async_carlos_db_connection(
+            client_name=CLIENT_NAME
+        ) as connection:
+            context = RequestContext(connection=connection)
+
+            for timeseries_id, driver_timeseries in driver_data.data.items():
+                await add_timeseries(
+                    context=context,
+                    timeseries_id=timeseries_id,
+                    timestamps=convert_timestamps_to_datetime(
+                        driver_timeseries.timestamps_utc
+                    ),
+                    values=driver_timeseries.values,
+                )
+
+        await self.send(
+            CarlosMessage(
+                message_type=MessageType.DRIVER_DATA_ACK,
+                payload=DriverDataAckPayload(staging_id=driver_data.staging_id),
+            )
+        )
+
+
+def convert_timestamps_to_datetime(utc_timestamps: list[int]) -> list[datetime]:
+    """Converts a list of timestamps to a list of datetime objects.
+
+    :param utc_timestamps: The list of timestamps. That are assumed to be in UTC.
+    :return: The list of datetime objects."""
+
+    return [datetime.fromtimestamp(ts, tz=UTC) for ts in utc_timestamps]
