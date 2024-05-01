@@ -51,6 +51,21 @@ async def test_timeseries(
         len(ts[0].timestamps) == n_samples
     ), f"First Timeseries should have {n_samples} timestamps"
 
+    # reading both signals should still work
+    ts = await get_timeseries(
+        context=async_carlos_db_context,
+        timeseries_ids=[signal.timeseries_id for signal in driver_signals],
+        datetime_range=datetime_range,
+    )
+    assert len(ts) == 2
+    for t in ts:
+        if t.timeseries_id == driver_signals[0].timeseries_id:
+            assert len(t.timestamps) == n_samples
+            assert len(t.values) == n_samples
+        else:
+            assert len(t.timestamps) == 0
+            assert len(t.values) == 0
+
     # insert second signal
     n_samples = 300
     data = random_data(datetime_range=datetime_range, n_samples=n_samples)
