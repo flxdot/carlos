@@ -39,7 +39,7 @@ DIGITAL_OUTPUT_CONFIG = GpioDriverConfig(
 
 class AnalogInputTest(AnalogInput):
 
-    def signals(self) -> list[DriverSignal]:
+    def get_signals(self) -> list[DriverSignal]:
         return [
             DriverSignal(
                 signal_identifier=key, unit_of_measurement=UnitOfMeasurement.UNIT_LESS
@@ -93,7 +93,7 @@ async def test_async_analog_input():
 
 class DigitalOutputTest(DigitalOutput):
 
-    def signals(self) -> list[DriverSignal]:
+    def get_signals(self) -> list[DriverSignal]:
         return [
             DriverSignal(
                 signal_identifier="state",

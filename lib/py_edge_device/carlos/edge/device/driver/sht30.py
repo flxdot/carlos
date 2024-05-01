@@ -53,7 +53,7 @@ class SHT30(AnalogInput):
 
         self._i2c: I2C | None = None
 
-    def signals(self) -> list[DriverSignal]:
+    def get_signals(self) -> list[DriverSignal]:
         """Returns the signals of the DHT sensor."""
 
         return [

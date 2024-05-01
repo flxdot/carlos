@@ -36,7 +36,7 @@ class DriverManager:  # pragma: no cover
                 identifier=driver.identifier,
                 direction=driver.direction,
                 driver_module=driver.config.driver_module,
-                signals=driver.signals(),
+                signals=driver.get_signals(),
             )
             for driver in self.drivers.values()
         ]
