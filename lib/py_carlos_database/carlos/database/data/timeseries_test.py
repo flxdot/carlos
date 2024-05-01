@@ -1,5 +1,5 @@
 import warnings
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from math import pi, sin
 
 import pytest
@@ -212,7 +212,7 @@ class TestTimeseriesData:
         with pytest.raises(ValidationError):
             TimeseriesData(
                 timeseries_id=-1,
-                timestamps=[datetime.now(), datetime.now()],
+                timestamps=[datetime.now(tz=UTC), datetime.now(tz=UTC)],
                 values=[1],
             )
 
@@ -223,14 +223,14 @@ class TestDatetimeRange:
         "start, end, expected_exception",
         [
             pytest.param(
-                datetime(2021, 1, 1, 0, 0, 1),
-                datetime(2021, 1, 1, 0, 0, 0),
+                datetime(2021, 1, 1, 0, 0, 1, tzinfo=UTC),
+                datetime(2021, 1, 1, 0, 0, 0, tzinfo=UTC),
                 ValueError,
                 id="End is before start",
             ),
             pytest.param(
-                datetime(2021, 1, 1, 0, 0, 0),
-                datetime(2021, 1, 1, 0, 0, 0),
+                datetime(2021, 1, 1, 0, 0, 0, tzinfo=UTC),
+                datetime(2021, 1, 1, 0, 0, 0, tzinfo=UTC),
                 ValueError,
                 id="Start and end are the same",
             ),
