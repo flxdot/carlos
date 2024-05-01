@@ -5,6 +5,13 @@
 
 
 export interface paths {
+  "/data/timeseries": {
+    /**
+     * Get timeseries data
+     * @description Returns the timeseries data for the given timeseries identifiers.
+     */
+    get: operations["getTimeseriesRoute"];
+  };
   "/devices": {
     /**
      * Get all devices.
@@ -281,6 +288,27 @@ export interface components {
      */
     HealthStatus: "ok" | "no_db_connection" | "error";
     /**
+     * TimeseriesData
+     * @description Holds the timeseries data of a signale sensor.
+     */
+    TimeseriesData: {
+      /**
+       * Timeseriesid
+       * @description The unique identifier of the timeseries.
+       */
+      timeseriesId: number;
+      /**
+       * Timestamps
+       * @description The timestamps of the individual samples. Each timestamp needs to be timezone aware.
+       */
+      timestamps: string[];
+      /**
+       * Values
+       * @description THe values of the individual samples.
+       */
+      values: (number | null)[];
+    };
+    /**
      * UnitOfMeasurement
      * @description An enumeration of supported units of measurement.
      *
@@ -319,6 +347,44 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  /**
+   * Get timeseries data
+   * @description Returns the timeseries data for the given timeseries identifiers.
+   */
+  getTimeseriesRoute: {
+    parameters: {
+      query: {
+        /** @description One ore more timeseries identifiers to get data for. */
+        timeseriesId: number[];
+        /** @description The start of range. Must be timezone aware. */
+        start_at_utc: string;
+        /** @description The end of the range. Must be timezone aware. */
+        end_at_utc: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TimeseriesData"][];
+        };
+      };
+      /** @description Range was invalid or more than 30 days, 0:00:00 */
+      400: {
+        content: never;
+      };
+      /** @description Timeseries not found. */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /**
    * Get all devices.
    * @description List all devices.

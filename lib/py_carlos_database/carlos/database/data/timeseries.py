@@ -1,5 +1,6 @@
 __all__ = [
     "DatetimeRange",
+    "MAX_QUERY_RANGE",
     "TimeseriesData",
     "add_timeseries",
     "get_timeseries",
