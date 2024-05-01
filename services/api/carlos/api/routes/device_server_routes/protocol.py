@@ -41,7 +41,7 @@ class WebsocketProtocol(EdgeProtocol):
                 f"Connection was closed by the device (code: {ex.code}): {ex.reason}"
             ) from ex
 
-        return CarlosMessage.from_str(raw_message)
+        return CarlosMessage.from_str(raw_message)  # pragma: no cover
 
     @property
     def is_connected(self) -> bool:
