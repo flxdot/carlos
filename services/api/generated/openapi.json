@@ -5,6 +5,93 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/data/timeseries": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get timeseries data",
+        "description": "Returns the timeseries data for the given timeseries identifiers.",
+        "operationId": "getTimeseriesRoute",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "timeseriesId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "One ore more timeseries identifiers to get data for.",
+              "title": "Timeseriesid"
+            },
+            "description": "One ore more timeseries identifiers to get data for."
+          },
+          {
+            "name": "start_at_utc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "description": "The start of range. Must be timezone aware.",
+              "title": "Start At Utc"
+            },
+            "description": "The start of range. Must be timezone aware."
+          },
+          {
+            "name": "end_at_utc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "description": "The end of the range. Must be timezone aware.",
+              "title": "End At Utc"
+            },
+            "description": "The end of the range. Must be timezone aware."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TimeseriesData"
+                  },
+                  "title": "Response Gettimeseriesroute"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Timeseries not found."
+          },
+          "400": {
+            "description": "Range was invalid or more than 30 days, 0:00:00"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/devices": {
       "get": {
         "tags": [
@@ -864,6 +951,47 @@
         ],
         "title": "HealthStatus",
         "description": "The status of the API."
+      },
+      "TimeseriesData": {
+        "properties": {
+          "timeseriesId": {
+            "type": "integer",
+            "title": "Timeseriesid",
+            "description": "The unique identifier of the timeseries."
+          },
+          "timestamps": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Timestamps",
+            "description": "The timestamps of the individual samples. Each timestamp needs to be timezone aware."
+          },
+          "values": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Values",
+            "description": "THe values of the individual samples."
+          }
+        },
+        "type": "object",
+        "required": [
+          "timeseriesId",
+          "timestamps",
+          "values"
+        ],
+        "title": "TimeseriesData",
+        "description": "Holds the timeseries data of a signale sensor."
       },
       "UnitOfMeasurement": {
         "type": "integer",
