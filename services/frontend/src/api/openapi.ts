@@ -357,9 +357,9 @@ export interface operations {
         /** @description One ore more timeseries identifiers to get data for. */
         timeseriesId: number[];
         /** @description The start of range. Must be timezone aware. */
-        start_at_utc: string;
+        startAtUtc: string;
         /** @description The end of the range. Must be timezone aware. */
-        end_at_utc: string;
+        endAtUtc: string;
       };
     };
     responses: {
