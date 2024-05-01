@@ -5,10 +5,9 @@ __all__ = ["update_device"]
 import os
 import shutil
 import subprocess
-from pathlib import Path
-
 import sys
 import time
+from pathlib import Path
 
 from loguru import logger
 
