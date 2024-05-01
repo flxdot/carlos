@@ -6,7 +6,6 @@ from carlos.edge.interface import (
     EdgeProtocol,
 )
 from carlos.edge.interface.protocol import EdgeProtocolCallback
-from loguru import logger
 from starlette.websockets import WebSocket, WebSocketDisconnect, WebSocketState
 
 
