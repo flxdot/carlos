@@ -198,7 +198,7 @@ class TimeseriesOrm(CarlosModelBase):
         INTEGER(),
         ForeignKey(
             CarlosDeviceSignalOrm.timeseries_id,
-            ondelete="RESTRICT",
+            ondelete="CASCADE",
         ),
         primary_key=True,
         comment="The unique identifier series.",

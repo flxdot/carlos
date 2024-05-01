@@ -2,7 +2,6 @@
 
 __all__ = [
     "convert_to_utc_timezone",
-    "convert_to_timezone_naive_utc",
     "interpolate_value_between_dates",
     "validate_datetime_timezone_utc",
     "validate_optional_datetime_timezone_utc",
@@ -46,19 +45,6 @@ def convert_to_utc_timezone(input_time_with_timezone: datetime) -> datetime:
         if input_time_with_timezone.tzinfo not in _UTC_TIMEZONES
         else input_time_with_timezone
     )
-
-
-def convert_to_timezone_naive_utc(input_time: datetime) -> datetime:
-    """Helper function to convert a timezone aware datetime object to UTC timezone and
-    remove the timezone information. This is required for processing timezone aware
-    datetime objects in numpy.
-    """
-
-    return (
-        input_time.astimezone(UTC)
-        if input_time.tzinfo not in _UTC_TIMEZONES
-        else input_time
-    ).replace(tzinfo=None)
 
 
 def validate_datetime_timezone_utc(value: datetime) -> datetime:

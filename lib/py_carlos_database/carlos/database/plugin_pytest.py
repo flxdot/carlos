@@ -10,6 +10,8 @@ import pytest
 import pytest_asyncio
 from _pytest.fixtures import FixtureRequest
 from _pytest.mark import ParameterSet
+from carlos.edge.interface.device import DriverDirection
+from carlos.edge.interface.units import UnitOfMeasurement
 from devtools.converter import to_environment
 from devtools.docker import ContainerHandler, ContainerManager, PostgresContainer
 from devtools.networking import find_next_unused_port
@@ -24,7 +26,17 @@ from carlos.database.connection import (
     get_carlos_database_engine,
 )
 from carlos.database.context import RequestContext
+from carlos.database.device import (
+    CarlosDeviceDriver,
+    CarlosDeviceDriverCreate,
+    CarlosDeviceSignal,
+    CarlosDeviceSignalCreate,
+    create_device_driver,
+    create_device_signals,
+    delete_device_driver,
+)
 from carlos.database.migration import setup_test_db_data
+from carlos.database.testing.expectations import DeviceId
 
 connection_settings = DatabaseConnectionSettings(
     host="localhost",
@@ -109,6 +121,67 @@ async def fixture_async_context(
     """Provides a fresh async connection to the test database from the connection
     pool"""
     yield RequestContext(connection=async_carlos_db_connection)
+
+
+@pytest_asyncio.fixture()
+async def driver(
+    async_carlos_db_context: RequestContext,
+) -> AsyncIterator[CarlosDeviceDriver]:
+
+    device_id = DeviceId.DEVICE_A.value
+
+    to_create = CarlosDeviceDriverCreate(
+        display_name="My Driver",
+        is_visible_on_dashboard=True,
+        driver_identifier="my-driver",
+        direction=DriverDirection.INPUT,
+        driver_module="does_not_matter",
+    )
+
+    created = await create_device_driver(
+        context=async_carlos_db_context, device_id=device_id, driver=to_create
+    )
+
+    yield created
+
+    # cleanup: delete the driver
+    await delete_device_driver(
+        context=async_carlos_db_context,
+        device_id=device_id,
+        driver_identifier=created.driver_identifier,
+    )
+
+
+@pytest_asyncio.fixture()
+async def driver_signals(
+    async_carlos_db_context: RequestContext, driver: CarlosDeviceDriver
+) -> AsyncIterator[list[CarlosDeviceSignal]]:
+
+    to_create = [
+        CarlosDeviceSignalCreate(
+            display_name="Temperature",
+            unit_of_measurement=UnitOfMeasurement.CELSIUS,
+            is_visible_on_dashboard=True,
+            signal_identifier="temperature",
+        ),
+        CarlosDeviceSignalCreate(
+            display_name="Humidity",
+            unit_of_measurement=UnitOfMeasurement.HUMIDITY_PERCENTAGE,
+            is_visible_on_dashboard=True,
+            signal_identifier="humidity",
+        ),
+    ]
+
+    created = await create_device_signals(
+        context=async_carlos_db_context,
+        device_id=driver.device_id,
+        driver_identifier=driver.driver_identifier,
+        signals=to_create,
+    )
+
+    yield created
+
+    # no cleanup. It will be removed with the teardown of driver fixture
 
 
 def format_any_of(expected: Sequence[str]) -> str:  # pragma: no cover

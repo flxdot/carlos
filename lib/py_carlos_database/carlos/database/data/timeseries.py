@@ -1,4 +1,9 @@
-__all__ = ["add_timeseries", "get_timeseries"]
+__all__ = [
+    "DatetimeRange",
+    "TimeseriesData",
+    "add_timeseries",
+    "get_timeseries",
+]
 import warnings
 from datetime import datetime, timedelta
 from typing import Collection, Iterable, Self, Sequence
@@ -225,14 +230,14 @@ MAX_QUERY_RANGE = timedelta(days=30)
 async def get_timeseries(
     context: RequestContext,
     timeseries_ids: Collection[int],
-    time_range: DatetimeRange,
+    datetime_range: DatetimeRange,
 ) -> list[TimeseriesData]:
     """Returns a list of TimeseriesData in between the `earliest_date` and
     `latest_date`.
 
     :param context: request context.
     :param timeseries_ids: List timeseries identifiers to fetch
-    :param time_range: Defines the timerange in which the timeseries data should
+    :param datetime_range: Defines the timerange in which the timeseries data should
         be fetched
     :raises ValueError: In case timeseries_ids are not provided.
     :raises ValueError: In case that timezone naive datetimes are passed in as
@@ -252,7 +257,7 @@ async def get_timeseries(
     # This check has been introduced to prevent timeouts on the database, in case
     # users/services request too much data at once. This happened in the past
     # as some jobs were marked running for weeks, months or even years.
-    if time_range.end_at_utc - time_range.start_at_utc > MAX_QUERY_RANGE:
+    if datetime_range.end_at_utc - datetime_range.start_at_utc > MAX_QUERY_RANGE:
         raise ValueError(
             f"Requested time range exceeds the maximum allowed duration of "
             f"{MAX_QUERY_RANGE}. If you need to fetch this amount of data, "
@@ -270,8 +275,8 @@ async def get_timeseries(
         )
         .where(
             TimeseriesOrm.timeseries_id.in_(timeseries_ids),
-            TimeseriesOrm.timestamp_utc >= time_range.start_at_utc,
-            TimeseriesOrm.timestamp_utc <= time_range.end_at_utc,
+            TimeseriesOrm.timestamp_utc >= datetime_range.start_at_utc,
+            TimeseriesOrm.timestamp_utc <= datetime_range.end_at_utc,
         )
         .order_by(TimeseriesOrm.timeseries_id.asc(), TimeseriesOrm.timestamp_utc.asc())
     )

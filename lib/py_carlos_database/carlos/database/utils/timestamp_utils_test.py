@@ -1,10 +1,15 @@
 from contextlib import nullcontext
-from datetime import datetime
+from datetime import UTC, datetime
 from math import isclose
+from zoneinfo import ZoneInfo
 
 import pytest
 
-from .timestamp_utils import interpolate_value_between_dates, validate_timezone
+from .timestamp_utils import (
+    interpolate_value_between_dates,
+    validate_datetime_timezone_utc,
+    validate_timezone,
+)
 
 
 def test_validate_timezone():
@@ -14,6 +19,17 @@ def test_validate_timezone():
 
     with pytest.raises(ValueError):
         validate_timezone("Europe/Invalid")
+
+
+def test_validate_datetime_timezone_utc():
+
+    has_utc_tz = validate_datetime_timezone_utc(
+        datetime(2024, 5, 1, tzinfo=ZoneInfo("Europe/Berlin"))
+    )
+    assert has_utc_tz.tzinfo == UTC
+
+    with pytest.raises(ValueError):
+        validate_datetime_timezone_utc(datetime(2024, 5, 1))
 
 
 @pytest.mark.parametrize(

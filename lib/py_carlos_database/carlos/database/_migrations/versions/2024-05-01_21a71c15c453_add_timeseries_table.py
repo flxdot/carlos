@@ -20,7 +20,7 @@ def upgrade():
         CREATE TABLE carlos.timeseries (
             timestamp_utc TIMESTAMP WITH TIME ZONE NOT NULL,
             timeseries_id INTEGER REFERENCES carlos.device_signal(timeseries_id)
-                ON DELETE RESTRICT NOT NULL,
+                ON DELETE CASCADE NOT NULL,
             value REAL,
             PRIMARY KEY (timeseries_id, timestamp_utc)
         ) PARTITION BY RANGE (timestamp_utc);

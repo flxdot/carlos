@@ -235,12 +235,13 @@ async def create_partition(context: RequestContext, partition: Partition):
 
     schema, table_name = partition.partition_table_name.split(".")
 
+    # may happen due to concurrency
     if await does_table_exist(
         context=context,
         schema_name=schema,
         table_name=table_name,
     ):
-        return
+        return  # pragma: no cover
 
     statement = text(
         f"CREATE TABLE {partition.partition_table_name} "
