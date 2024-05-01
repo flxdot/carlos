@@ -156,6 +156,7 @@ class DeviceRuntime:  # pragma: no cover
             staged_data = await stage_timeseries_data(connection=connection)
 
             if staged_data is not None:
+                logger.debug("No data available to be staged.")
                 return
 
             await self.communication_handler.send(
