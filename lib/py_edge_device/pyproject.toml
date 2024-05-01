@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "carlos.edge.device"
-version = "0.1.12"
+version = "0.1.13"
 description = "The library for the edge device of the carlos project."
 authors = ["Felix Fanghanel"]
 license = "MIT"
@@ -35,7 +35,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.bumpversion]
-current_version = "0.1.12"
+current_version = "0.1.13"
 commit = true
 tag = false
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(\\-(?P<prerelease>[a-z0-9\\.]+))?"
