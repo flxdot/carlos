@@ -22,6 +22,16 @@ def update_device():  # pragma: no cover
 
     logger.info("Updating the device to the latest version...")
 
+    update_from_git()
+    update_dependencies()
+
+    # Restart the running process
+    logger.info("Restarting the running process...")
+    os.execv(sys.executable, [sys.executable] + sys.argv)
+
+
+def update_from_git():  # pragma: no cover
+
     logger.debug("Pulling the latest changes from the git repository...")
     process = subprocess.run(["git", "pull"], capture_output=True)
     if process.returncode != 0:  # pragma: no cover
@@ -32,22 +42,15 @@ def update_device():  # pragma: no cover
     else:
         logger.debug(process.stdout.decode("utf-8").strip())
 
-    # Update the dependencies
-    update_dependencies()
 
-    # Restart the running process
-    logger.info("Restarting the running process...")
-    os.execv(sys.executable, [sys.executable] + sys.argv)
-
-
-def update_dependencies():
+def update_dependencies():  # pragma: no cover
     """Removes all known carlos dependencies and installs the latest ones."""
 
     logger.debug("Removing the current carlos dependencies...")
     venv_path = Path(__file__).parent.parent.parent.parent / ".venv"
     site_packages = venv_path / "lib" / "python3.11" / "site-packages"
     for dep in site_packages.glob("carlos*"):
-        logger.debug(f"Removing {dep}...")
+        logger.debug(f"Removing {dep}")
         if dep.is_dir():
             shutil.rmtree(dep)
         else:
