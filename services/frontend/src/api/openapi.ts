@@ -223,6 +223,8 @@ export interface components {
        * @description The unique identifier of the driver in the context of the device.
        */
       driverIdentifier: string;
+      /** @description The matching physical quantity of the unit of measurement. */
+      physicalQuantity: components["schemas"]["PhysicalQuantity"];
     };
     /**
      * CarlosDeviceSignalUpdate
@@ -287,6 +289,18 @@ export interface components {
      * @enum {string}
      */
     HealthStatus: "ok" | "no_db_connection" | "error";
+    /**
+     * PhysicalQuantity
+     * @description An enumeration of supported physical quantities
+     *
+     * - 0 = IDENTITY
+     * - 1 = TEMPERATURE
+     * - 2 = HUMIDITY
+     * - 3 = ILLUMINANCE
+     * - 4 = RATIO
+     * @enum {integer}
+     */
+    PhysicalQuantity: 0 | 1 | 2 | 3 | 4;
     /**
      * TimeseriesData
      * @description Holds the timeseries data of a signale sensor.
