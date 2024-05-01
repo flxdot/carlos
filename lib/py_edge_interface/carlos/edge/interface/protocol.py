@@ -150,6 +150,9 @@ class EdgeCommunicationHandler:
 
         :param message: The message to send.
         """
+
+        logger.debug(f"Sending message: {message.message_type}")
+
         await self.protocol.send(message)
 
     async def listen(self):

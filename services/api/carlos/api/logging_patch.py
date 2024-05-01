@@ -72,7 +72,7 @@ LOGGERS_TO_INTERCEPT = (
 
 
 def setup_logging(
-    level: int = logging.INFO, logger_to_intercept: Iterable[str] | None = None
+    level: int = logging.DEBUG, logger_to_intercept: Iterable[str] | None = None
 ):
     """
     Replaces logging handlers with a handler for using the custom handler."""

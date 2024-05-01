@@ -159,8 +159,6 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         if not self.is_connected:
             raise EdgeConnectionDisconnected("The connection is not connected.")
 
-        logger.debug(f"Sending message: {message.message_type.value}")
-
         # we can guarantee that the connection is not None
         await self._connection.send(message.build())  # type: ignore[union-attr]
 
@@ -183,6 +181,4 @@ class DeviceWebsocketClient(EdgeProtocol):  # pragma: no cover
         if isinstance(message, bytes):
             message = message.decode()
 
-        carlos_message = CarlosMessage.from_str(message)
-        logger.debug(f"Received message: {carlos_message.message_type.value}")
-        return carlos_message
+        return CarlosMessage.from_str(message)

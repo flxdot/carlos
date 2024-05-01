@@ -27,8 +27,6 @@ class WebsocketProtocol(EdgeProtocol):
         :param message: The message to send.
         :raises EdgeConnectionDisconnected: If the connection is disconnected.
         """
-        logger.debug(f"Sending message: {message.message_type.value}")
-
         await self._websocket.send_text(message.build())
 
     async def receive(self) -> CarlosMessage:
@@ -44,11 +42,7 @@ class WebsocketProtocol(EdgeProtocol):
                 f"Connection was closed by the device (code: {ex.code}): {ex.reason}"
             ) from ex
 
-        message = CarlosMessage.from_str(raw_message)
-
-        logger.debug(f"Received message: {message.message_type.value}")
-
-        return message
+        return CarlosMessage.from_str(raw_message)
 
     @property
     def is_connected(self) -> bool:

@@ -69,73 +69,86 @@ class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
         ) as connection:
             context = RequestContext(connection=connection)
 
-            known_drivers = await get_device_drivers(
-                context=context, device_id=self.device_id
+            await self._upsert_driver_metadata(context, payload)
+
+            response = await self._build_device_config_response(context)
+
+        await self.send(response)
+
+    async def _upsert_driver_metadata(
+        self, context: RequestContext, payload: DeviceConfigPayload
+    ):
+        """This functions inserts any new drivers and signals into the database."""
+
+        known_drivers = await get_device_drivers(
+            context=context, device_id=self.device_id
+        )
+        known_driver_index = {
+            driver.driver_identifier: driver for driver in known_drivers
+        }
+        for driver in payload.drivers:
+            if driver.identifier not in known_driver_index:
+                _ = await create_device_driver(
+                    context=context,
+                    device_id=self.device_id,
+                    driver=CarlosDeviceDriverCreate(
+                        display_name=driver.identifier,
+                        is_visible_on_dashboard=True,
+                        driver_identifier=driver.identifier,
+                        direction=driver.direction,
+                        driver_module=driver.driver_module,
+                    ),
+                )
+
+            known_signals = await get_device_signals(
+                context=context,
+                device_id=self.device_id,
+                driver_identifier=driver.identifier,
             )
-            known_driver_index = {
-                driver.driver_identifier: driver for driver in known_drivers
+            known_signal_index = {
+                signal.signal_identifier: signal for signal in known_signals
             }
 
-            for driver in payload.drivers:
-                if driver.identifier not in known_driver_index:
-                    _ = await create_device_driver(
-                        context=context,
-                        device_id=self.device_id,
-                        driver=CarlosDeviceDriverCreate(
-                            display_name=driver.identifier,
+            signals = []
+            for signal in driver.signals:
+                if signal.signal_identifier not in known_signal_index:
+                    signals.append(
+                        CarlosDeviceSignalCreate(
+                            signal_identifier=signal.signal_identifier,
+                            display_name=signal.signal_identifier,
+                            unit_of_measurement=signal.unit_of_measurement,
                             is_visible_on_dashboard=True,
-                            driver_identifier=driver.identifier,
-                            direction=driver.direction,
-                            driver_module=driver.driver_module,
-                        ),
+                        )
                     )
-
-                known_signals = await get_device_signals(
+            if signals:
+                await create_device_signals(
                     context=context,
                     device_id=self.device_id,
                     driver_identifier=driver.identifier,
+                    signals=signals,
                 )
-                known_signal_index = {
-                    signal.signal_identifier: signal for signal in known_signals
-                }
 
-                signals = []
-                for signal in driver.signals:
-                    if signal.signal_identifier not in known_signal_index:
-                        signals.append(
-                            CarlosDeviceSignalCreate(
-                                signal_identifier=signal.signal_identifier,
-                                display_name=signal.signal_identifier,
-                                unit_of_measurement=signal.unit_of_measurement,
-                                is_visible_on_dashboard=True,
-                            )
-                        )
-                if signals:
-                    await create_device_signals(
-                        context=context,
-                        device_id=self.device_id,
-                        driver_identifier=driver.identifier,
-                        signals=signals,
-                    )
+    async def _build_device_config_response(
+        self, context: RequestContext
+    ) -> CarlosMessage:
+        """Builds the DEVICE_CONFIG_RESPONSE message."""
 
-            timeseries_index: dict[str, dict[str, int]] = {}
-            update_drivers = await get_device_drivers(
-                context=context, device_id=self.device_id
+        timeseries_index: dict[str, dict[str, int]] = {}
+        update_drivers = await get_device_drivers(
+            context=context, device_id=self.device_id
+        )
+        for driver_ in update_drivers:
+            updated_signals = await get_device_signals(
+                context=context,
+                device_id=self.device_id,
+                driver_identifier=driver_.driver_identifier,
             )
-            for driver in update_drivers:
-                updated_signals = await get_device_signals(
-                    context=context,
-                    device_id=self.device_id,
-                    driver_identifier=driver.driver_identifier,
-                )
-                for signal in updated_signals:
-                    timeseries_index.setdefault(driver.driver_identifier, {})[
-                        signal.signal_identifier
-                    ] = signal.timeseries_id
+            for signal_ in updated_signals:
+                timeseries_index.setdefault(driver_.driver_identifier, {})[
+                    signal_.signal_identifier
+                ] = signal_.timeseries_id
 
-        await protocol.send(
-            CarlosMessage(
-                message_type=MessageType.DEVICE_CONFIG_RESPONSE,
-                payload=DeviceConfigResponsePayload(timeseries_index=timeseries_index),
-            )
+        return CarlosMessage(
+            message_type=MessageType.DEVICE_CONFIG_RESPONSE,
+            payload=DeviceConfigResponsePayload(timeseries_index=timeseries_index),
         )
