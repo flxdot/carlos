@@ -6,6 +6,7 @@ __all__ = [
     "CarlosPayload",
     "DeviceConfigPayload",
     "DeviceConfigResponsePayload",
+    "DriverDataAckPayload",
     "DriverDataPayload",
     "DriverTimeseries",
     "EdgeVersionPayload",

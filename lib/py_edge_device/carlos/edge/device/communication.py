@@ -12,13 +12,17 @@ from carlos.edge.interface import (
     EdgeVersionPayload,
     MessageType,
 )
-from carlos.edge.interface.messages import DeviceConfigResponsePayload
+from carlos.edge.interface.messages import (
+    DeviceConfigResponsePayload,
+    DriverDataAckPayload,
+)
 from loguru import logger
 from semver import Version
 
 from .constants import VERSION
 from .storage.connection import get_async_storage_engine
 from .storage.exceptions import NotFoundError
+from .storage.timeseries_data import confirm_staged_data
 from .storage.timeseries_index import find_timeseries_index, update_timeseries_index
 from .update import update_device
 
@@ -38,6 +42,7 @@ class ClientEdgeCommunicationHandler(EdgeCommunicationHandler):
             {
                 MessageType.EDGE_VERSION: handle_edge_version,
                 MessageType.DEVICE_CONFIG_RESPONSE: handle_device_config_response,
+                MessageType.DRIVER_DATA_ACK: handle_driver_data_ack,
             }
         )
 
@@ -123,3 +128,23 @@ async def handle_device_config_response(
                         f"Error updating timeseries index for {driver_identifier=} and"
                         f" {signal_identifier=}."
                     )
+
+
+async def handle_driver_data_ack(
+    protocol: EdgeProtocol, message: CarlosMessage
+):  # pragma: no cover
+    """Handles the incoming driver data ack message.
+
+    This message is sent by the server as an acknowledgment of the driver data
+    received.
+
+    :param protocol: The protocol to use for communication.
+    :param message: The incoming message.
+    """
+
+    ackn_message = DriverDataAckPayload.model_validate(message.payload)
+
+    async with get_async_storage_engine().connect() as connection:
+        await confirm_staged_data(
+            connection=connection, staging_id=ackn_message.staging_id
+        )

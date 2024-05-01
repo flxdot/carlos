@@ -20,7 +20,9 @@ from loguru import logger
 from .communication import ClientEdgeCommunicationHandler
 from .constants import LOCAL_DEVICE_STORAGE_PATH
 from .driver_manager import DriverManager
+from .storage.connection import get_async_storage_engine
 from .storage.migration import alembic_upgrade
+from .storage.timeseries_data import stage_timeseries_data
 
 
 # We don't cover this in the unit tests. This needs to be tested in an integration test.
@@ -145,8 +147,23 @@ class DeviceRuntime:  # pragma: no cover
 
     async def _send_pending_data(self):
         """Sends the pending data to the server."""
-        logger.debug("Sending pending data to the server.")
-        pass
+
+        if not self.communication_handler.protocol.is_connected:
+            logger.warning("Cannot send pending data, as the device is not connected.")
+            return
+
+        async with get_async_storage_engine().connect() as connection:
+            staged_data = await stage_timeseries_data(connection=connection)
+
+            if staged_data is not None:
+                return
+
+            await self.communication_handler.send(
+                CarlosMessage(
+                    message_type=MessageType.DRIVER_DATA,
+                    payload=staged_data,
+                )
+            )
 
 
 async def send_ping(
