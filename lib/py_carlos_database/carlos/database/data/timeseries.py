@@ -19,6 +19,7 @@ from carlos.database.error_handling import PostgresErrorCodes, is_postgres_error
 from carlos.database.exceptions import NotFound
 from carlos.database.orm import CarlosDeviceSignalOrm, TimeseriesOrm
 from carlos.database.schema import CarlosSchema
+from carlos.database.utils import utcnow
 from carlos.database.utils.partitions import MonthlyPartition, create_partition
 from carlos.database.utils.timestamp_utils import validate_datetime_timezone_utc
 from carlos.database.utils.values import prevent_real_overflow
@@ -85,6 +86,18 @@ class DatetimeRange(CarlosSchema):
             raise ValueError("The specified range is empty.")
 
         return self
+
+    @classmethod
+    def from_timedelta(
+        cls, td: timedelta, start_at_utc: datetime | None = None
+    ) -> Self:
+        """Constructs a filter from a timedelta."""
+
+        start_at_utc = start_at_utc or utcnow()
+        return cls(
+            start_at_utc=start_at_utc,
+            end_at_utc=start_at_utc + td,
+        )
 
 
 _TIMESERIES_MAX_BATCH_SIZE = 1000

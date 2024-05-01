@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta
 from math import pi, sin
 
+import pytest
+
 from carlos.database.context import RequestContext
 from carlos.database.device import CarlosDeviceSignal
+from carlos.database.exceptions import NotFound
 from carlos.database.utils import utcnow
 
-from .timeseries import DatetimeRange, add_timeseries, get_timeseries
+from .timeseries import MAX_QUERY_RANGE, DatetimeRange, add_timeseries, get_timeseries
 
 
 async def test_timeseries(
@@ -108,3 +111,41 @@ def random_data(datetime_range, n_samples: int) -> tuple[list[datetime], list[fl
     values = [sin(2 * pi * 1 / n_samples) for i in range(n_samples)]
 
     return timestamps, values
+
+
+@pytest.mark.parametrize(
+    "timeseries_ids, datetime_range, expected_exception",
+    [
+        pytest.param(
+            [],
+            DatetimeRange.from_timedelta(timedelta(minutes=5)),
+            ValueError,
+            id="empty timeseries_ids raises ValueError",
+        ),
+        pytest.param(
+            [1],
+            DatetimeRange.from_timedelta(MAX_QUERY_RANGE + timedelta(seconds=1)),
+            ValueError,
+            id="Too large data request raises ValueError",
+        ),
+        pytest.param(
+            [42069],
+            DatetimeRange.from_timedelta(timedelta(minutes=5)),
+            NotFound,
+            id="Non existing timeseries_id raises NotFound",
+        ),
+    ],
+)
+async def test_get_timeseries_exceptions(
+    async_carlos_db_context: RequestContext,
+    timeseries_ids: list[int],
+    datetime_range: DatetimeRange,
+    expected_exception: type[Exception],
+):
+
+    with pytest.raises(expected_exception):
+        _ = await get_timeseries(
+            context=async_carlos_db_context,
+            timeseries_ids=timeseries_ids,
+            datetime_range=datetime_range,
+        )
