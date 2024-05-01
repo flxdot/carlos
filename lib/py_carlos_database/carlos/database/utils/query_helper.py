@@ -18,7 +18,7 @@ async def does_exist(context: RequestContext, sql_filters: list[SqlFilter]) -> b
     """
     Checks if an entry exists for the given sql filter.
 
-    :param context: Qmulus request context.
+    :param context: The request context.
     :param sql_filters: Filter of the desired entry
     :return: True if entry exists, False otherwise
     """
