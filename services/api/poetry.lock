@@ -276,7 +276,7 @@ url = "../../lib/py_carlos_database"
 
 [[package]]
 name = "carlos-edge-device"
-version = "0.1.13"
+version = "0.1.14"
 description = "The library for the edge device of the carlos project."
 optional = false
 python-versions = ">=3.11,<3.12"
