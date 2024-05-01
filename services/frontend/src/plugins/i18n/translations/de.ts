@@ -1,6 +1,7 @@
 import {
   ERouteName,
 } from '@/router/route-name.ts';
+import {EPhysicalDimension, EUnitOfMeasurement} from "@/api/unit-of-measurement.ts";
 
 const authentication = {
   login: 'Anmelden',
@@ -48,6 +49,23 @@ const pages = {
   [ERouteName.DEVICES_OVERVIEW]: 'Geräte Übersicht',
 };
 
+const unitOfMeasurement: Record<EUnitOfMeasurement, string> = {
+  [EUnitOfMeasurement.UNIT_LESS]: '',
+  [EUnitOfMeasurement.PERCENTAGE]: 'Prozent',
+  [EUnitOfMeasurement.CELSIUS]: 'Grad Celsius',
+  [EUnitOfMeasurement.FAHRENHEIT]: 'Grad Fahrenheit',
+  [EUnitOfMeasurement.HUMIDITY_PERCENTAGE]: 'Prozent',
+  [EUnitOfMeasurement.LUX]: 'Lux',
+};
+
+const physicalDimension: Record<EPhysicalDimension, string> = {
+  [EPhysicalDimension.IDENTITY]: 'Einheit',
+  [EPhysicalDimension.TEMPERATURE]: 'Temperatur',
+  [EPhysicalDimension.HUMIDITY]: 'Feuchtigkeit',
+  [EPhysicalDimension.ILLUMINANCE]: 'Helligkeit',
+  [EPhysicalDimension.RATIO]: 'Verhältnis',
+};
+
 export default {
   authentication,
   chart,
@@ -56,4 +74,6 @@ export default {
   error,
   navbar,
   pages,
+  unitOfMeasurement,
+  physicalDimension,
 };

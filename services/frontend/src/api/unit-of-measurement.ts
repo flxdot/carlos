@@ -12,7 +12,8 @@ export enum EUnitOfMeasurement {
 }
 
 /*
- * Ensures that each available UnitOfMeasurement is present in the EUnitOfMeasurement
+ * This map exists to formally couple the EUnitOfMeasurement and the UnitOfMeasurement
+ * from the API.
  */
 export const UnitOfMeasurementMap: Record<components['schemas']['UnitOfMeasurement'], keyof typeof EUnitOfMeasurement> = {
   0: 'UNIT_LESS',
@@ -30,4 +31,24 @@ export const UnitOfMeasurementSymbol: Record<EUnitOfMeasurement, string> = {
   [EUnitOfMeasurement.FAHRENHEIT]: '°F',
   [EUnitOfMeasurement.HUMIDITY_PERCENTAGE]: '%',
   [EUnitOfMeasurement.LUX]: 'lx',
+};
+
+export enum EPhysicalDimension {
+    IDENTITY= 0,
+    TEMPERATURE =1,
+    HUMIDITY = 2,
+    ILLUMINANCE = 3,
+    RATIO = 4,
+}
+
+/*
+ * This map exists to formally couple the EPhysicalDimension and the PhysicalQuantity
+ * from the API.
+ */
+export const PhysicalQuantityMap: Record<components['schemas']['PhysicalQuantity'], keyof typeof EPhysicalDimension> = {
+  0: 'IDENTITY',
+  1: 'TEMPERATURE',
+  2: 'HUMIDITY',
+  3: 'ILLUMINANCE',
+  4: 'RATIO',
 };
