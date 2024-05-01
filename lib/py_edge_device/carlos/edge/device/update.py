@@ -3,7 +3,10 @@
 __all__ = ["update_device"]
 
 import os
+import shutil
 import subprocess
+from pathlib import Path
+
 import sys
 import time
 
@@ -29,8 +32,29 @@ def update_device():  # pragma: no cover
     else:
         logger.debug(process.stdout.decode("utf-8").strip())
 
+    # Update the dependencies
+    update_dependencies()
+
+    # Restart the running process
+    logger.info("Restarting the running process...")
+    os.execv(sys.executable, [sys.executable] + sys.argv)
+
+
+def update_dependencies():
+    """Removes all known carlos dependencies and installs the latest ones."""
+
+    logger.debug("Removing the current carlos dependencies...")
+    venv_path = Path(__file__).parent.parent.parent.parent / ".venv"
+    site_packages = venv_path / "lib" / "python3.11" / "site-packages"
+    for dep in site_packages.glob("carlos*"):
+        logger.debug(f"Removing {dep}...")
+        if dep.is_dir():
+            shutil.rmtree(dep)
+        else:
+            dep.unlink()
+
     logger.debug("Installing the latest dependencies...")
-    process = subprocess.run(["poetry", "install", "--sync"], capture_output=True)
+    process = subprocess.run(["poetry", "install"], capture_output=True)
     if process.returncode != 0:  # pragma: no cover
         raise RuntimeError(
             "Failed to install the latest dependencies: "
@@ -38,10 +62,6 @@ def update_device():  # pragma: no cover
         )
     else:
         logger.debug(process.stdout.decode("utf-8").strip())
-
-    # Restart the running process
-    logger.info("Restarting the running process...")
-    os.execv(sys.executable, [sys.executable] + sys.argv)
 
 
 if __name__ == "__main__":
