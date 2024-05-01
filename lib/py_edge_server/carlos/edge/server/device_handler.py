@@ -24,7 +24,8 @@ from carlos.edge.interface import (
 )
 from carlos.edge.interface.messages import (
     DeviceConfigResponsePayload,
-    DriverDataPayload, DriverDataAckPayload,
+    DriverDataAckPayload,
+    DriverDataPayload,
 )
 
 from carlos.edge.server.constants import CLIENT_NAME
