@@ -4,16 +4,19 @@ __all__ = [
     "CarlosDeviceOrm",
     "CarlosDeviceSignalOrm",
     "CarlosModelBase",
+    "TimeseriesOrm",
 ]
 
 import inspect
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import (
     BOOLEAN,
     INTEGER,
+    REAL,
     SMALLINT,
     TEXT,
     TIMESTAMP,
@@ -69,7 +72,7 @@ class CarlosDeviceOrm(CarlosModelBase):
         comment="The name of the device that is displayed to the user.",
     )
     description: Mapped[str] = mapped_column(
-        TEXT, nullable=True, comment="A description of the device for the user."
+        TEXT(), nullable=True, comment="A description of the device for the user."
     )
     registered_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
@@ -120,7 +123,7 @@ class CarlosDeviceDriverOrm(CarlosModelBase):
         comment="The name of the driver that is displayed in the UI.",
     )
     is_visible_on_dashboard: Mapped[bool] = mapped_column(
-        BOOLEAN,
+        BOOLEAN(),
         nullable=False,
         comment="Whether the driver is visible on the dashboard.",
     )
@@ -143,7 +146,7 @@ class CarlosDeviceSignalOrm(CarlosModelBase):
     )
 
     timeseries_id: Mapped[int] = mapped_column(
-        INTEGER,
+        INTEGER(),
         primary_key=True,
         autoincrement=True,
         comment="The unique identifier of the signal.",
@@ -166,12 +169,41 @@ class CarlosDeviceSignalOrm(CarlosModelBase):
         comment="The name of the signal that is displayed in the UI.",
     )
     unit_of_measurement: Mapped[int] = mapped_column(
-        SMALLINT,
+        SMALLINT(),
         nullable=False,
         comment="The unit of measurement of the driver.",
     )
     is_visible_on_dashboard: Mapped[bool] = mapped_column(
-        BOOLEAN,
+        BOOLEAN(),
         nullable=False,
         comment="Whether the signal is visible on the dashboard.",
+    )
+
+
+class TimeseriesOrm(CarlosModelBase):
+    """Holds all numeric and boolean timeseries data."""
+
+    __tablename__ = "timeseries"
+    __table_args__ = {
+        "comment": _clean_doc(__doc__),
+        "schema": CarlosDatabaseSchema.CARLOS.value,
+    }
+
+    timestamp_utc: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True),
+        primary_key=True,
+        comment="The timestamp of the data point in UTC.",
+    )
+    timeseries_id: Mapped[int] = mapped_column(
+        INTEGER(),
+        ForeignKey(
+            CarlosDeviceSignalOrm.timeseries_id,
+            ondelete="RESTRICT",
+        ),
+        primary_key=True,
+        comment="The unique identifier series.",
+    )
+    value: Mapped[Optional[float]] = mapped_column(
+        REAL(),
+        comment="The value of the data point.",
     )
