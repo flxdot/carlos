@@ -1,14 +1,22 @@
+import warnings
 from datetime import datetime, timedelta
 from math import pi, sin
 
 import pytest
+from pydantic import ValidationError
 
 from carlos.database.context import RequestContext
 from carlos.database.device import CarlosDeviceSignal
 from carlos.database.exceptions import NotFound
 from carlos.database.utils import utcnow
 
-from .timeseries import MAX_QUERY_RANGE, DatetimeRange, add_timeseries, get_timeseries
+from .timeseries import (
+    MAX_QUERY_RANGE,
+    DatetimeRange,
+    TimeseriesData,
+    add_timeseries,
+    get_timeseries,
+)
 
 
 async def test_timeseries(
@@ -113,6 +121,39 @@ def random_data(datetime_range, n_samples: int) -> tuple[list[datetime], list[fl
     return timestamps, values
 
 
+async def test_timeseries_duplicate_data(
+    async_carlos_db_context: RequestContext, driver_signals: list[CarlosDeviceSignal]
+):
+    span = timedelta(hours=2)
+    now = utcnow()
+    datetime_range = DatetimeRange(start_at_utc=now - span, end_at_utc=now)
+
+    n_samples = 500
+    data = random_data(datetime_range=datetime_range, n_samples=n_samples)
+
+    # duplicate data, should be ignored
+    timestamps = data[0] + data[0]
+    values = data[1] + data[1]
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        await add_timeseries(
+            context=async_carlos_db_context,
+            timeseries_id=driver_signals[0].timeseries_id,
+            timestamps=timestamps,
+            values=values,
+        )
+
+    ts = await get_timeseries(
+        context=async_carlos_db_context,
+        timeseries_ids=[driver_signals[0].timeseries_id],
+        datetime_range=datetime_range,
+    )
+    assert len(ts) == 1
+    assert len(ts[0].values) == n_samples, "Duplicate data was not ignored"
+    assert len(ts[0].timestamps) == n_samples, "Duplicate data was not ignored"
+
+
 @pytest.mark.parametrize(
     "timeseries_ids, datetime_range, expected_exception",
     [
@@ -149,3 +190,54 @@ async def test_get_timeseries_exceptions(
             timeseries_ids=timeseries_ids,
             datetime_range=datetime_range,
         )
+
+
+async def test_add_timeseries_exceptions(
+    async_carlos_db_context: RequestContext, driver_signals: list[CarlosDeviceSignal]
+):
+
+    # ensure that the method raises an error if the input data has different lengths
+    with pytest.raises(ValueError):
+        await add_timeseries(
+            context=async_carlos_db_context,
+            timeseries_id=driver_signals[0].timeseries_id,
+            timestamps=[datetime.now(), datetime.now()],
+            values=[1],
+        )
+
+
+class TestTimeseriesData:
+
+    def test_sample_cnt_validation(self):
+        with pytest.raises(ValidationError):
+            TimeseriesData(
+                timeseries_id=-1,
+                timestamps=[datetime.now(), datetime.now()],
+                values=[1],
+            )
+
+
+class TestDatetimeRange:
+
+    @pytest.mark.parametrize(
+        "start, end, expected_exception",
+        [
+            pytest.param(
+                datetime(2021, 1, 1, 0, 0, 1),
+                datetime(2021, 1, 1, 0, 0, 0),
+                ValueError,
+                id="End is before start",
+            ),
+            pytest.param(
+                datetime(2021, 1, 1, 0, 0, 0),
+                datetime(2021, 1, 1, 0, 0, 0),
+                ValueError,
+                id="Start and end are the same",
+            ),
+        ],
+    )
+    def test_validation(
+        self, start: datetime, end: datetime, expected_exception: type[Exception]
+    ):
+        with pytest.raises(expected_exception):
+            DatetimeRange(start_at_utc=start, end_at_utc=end)
