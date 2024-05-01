@@ -20,6 +20,7 @@ from carlos.edge.interface import (
     EdgeProtocol,
     MessageType,
 )
+from carlos.edge.interface.messages import DeviceConfigResponsePayload
 
 from carlos.edge.server.constants import CLIENT_NAME
 
@@ -116,3 +117,25 @@ class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
                         driver_identifier=driver.identifier,
                         signals=signals,
                     )
+
+            timeseries_index: dict[str, dict[str, int]] = {}
+            update_drivers = await get_device_drivers(
+                context=context, device_id=self.device_id
+            )
+            for driver in update_drivers:
+                updated_signals = await get_device_signals(
+                    context=context,
+                    device_id=self.device_id,
+                    driver_identifier=driver.driver_identifier,
+                )
+                for signal in updated_signals:
+                    timeseries_index.setdefault(driver.driver_identifier, {})[
+                        signal.signal_identifier
+                    ] = signal.timeseries_id
+
+        await protocol.send(
+            CarlosMessage(
+                message_type=MessageType.DEVICE_CONFIG_RESPONSE,
+                payload=DeviceConfigResponsePayload(timeseries_index=timeseries_index),
+            )
+        )
