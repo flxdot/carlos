@@ -155,7 +155,7 @@ class DeviceRuntime:  # pragma: no cover
         async with get_async_storage_engine().connect() as connection:
             staged_data = await stage_timeseries_data(connection=connection)
 
-            if staged_data is not None:
+            if staged_data is None:
                 logger.debug("No data available to be staged.")
                 return
 
