@@ -1,6 +1,6 @@
 __all__ = ["ServerEdgeCommunicationHandler"]
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from carlos.database.connection import get_async_carlos_db_connection
 from carlos.database.context import RequestContext
@@ -160,7 +160,11 @@ class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
             payload=DeviceConfigResponsePayload(timeseries_index=timeseries_index),
         )
 
-    async def handle_driver_data(self, protocol: EdgeProtocol, message: CarlosMessage):
+    async def handle_driver_data(
+        self,
+        protocol: EdgeProtocol,
+        message: CarlosMessage,
+    ):  # pragma: no cover
         """Handles the DRIVER_DATA message.
 
         :param protocol: The protocol to use for communication.
@@ -178,10 +182,9 @@ class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
                 await add_timeseries(
                     context=context,
                     timeseries_id=timeseries_id,
-                    timestamps=[
-                        datetime.fromtimestamp(ts)
-                        for ts in driver_timeseries.timestamps_utc
-                    ],
+                    timestamps=convert_timestamps_to_datetime(
+                        driver_timeseries.timestamps_utc
+                    ),
                     values=driver_timeseries.values,
                 )
 
@@ -191,3 +194,12 @@ class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
                 payload=DriverDataAckPayload(staging_id=driver_data.staging_id),
             )
         )
+
+
+def convert_timestamps_to_datetime(utc_timestamps: list[int]) -> list[datetime]:
+    """Converts a list of timestamps to a list of datetime objects.
+
+    :param utc_timestamps: The list of timestamps. That are assumed to be in UTC.
+    :return: The list of datetime objects."""
+
+    return [datetime.fromtimestamp(ts, tz=UTC) for ts in utc_timestamps]
