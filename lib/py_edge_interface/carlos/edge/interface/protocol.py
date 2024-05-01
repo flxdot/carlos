@@ -162,7 +162,8 @@ class EdgeCommunicationHandler:
             await self.protocol.connect()  # pragma: no cover
 
         while not self._stopped:
-            await self.handle_message(await self.protocol.receive())
+            msg = await self.protocol.receive()
+            await self.handle_message(msg)
             await sleep(0.1)
 
     async def handle_message(self, message: CarlosMessage):

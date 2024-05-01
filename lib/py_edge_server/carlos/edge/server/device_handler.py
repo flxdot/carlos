@@ -109,9 +109,10 @@ class ServerEdgeCommunicationHandler(EdgeCommunicationHandler):
                                 is_visible_on_dashboard=True,
                             )
                         )
-                await create_device_signals(
-                    context=context,
-                    device_id=self.device_id,
-                    driver_identifier=driver.identifier,
-                    signals=signals,
-                )
+                if signals:
+                    await create_device_signals(
+                        context=context,
+                        device_id=self.device_id,
+                        driver_identifier=driver.identifier,
+                        signals=signals,
+                    )

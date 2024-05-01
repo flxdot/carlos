@@ -122,7 +122,7 @@ class CarlosMessage(CarlosSchema):
         return (
             self.message_type.value
             + MESSAGE_SEPERATOR
-            + self.payload.model_dump_json(indent=0, by_alias=True)
+            + self.payload.model_dump_json(indent=None, by_alias=True)
         )
 
     @classmethod
