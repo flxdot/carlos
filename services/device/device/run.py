@@ -1,12 +1,3 @@
-from pathlib import Path
-
-import sentry_sdk
-import yaml
-from sentry_sdk.integrations.asyncio import AsyncioIntegration
-from sentry_sdk.integrations.httpx import HttpxIntegration
-from sentry_sdk.integrations.loguru import LoguruIntegration
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-
 from carlos.edge.device import DeviceRuntime
 from carlos.edge.device.constants import VERSION
 from loguru import logger
