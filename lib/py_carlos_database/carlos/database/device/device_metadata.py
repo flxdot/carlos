@@ -96,12 +96,6 @@ class _SignalMixin(CarlosSchema):
         description="The unit of measurement of the signal.",
     )
 
-    @computed_field  # type: ignore
-    @property
-    def physical_quantity(self) -> PhysicalQuantity:
-        """The matching physical quantity of the unit of measurement."""
-        return self.unit_of_measurement.physical_quantity
-
     is_visible_on_dashboard: bool = Field(
         ...,
         description="Whether the signal is visible on the dashboard.",
@@ -134,6 +128,12 @@ class CarlosDeviceSignal(CarlosDeviceSignalCreate):
         max_length=DRIVER_IDENTIFIER_LENGTH,
         description="The unique identifier of the driver in the context of the device.",
     )
+
+    @computed_field  # type: ignore
+    @property
+    def physical_quantity(self) -> PhysicalQuantity:
+        """The matching physical quantity of the unit of measurement."""
+        return self.unit_of_measurement.physical_quantity
 
 
 async def get_device_drivers(
