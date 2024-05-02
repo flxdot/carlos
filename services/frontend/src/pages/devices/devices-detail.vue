@@ -65,7 +65,7 @@
         {{ driver.driverIdentifier }}
       </div>
       <driver-timeseries
-        v-if="deviceSignals !== undefined"
+        v-if="deviceSignals !== undefined && deviceSignals.get(driver.driverIdentifier) !== undefined"
         :driver="driver"
         :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
       />
