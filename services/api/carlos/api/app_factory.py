@@ -29,6 +29,8 @@ def create_app(api_settings: CarlosAPISettings | None = None) -> FastAPI:
 
     api_settings = api_settings or CarlosAPISettings()
 
+    configure_sentry()
+
     # ensures that the logging is handled via loguru
     setup_logging(level=api_settings.LOG_LEVEL)
 
