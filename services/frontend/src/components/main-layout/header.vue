@@ -264,6 +264,9 @@ function login() {
 </script>
 
 <style scoped lang="scss">
+.carlos-nav {
+  z-index: 100;
+}
 
 .p-menu.p-menu-overlay, .p-menubar {
   background-color: var(--primary-color);
