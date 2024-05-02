@@ -152,35 +152,50 @@ export function toPoints(timeseries: ITimeseries): {x: string, y: number}[] {
   }));
 }
 
-export function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: TAxisLimit, ticks: number[], tickPrefix: (arg0: number) => string): TLineAxisProps[string] {
+export function buildAxis(
+  position: 'left' | 'right',
+  timeseries: ITimeseries,
+  limits: TAxisLimit | undefined = undefined,
+  ticks: number[] | undefined = undefined,
+): TLineAxisProps[string] {
   const mediaSize = getMediaCategory();
 
-  return {
+  const axis: TLineAxisProps[string] = {
     // @ts-ignore - unsure why the types do not match
     type: 'linear',
     display: true,
     position,
     title: {
-      display: mediaSize >= MediaSize.DESKTOP,
+      display: mediaSize >= MediaSize.TABLET,
       text: timeseries.unitSymbol ? i18n.global.t('data.labelWithUnit', {
         label: timeseries.displayName,
         unit: timeseries.unitSymbol,
       }) : timeseries.displayName,
     },
-    min: limits[0],
-    max: limits[1],
-    ticks: {
-      callback: (value: number) => {
-        return `${value}`;
-        if (mediaSize >= MediaSize.DESKTOP) {
-          return `${tickPrefix(value)} ${value} ${timeseries.unitSymbol}`;
-        }
-        if (mediaSize >= MediaSize.TABLET) {
-          return `${value} ${timeseries.unitSymbol}`;
-        }
-        return `${value}`;
-      },
-    },
-    afterBuildTicks: setConstantTicks(ticks),
   };
+
+  if (limits !== undefined) {
+    axis.min = limits[0];
+    axis.max = limits[1];
+  }
+  if (ticks !== undefined) {
+    axis.afterBuildTicks = setConstantTicks(ticks);
+  }
+
+  return axis;
+}
+
+const colorRotation = [
+  '--carlos-primary-color',
+  '--carlos-palette-ten',
+  '--carlos-palette1-charlotte',
+  '--carlos-palette2-cream',
+  '--carlos-palette2-mindaro',
+  '--carlos-palette3-beaver',
+  '--carlos-palette3-fawn',
+];
+let colorIndex = 0;
+export function nextColor(): string {
+  colorIndex = (colorIndex + 1) % colorRotation.length;
+  return getComputedStyle(document.documentElement).getPropertyValue(colorRotation[colorIndex]);
 }

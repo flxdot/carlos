@@ -106,10 +106,10 @@ const yAxes = computed<TLineAxisProps>(() => {
     props.timeseries,
     limits,
     limits,
-    tempEmojis,
   );
 
-  axis.ticks!.callback = (value: number) => {
+  axis.ticks = axis.ticks || {};
+  axis.ticks.callback = (value: number) => {
     return value > 0.5 ? i18n.global.t('chart.boolean.high') : i18n.global.t('chart.boolean.low');
   };
 

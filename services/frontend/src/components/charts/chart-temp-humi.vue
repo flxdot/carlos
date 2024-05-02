@@ -2,7 +2,7 @@
   <chart-base-line
     :chart-data="chartData"
     :y-axes="yAxes"
-    height="10rem"
+    height="20rem"
   />
 </template>
 

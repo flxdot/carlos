@@ -1,21 +1,35 @@
 <template>
   <div class="container-group">
-    <router-link
-      v-slot="{ href, navigate }"
-      :to="{
-        name: ERouteName.DEVICES_OVERVIEW,
+    <div
+      :style="{
+        display: 'flex',
+        flexDirection:'row',
+        justifyContent: 'space-between',
       }"
     >
-      <a
-        :href="href"
-        title="Carlos"
-        class="input-group subnav-link"
-        @click="navigate"
+      <router-link
+        v-slot="{ href, navigate }"
+        :to="{
+          name: ERouteName.DEVICES_OVERVIEW,
+        }"
       >
-        <i class="pi pi-arrow-left" />
-        <span>{{ i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`) }}</span>
-      </a>
-    </router-link>
+        <a
+          :href="href"
+          title="Carlos"
+          class="input-group subnav-link"
+          @click="navigate"
+        >
+          <i class="pi pi-arrow-left" />
+          <span>{{ i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`) }}</span>
+        </a>
+      </router-link>
+      <prm-button
+        v-if="false"
+        label="Refresh"
+        icon="pi pi-replay"
+        severity="primary"
+      />
+    </div>
     <card class="device-card">
       <template #title>
         <skeleton
@@ -54,7 +68,7 @@
           {{ driver.displayName }}
         </template>
         <driver-timeseries
-          v-if="deviceSignals.get(driver.driverIdentifier)  !== undefined"
+          v-if="deviceSignals.get(driver.driverIdentifier) !== undefined"
           :driver="driver"
           :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
         />
@@ -123,6 +137,7 @@ import {
 } from 'vue-router';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
+import PrmButton from 'primevue/button';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
 import Skeleton from 'primevue/skeleton';

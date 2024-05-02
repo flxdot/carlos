@@ -1,6 +1,24 @@
 <template>
-  <div v-for="ts in signalTimeseries">
+  <div
+    v-for="ts in signalTimeseries"
+    :key="ts.displayName"
+  >
     {{ ts.displayName }}: {{ renderNumber(ts.values[ts.values.length - 1]) }} {{ ts.unitSymbol }}
+  </div>
+  <chart-temp-humi
+    v-if="driver.driverIdentifier.startsWith('temp-humi')"
+    :temperature="signalTimeseries.find((ts) => ts.displayName === 'temperature')!"
+    :humidity="signalTimeseries.find((ts) => ts.displayName === 'humidity')!"
+  />
+  <div
+    v-for="ts in signalTimeseries"
+    v-else
+    :key="ts.displayName"
+  >
+    <chart-analog
+      :timeseries="ts"
+      :color="nextColor()"
+    />
   </div>
 </template>
 
@@ -26,6 +44,11 @@ import {
 import {
   UnitOfMeasurementSymbol,
 } from '@/api/unit-of-measurement.ts';
+import ChartTempHumi from '@/components/charts/chart-temp-humi.vue';
+import ChartAnalog from '@/components/charts/chart-analog.vue';
+import {
+  nextColor,
+} from '@/components/charts/chart-utils.ts';
 
 const props = withDefaults(defineProps<{
   driver: TGetDeviceDriversResponse[number],
@@ -45,7 +68,6 @@ const signalTimeseries = computed<ITimeseries[]>(() => {
   }
 
   for (const signal of props.signalList) {
-
     const tsData = rawData.value.find((data) => data.timeseriesId === signal.timeseriesId);
 
     const ts: ITimeseries = {
