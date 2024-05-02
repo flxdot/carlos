@@ -11,7 +11,7 @@ from sentry_sdk.integrations.loguru import LoguruIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 
-class SentrySettings(BaseSettings):
+class SentrySettings(BaseSettings):  # pragma: no cover
 
     SENTRY_DSN: str = Field(
         ...,
