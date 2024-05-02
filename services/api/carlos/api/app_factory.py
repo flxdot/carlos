@@ -2,9 +2,15 @@ __all__ = ["create_app"]
 
 from typing import Any
 
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from pydantic.alias_generators import to_camel
+from sentry_sdk.integrations.asyncio import AsyncioIntegration
+from sentry_sdk.integrations.asyncpg import AsyncPGIntegration
+from sentry_sdk.integrations.httpx import HttpxIntegration
+from sentry_sdk.integrations.loguru import LoguruIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
@@ -76,3 +82,15 @@ def get_cors_kwargs(api_settings: CarlosAPISettings) -> dict[str, Any]:
         "allow_methods": ["*"],
         "allow_headers": ["*"],
     }
+
+
+def configure_sentry():
+    sentry_sdk.init(
+        integrations=[
+            AsyncioIntegration(),
+            HttpxIntegration(),
+            SqlalchemyIntegration(),
+            LoguruIntegration(),
+            AsyncPGIntegration(),
+        ],
+    )
