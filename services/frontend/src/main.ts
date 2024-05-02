@@ -21,6 +21,9 @@ import config from '@/config.ts';
 import i18n from '@/plugins/i18n';
 import '@/plugins/chartjs';
 import '@/plugins/dayjs';
+import {
+  useSentry,
+} from '@/plugins/sentry.ts';
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -41,6 +44,8 @@ app.use(
   }),
 );
 app.use(router);
+
+useSentry(app);
 
 app.directive('tooltip', Tooltip);
 
