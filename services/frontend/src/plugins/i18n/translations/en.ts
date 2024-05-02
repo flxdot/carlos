@@ -1,7 +1,9 @@
 import {
   ERouteName,
 } from '@/router/route-name.ts';
-import {EPhysicalDimension, EUnitOfMeasurement} from "@/api/unit-of-measurement.ts";
+import {
+  EPhysicalDimension, EUnitOfMeasurement,
+} from '@/api/unit-of-measurement.ts';
 
 const authentication = {
   login: 'Login',

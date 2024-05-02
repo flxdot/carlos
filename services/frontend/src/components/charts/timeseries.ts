@@ -1,4 +1,6 @@
-import {notEmpty} from "@/utils/filters.ts";
+import {
+  notEmpty,
+} from '@/utils/filters.ts';
 
 /**
  * Determines the type of values of the timeseries.
