@@ -1,10 +1,12 @@
 <template>
+  <div v-for="ts in signalTimeseries">
+    {{ ts.displayName }}: {{ ts.values[ts.values.length - 1] || '-' }} {{ ts.unitSymbol }}
+  </div>
 </template>
 
 <script setup lang="ts">
-
 import {
-  ref, defineProps, withDefaults,
+  ref, defineProps, withDefaults, computed,
 } from 'vue';
 import dayjs from 'dayjs';
 import {
@@ -18,6 +20,12 @@ import {
   getTimeseries, TGetTimeseriesQueryParams,
   TGetTimeseriesResponse,
 } from '@/api/timeseries.ts';
+import {
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
+import {
+  UnitOfMeasurementSymbol,
+} from '@/api/unit-of-measurement.ts';
 
 const props = withDefaults(defineProps<{
   driver: TGetDeviceDriversResponse[number],
@@ -27,7 +35,30 @@ const props = withDefaults(defineProps<{
   duration: dayjs.duration(7, 'days'),
 });
 
-const rawData = ref<TGetTimeseriesResponse>();
+const rawData = ref<TGetTimeseriesResponse | undefined>();
+
+const signalTimeseries = computed<ITimeseries[]>(() => {
+  const timeseries: ITimeseries[] = [];
+
+  if (rawData.value === undefined) {
+    return timeseries;
+  }
+
+  for (const signal of props.signalList) {
+
+    const tsData = rawData.value.find((data) => data.timeseriesId === signal.timeseriesId);
+
+    const ts: ITimeseries = {
+      displayName: signal.displayName,
+      unitSymbol: UnitOfMeasurementSymbol[signal.unitOfMeasurement],
+      timestamps: tsData?.timestamps || [],
+      values: tsData?.values || [],
+    };
+    timeseries.push(ts);
+  }
+
+  return timeseries;
+});
 
 function updateData() {
   const now = dayjs();
