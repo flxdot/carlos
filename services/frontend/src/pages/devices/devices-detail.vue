@@ -59,6 +59,7 @@
     </card>
     <accordion
       :active-index="0"
+      multiple
     >
       <accordion-tab
         v-for="driver in deviceDriver"
