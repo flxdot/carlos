@@ -30,9 +30,6 @@ import {
   GradientCache, GradientDefinition,
 } from '@/components/charts/gradients.ts';
 import {
-  tempEmojis,
-} from '@/utils/value-render.ts';
-import {
   LineWidth,
 } from '@/components/charts/constants.ts';
 import {
@@ -53,7 +50,7 @@ interface IChartAnalogProps {
 }
 
 const props = withDefaults(defineProps<IChartAnalogProps>(), {
-  limits: [
+  limits: () => [
     0,
     1,
   ],

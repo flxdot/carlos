@@ -163,7 +163,7 @@ import {
 } from '@/components/charts/chart-utils.ts';
 import {
   tempEmojis,
-  humidEmojis,
+  humidEmojis, renderNumber,
 } from '@/utils/value-render.ts';
 import MarkdownText from '@/components/markdown-text/markdown-text.vue';
 import ChartAnalog from '@/components/charts/chart-analog.vue';
@@ -238,9 +238,9 @@ const dataAge = computed<string | undefined>(() => {
 
 function renderTimeseriesAsString(ts: ITimeseries, suffix: ((num: number) => string) | undefined = undefined, showLabel: boolean = true): string {
   const value = ts.values[ts.values.length - 1];
-  let rendered = `${value !== undefined ? value.toFixed(1) : '-'} ${ts.unitSymbol}`;
+  let rendered = `${renderNumber(value)} ${ts.unitSymbol}`;
 
-  if (suffix !== undefined) {
+  if (suffix !== undefined && value !== null) {
     rendered += ` ${suffix(value)}`;
   }
   if (showLabel) {

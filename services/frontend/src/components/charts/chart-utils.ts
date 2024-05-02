@@ -17,6 +17,9 @@ import {
 import {
   ITimeseries,
 } from '@/components/charts/timeseries.ts';
+import {
+  notEmpty,
+} from '@/utils/filters.ts';
 
 export function generateChartTimestamps(days: number, minutesBetweenSamples: number): string[] {
   const timestamps: string[] = [];
@@ -134,22 +137,22 @@ export function roundToNearestMultiple(value: number, n: number): number {
   return Math.sign(value) * Math.ceil(Math.abs(value / n)) * n;
 }
 
-export function getSuitableLimit(staticLimits: [number, number], values: number[], n: number = 5): [number, number] {
+export function getSuitableLimit(
+  staticLimits: [number, number],
+  values: (number | null)[],
+  n: number = 5,
+): [number, number] {
   if (values.length === 0) {
     return staticLimits;
   }
+
+  const numValues = values.filter(notEmpty);
+
   return [
     // eslint-disable-next-line array-element-newline
-    Math.min(staticLimits[0], roundToNearestMultiple(Math.min(...values), n)),
-    Math.max(staticLimits[1], roundToNearestMultiple(Math.max(...values), n)),
+    Math.min(staticLimits[0], roundToNearestMultiple(Math.min(...numValues), n)),
+    Math.max(staticLimits[1], roundToNearestMultiple(Math.max(...numValues), n)),
   ];
-}
-
-export function toPoints(timeseries: ITimeseries): {x: string, y: number}[] {
-  return timeseries.timestamps.map((timestamp, index) => ({
-    x: timestamp,
-    y: timeseries.values[index],
-  }));
 }
 
 export function buildAxis(

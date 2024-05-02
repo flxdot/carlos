@@ -49,6 +49,9 @@ import ChartAnalog from '@/components/charts/chart-analog.vue';
 import {
   nextColor,
 } from '@/components/charts/chart-utils.ts';
+import {
+  renderNumber,
+} from '@/utils/value-render.ts';
 
 const props = withDefaults(defineProps<{
   driver: TGetDeviceDriversResponse[number],
@@ -93,13 +96,6 @@ function updateData() {
   getTimeseries(params).then((response) => {
     rawData.value = response.data;
   });
-}
-
-function renderNumber(value: number | undefined): string {
-  if (value === undefined) {
-    return '-';
-  }
-  return value.toFixed(1);
 }
 
 updateData();

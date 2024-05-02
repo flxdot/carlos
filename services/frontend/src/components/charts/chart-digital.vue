@@ -28,9 +28,6 @@ import {
   GradientCache, GradientDefinition,
 } from '@/components/charts/gradients.ts';
 import {
-  tempEmojis,
-} from '@/utils/value-render.ts';
-import {
   LineWidth,
 } from '@/components/charts/constants.ts';
 import {

@@ -1,3 +1,5 @@
+import {notEmpty} from "@/utils/filters.ts";
+
 /**
  * Determines the type of values of the timeseries.
  *
@@ -22,19 +24,19 @@ export interface ITimeseries {
     displayName: string;
     unitSymbol?: string;
     timestamps: string[];
-    values: number[];
+    values: (number | null)[];
 }
 
 export interface ITimeseriesSample {
     x: string;
-    y: number;
+    y: number | undefined;
 }
 
 export function toChartJsData(timeseries: ITimeseries): ITimeseriesSample[] {
-  return timeseries.timestamps.map(
-    (timestamp, index) => ({
-      x: timestamp,
-      y: timeseries.values[index],
+  return timeseries.values.filter(notEmpty).map(
+    (value, index) => ({
+      x: timeseries.timestamps[index],
+      y: value,
     }
     ),
   );

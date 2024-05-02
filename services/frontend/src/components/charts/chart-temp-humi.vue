@@ -21,15 +21,11 @@ import {
   chartJsGradient,
   getSuitableLimit,
   buildAxis,
-  toPoints,
 } from '@/components/charts/chart-utils.ts';
 import {
   pastelHumidityGradient,
   outdoorTemperatureGradientCelsius, GradientCache,
 } from '@/components/charts/gradients.ts';
-import {
-  humidEmojis, tempEmojis,
-} from '@/utils/value-render.ts';
 import {
   humidityLimits,
   humidityTicks, LineWidth,
@@ -40,7 +36,7 @@ import {
   DeepPartial,
 } from '@/utils/types.ts';
 import {
-  ITimeseries,
+  ITimeseries, toChartJsData,
 } from '@/components/charts/timeseries.ts';
 
 const props = defineProps<{temperature: ITimeseries, humidity: ITimeseries}>();
@@ -79,7 +75,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
     datasets: [
       {
         label: 'Temperature',
-        data: toPoints(props.temperature),
+        data: toChartJsData(props.temperature),
         borderWidth: LineWidth,
         borderColor: tempColor,
         backgroundColor: tempBgColor,
@@ -94,7 +90,7 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
       },
       {
         label: 'Humidity',
-        data: toPoints(props.humidity),
+        data: toChartJsData(props.humidity),
         borderWidth: LineWidth,
         borderColor: humidColor,
         backgroundColor: humidBgColor,
@@ -110,8 +106,8 @@ const chartData = computed<DeepPartial<TLineChartData>>(() => {
 
 const yAxes = computed<TLineAxisProps>(() => {
   return {
-    temp: buildAxis('left', props.temperature, tempYLimit.value, tempTicks, tempEmojis),
-    humid: buildAxis('right', props.humidity, humidYLimit.value, humidityTicks, humidEmojis),
+    temp: buildAxis('left', props.temperature, tempYLimit.value, tempTicks),
+    humid: buildAxis('right', props.humidity, humidYLimit.value, humidityTicks),
   } as TLineAxisProps;
 });
 
