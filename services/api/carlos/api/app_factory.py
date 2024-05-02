@@ -88,6 +88,7 @@ def get_cors_kwargs(api_settings: CarlosAPISettings) -> dict[str, Any]:
 
 
 def configure_sentry():
+    """Initializes sentry based on environment variables."""
     sentry_sdk.init(
         integrations=[
             AsyncPGIntegration(),
