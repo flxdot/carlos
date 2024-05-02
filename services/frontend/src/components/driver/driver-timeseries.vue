@@ -6,7 +6,7 @@
     {{ ts.displayName }}: {{ renderNumber(ts.values[ts.values.length - 1]) }} {{ ts.unitSymbol }}
   </div>
   <chart-temp-humi
-    v-if="driver.driverIdentifier.startsWith('temp-humi')"
+    v-if="rawData !== undefined && driver.driverIdentifier.startsWith('temp-humi')"
     :temperature="signalTimeseries.find((ts) => ts.displayName === 'temperature')!"
     :humidity="signalTimeseries.find((ts) => ts.displayName === 'humidity')!"
   />
