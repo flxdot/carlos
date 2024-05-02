@@ -1,6 +1,6 @@
 <template>
   <div v-for="ts in signalTimeseries">
-    {{ ts.displayName }}: {{ ts.values[ts.values.length - 1] || '-' }} {{ ts.unitSymbol }}
+    {{ ts.displayName }}: {{ renderNumber(ts.values[ts.values.length - 1]) }} {{ ts.unitSymbol }}
   </div>
 </template>
 
@@ -71,6 +71,13 @@ function updateData() {
   getTimeseries(params).then((response) => {
     rawData.value = response.data;
   });
+}
+
+function renderNumber(value: number | undefined): string {
+  if (value === undefined) {
+    return '-';
+  }
+  return value.toFixed(1);
 }
 
 updateData();
