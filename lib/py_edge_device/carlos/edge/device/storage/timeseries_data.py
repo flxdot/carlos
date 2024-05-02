@@ -126,8 +126,8 @@ async def stage_timeseries_data(
     staged_rows = (await connection.execute(staged_query)).all()
 
     for row in staged_rows:
-        if row.timeseries_id not in payload.data:
-            payload.data[row.timeseries_id] = DriverTimeseries(
+        if row.server_timeseries_id not in payload.data:
+            payload.data[row.server_timeseries_id] = DriverTimeseries(
                 timestamps_utc=[], values=[]
             )
         dt = payload.data[row.server_timeseries_id]
