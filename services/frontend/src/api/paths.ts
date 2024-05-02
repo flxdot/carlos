@@ -9,6 +9,7 @@ export enum EOpenapiPath {
     DEVICES_GET_PUT_POST_DELETE = '/devices/{deviceId}',
     DEVICE_DRIVERS_GET = '/devices/{deviceId}/drivers',
     DEVICE_DRIVERS_SIGNALS_GET = '/devices/{deviceId}/drivers/{driverIdentifier}/signals',
+    TIMESERIES_GET = '/data/timeseries',
 }
 
 export const pathFactory = {

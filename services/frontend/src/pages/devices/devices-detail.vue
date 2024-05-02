@@ -1,21 +1,35 @@
 <template>
   <div class="container-group">
-    <router-link
-      v-slot="{ href, navigate }"
-      :to="{
-        name: ERouteName.DEVICES_OVERVIEW,
+    <div
+      :style="{
+        display: 'flex',
+        flexDirection:'row',
+        justifyContent: 'space-between',
       }"
     >
-      <a
-        :href="href"
-        title="Carlos"
-        class="input-group subnav-link"
-        @click="navigate"
+      <router-link
+        v-slot="{ href, navigate }"
+        :to="{
+          name: ERouteName.DEVICES_OVERVIEW,
+        }"
       >
-        <i class="pi pi-arrow-left" />
-        <span>{{ i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`) }}</span>
-      </a>
-    </router-link>
+        <a
+          :href="href"
+          title="Carlos"
+          class="input-group subnav-link"
+          @click="navigate"
+        >
+          <i class="pi pi-arrow-left" />
+          <span>{{ i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`) }}</span>
+        </a>
+      </router-link>
+      <prm-button
+        v-if="false"
+        label="Refresh"
+        icon="pi pi-replay"
+        severity="primary"
+      />
+    </div>
     <card class="device-card">
       <template #title>
         <skeleton
@@ -45,6 +59,7 @@
     </card>
     <accordion
       :active-index="0"
+      multiple
     >
       <accordion-tab
         v-for="driver in deviceDriver"
@@ -53,15 +68,11 @@
         <template #header>
           {{ driver.displayName }}
         </template>
-        <pre>
-          {{ driver }}
-        </pre>
-        <pre
-          v-for="signal in deviceSignals.get(driver.driverIdentifier) || []"
-          :key="signal.signalIdentifier"
-        >
-          {{ signal }}
-        </pre>
+        <driver-timeseries
+          v-if="deviceSignals.get(driver.driverIdentifier) !== undefined"
+          :driver="driver"
+          :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
+        />
       </accordion-tab>
       <accordion-tab>
         <template #header>
@@ -118,6 +129,7 @@
 <script setup lang="ts">
 import {
   ref,
+  reactive,
   onMounted,
   onBeforeUnmount, computed,
 } from 'vue';
@@ -126,6 +138,7 @@ import {
 } from 'vue-router';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
+import PrmButton from 'primevue/button';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
 import Skeleton from 'primevue/skeleton';
@@ -150,7 +163,7 @@ import {
 } from '@/components/charts/chart-utils.ts';
 import {
   tempEmojis,
-  humidEmojis,
+  humidEmojis, renderNumber,
 } from '@/utils/value-render.ts';
 import MarkdownText from '@/components/markdown-text/markdown-text.vue';
 import ChartAnalog from '@/components/charts/chart-analog.vue';
@@ -171,6 +184,7 @@ import ChartDigital from '@/components/charts/chart-digital.vue';
 import {
   useDevicesStore,
 } from '@/store/devices.ts';
+import DriverTimeseries from '@/components/driver/driver-timeseries.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -182,7 +196,7 @@ const currentDeviceId = computed<string>(() => route.params.deviceId as string);
 
 const deviceDetails = ref<TGetDeviceDetailResponse | undefined>();
 const deviceDriver = ref<TGetDeviceDriversResponse | undefined>();
-const deviceSignals = ref<Map<string, TGetDeviceDriversSignalsResponse | undefined>>(new Map());
+const deviceSignals = reactive<Map<string, TGetDeviceDriversSignalsResponse | undefined>>(new Map());
 
 const temperatureTs = ref<ITimeseries>({
   displayName: 'Temperature',
@@ -224,9 +238,9 @@ const dataAge = computed<string | undefined>(() => {
 
 function renderTimeseriesAsString(ts: ITimeseries, suffix: ((num: number) => string) | undefined = undefined, showLabel: boolean = true): string {
   const value = ts.values[ts.values.length - 1];
-  let rendered = `${value !== undefined ? value.toFixed(1) : '-'} ${ts.unitSymbol}`;
+  let rendered = `${renderNumber(value)} ${ts.unitSymbol}`;
 
-  if (suffix !== undefined) {
+  if (suffix !== undefined && value !== null) {
     rendered += ` ${suffix(value)}`;
   }
   if (showLabel) {
@@ -250,7 +264,7 @@ function updateDevice() {
     for (const driver of (driverList || [])) {
       deviceStore.fetchDeviceDriverSignals(currentDeviceId.value, driver.driverIdentifier)
         .then((signalList) => {
-          deviceSignals.value.set(driver.driverIdentifier, signalList);
+          deviceSignals.set(driver.driverIdentifier, signalList);
         });
     }
   });

@@ -22,8 +22,8 @@ from carlos.edge.interface.device.driver_config import (
     DRIVER_IDENTIFIER_LENGTH,
     DriverDirection,
 )
-from carlos.edge.interface.units import UnitOfMeasurement
-from pydantic import Field
+from carlos.edge.interface.units import PhysicalQuantity, UnitOfMeasurement
+from pydantic import Field, computed_field
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.exc import NoResultFound
 
@@ -128,6 +128,12 @@ class CarlosDeviceSignal(CarlosDeviceSignalCreate):
         max_length=DRIVER_IDENTIFIER_LENGTH,
         description="The unique identifier of the driver in the context of the device.",
     )
+
+    @computed_field  # type: ignore
+    @property
+    def physical_quantity(self) -> PhysicalQuantity:
+        """The matching physical quantity of the unit of measurement."""
+        return self.unit_of_measurement.physical_quantity
 
 
 async def get_device_drivers(

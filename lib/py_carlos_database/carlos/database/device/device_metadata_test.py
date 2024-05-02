@@ -1,7 +1,7 @@
 import pytest
 import pytest_asyncio
 from carlos.edge.interface.device import DriverDirection
-from carlos.edge.interface.units import UnitOfMeasurement
+from carlos.edge.interface.units import PhysicalQuantity, UnitOfMeasurement
 
 from carlos.database.context import RequestContext
 from carlos.database.device import (
@@ -237,6 +237,7 @@ async def test_driver_signals_crud(
     assert updated.display_name == "Temperature Updated"
     assert updated.unit_of_measurement == UnitOfMeasurement.FAHRENHEIT
     assert updated.is_visible_on_dashboard is False
+    assert isinstance(updated.physical_quantity, PhysicalQuantity)
 
     found_map = {f.timeseries_id: f for f in found}
 

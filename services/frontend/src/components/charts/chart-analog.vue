@@ -30,9 +30,6 @@ import {
   GradientCache, GradientDefinition,
 } from '@/components/charts/gradients.ts';
 import {
-  tempEmojis,
-} from '@/utils/value-render.ts';
-import {
   LineWidth,
 } from '@/components/charts/constants.ts';
 import {
@@ -44,15 +41,20 @@ import {
 
 interface IChartAnalogProps {
   timeseries: ITimeseries;
-  limits: TAxisLimit;
-  ticks: number[];
   color: string | GradientDefinition | DiscreteGradientDefinition;
+  limits?: TAxisLimit;
+  ticks?: number[];
   height?: string;
   tickStepSize?: number;
   showXTicks?: boolean;
 }
 
 const props = withDefaults(defineProps<IChartAnalogProps>(), {
+  limits: () => [
+    0,
+    1,
+  ],
+  ticks: undefined,
   height: '10rem',
   tickStepSize: 5,
   showXTicks: true,
@@ -107,8 +109,6 @@ const yAxes = computed<TLineAxisProps>(() => {
       'right',
       props.timeseries,
       actualLimits.value,
-      props.ticks,
-      tempEmojis,
     ),
   } as TLineAxisProps;
 });

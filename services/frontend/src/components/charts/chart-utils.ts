@@ -17,6 +17,9 @@ import {
 import {
   ITimeseries,
 } from '@/components/charts/timeseries.ts';
+import {
+  notEmpty,
+} from '@/utils/filters.ts';
 
 export function generateChartTimestamps(days: number, minutesBetweenSamples: number): string[] {
   const timestamps: string[] = [];
@@ -134,53 +137,68 @@ export function roundToNearestMultiple(value: number, n: number): number {
   return Math.sign(value) * Math.ceil(Math.abs(value / n)) * n;
 }
 
-export function getSuitableLimit(staticLimits: [number, number], values: number[], n: number = 5): [number, number] {
+export function getSuitableLimit(
+  staticLimits: [number, number],
+  values: (number | null)[],
+  n: number = 5,
+): [number, number] {
   if (values.length === 0) {
     return staticLimits;
   }
+
+  const numValues = values.filter(notEmpty);
+
   return [
     // eslint-disable-next-line array-element-newline
-    Math.min(staticLimits[0], roundToNearestMultiple(Math.min(...values), n)),
-    Math.max(staticLimits[1], roundToNearestMultiple(Math.max(...values), n)),
+    Math.min(staticLimits[0], roundToNearestMultiple(Math.min(...numValues), n)),
+    Math.max(staticLimits[1], roundToNearestMultiple(Math.max(...numValues), n)),
   ];
 }
 
-export function toPoints(timeseries: ITimeseries): {x: string, y: number}[] {
-  return timeseries.timestamps.map((timestamp, index) => ({
-    x: timestamp,
-    y: timeseries.values[index],
-  }));
-}
-
-export function buildAxis(position: 'left' | 'right', timeseries: ITimeseries, limits: TAxisLimit, ticks: number[], tickPrefix: (arg0: number) => string): TLineAxisProps[string] {
+export function buildAxis(
+  position: 'left' | 'right',
+  timeseries: ITimeseries,
+  limits: TAxisLimit | undefined = undefined,
+  ticks: number[] | undefined = undefined,
+): TLineAxisProps[string] {
   const mediaSize = getMediaCategory();
 
-  return {
+  const axis: TLineAxisProps[string] = {
     // @ts-ignore - unsure why the types do not match
     type: 'linear',
     display: true,
     position,
     title: {
-      display: mediaSize >= MediaSize.DESKTOP,
+      display: mediaSize >= MediaSize.TABLET,
       text: timeseries.unitSymbol ? i18n.global.t('data.labelWithUnit', {
         label: timeseries.displayName,
         unit: timeseries.unitSymbol,
       }) : timeseries.displayName,
     },
-    min: limits[0],
-    max: limits[1],
-    ticks: {
-      callback: (value: number) => {
-        return `${value}`;
-        if (mediaSize >= MediaSize.DESKTOP) {
-          return `${tickPrefix(value)} ${value} ${timeseries.unitSymbol}`;
-        }
-        if (mediaSize >= MediaSize.TABLET) {
-          return `${value} ${timeseries.unitSymbol}`;
-        }
-        return `${value}`;
-      },
-    },
-    afterBuildTicks: setConstantTicks(ticks),
   };
+
+  if (limits !== undefined) {
+    axis.min = limits[0];
+    axis.max = limits[1];
+  }
+  if (ticks !== undefined) {
+    axis.afterBuildTicks = setConstantTicks(ticks);
+  }
+
+  return axis;
+}
+
+const colorRotation = [
+  '--carlos-primary-color',
+  '--carlos-palette-ten',
+  '--carlos-palette1-charlotte',
+  '--carlos-palette2-cream',
+  '--carlos-palette2-mindaro',
+  '--carlos-palette3-beaver',
+  '--carlos-palette3-fawn',
+];
+let colorIndex = 0;
+export function nextColor(): string {
+  colorIndex = (colorIndex + 1) % colorRotation.length;
+  return getComputedStyle(document.documentElement).getPropertyValue(colorRotation[colorIndex]);
 }

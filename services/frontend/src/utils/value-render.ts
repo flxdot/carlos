@@ -1,3 +1,10 @@
+export function renderNumber(value: number | undefined | null): string {
+  if (value !== undefined && value !== null) {
+    return value.toFixed(1);
+  }
+  return '-';
+}
+
 export function tempEmojis(temp: number): string {
   if (temp <= 0) {
     return '❄️';

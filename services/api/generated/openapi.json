@@ -824,6 +824,15 @@
             "minLength": 1,
             "title": "Driveridentifier",
             "description": "The unique identifier of the driver in the context of the device."
+          },
+          "physicalQuantity": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhysicalQuantity"
+              }
+            ],
+            "description": "The matching physical quantity of the unit of measurement.",
+            "readOnly": true
           }
         },
         "type": "object",
@@ -834,7 +843,8 @@
           "signalIdentifier",
           "timeseriesId",
           "deviceId",
-          "driverIdentifier"
+          "driverIdentifier",
+          "physicalQuantity"
         ],
         "title": "CarlosDeviceSignal",
         "description": "The properties of a device signal."
@@ -951,6 +961,18 @@
         ],
         "title": "HealthStatus",
         "description": "The status of the API."
+      },
+      "PhysicalQuantity": {
+        "type": "integer",
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "title": "PhysicalQuantity",
+        "description": "An enumeration of supported physical quantities\n\n- 0 = IDENTITY\n- 1 = TEMPERATURE\n- 2 = HUMIDITY\n- 3 = ILLUMINANCE\n- 4 = RATIO"
       },
       "TimeseriesData": {
         "properties": {
