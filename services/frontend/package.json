@@ -20,6 +20,7 @@
   "dependencies": {
     "@auth0/auth0-vue": "^2.3.3",
     "@carbon/icons-vue": "^10.83.1",
+    "@sentry/vue": "^7.112.2",
     "axios": "^1.6.8",
     "axios-jwt": "^4.0.2",
     "chart.js": "^4.4.2",

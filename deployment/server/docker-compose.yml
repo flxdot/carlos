@@ -16,6 +16,9 @@ services:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USER=${DATABASE_USER}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      # Sentry
+      - SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_ENVIRONMENT=prod
     depends_on:
       - db
     healthcheck:
@@ -35,6 +38,8 @@ services:
       - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
       - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID}
       - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE}
+      - VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
+      - VITE_SENTRY_ENVIRONMENT=prod
     depends_on:
       - api
     healthcheck:
