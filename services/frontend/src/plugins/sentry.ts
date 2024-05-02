@@ -1,8 +1,11 @@
 import * as Sentry from '@sentry/vue';
+import {
+  App,
+} from 'vue';
 import config from '@/config';
 import packageInfo from '@/../package.json';
 
-export function useSentry(app) {
+export function useSentry(app: App) {
   const tracePropagationTargets = [
     'localhost',
   ];
