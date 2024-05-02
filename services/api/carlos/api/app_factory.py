@@ -11,6 +11,7 @@ from sentry_sdk.integrations.asyncpg import AsyncPGIntegration
 from sentry_sdk.integrations.httpx import HttpxIntegration
 from sentry_sdk.integrations.loguru import LoguruIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
+from sentry_sdk.integrations.fastapi import FastApiIntegration
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
@@ -87,10 +88,11 @@ def get_cors_kwargs(api_settings: CarlosAPISettings) -> dict[str, Any]:
 def configure_sentry():
     sentry_sdk.init(
         integrations=[
-            AsyncioIntegration(),
-            HttpxIntegration(),
-            SqlalchemyIntegration(),
-            LoguruIntegration(),
             AsyncPGIntegration(),
+            AsyncioIntegration(),
+            FastApiIntegration(),
+            HttpxIntegration(),
+            LoguruIntegration(),
+            SqlalchemyIntegration(),
         ],
     )

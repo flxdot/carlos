@@ -1,8 +1,18 @@
+from pathlib import Path
+
+import sentry_sdk
+import yaml
+from sentry_sdk.integrations.asyncio import AsyncioIntegration
+from sentry_sdk.integrations.httpx import HttpxIntegration
+from sentry_sdk.integrations.loguru import LoguruIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
+
 from carlos.edge.device import DeviceRuntime
 from carlos.edge.device.constants import VERSION
 from loguru import logger
 
 from device.connection import read_connection_settings
+from device.sentry import setup_sentry
 from device.websocket import DeviceWebsocketClient
 
 
@@ -23,6 +33,8 @@ async def main():  # pragma: no cover
     )
 
     logger.info(f"Starting Carlos device (v{VERSION})...")
+
+    setup_sentry()
 
     device_connection = read_connection_settings()
     protocol = DeviceWebsocketClient(settings=device_connection)
