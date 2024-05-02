@@ -14,8 +14,8 @@ async def test_get_timeseries_route(
         "/data/timeseries",
         params={
             "timeseriesId": [signal.timeseries_id for signal in driver_signals],
-            "start_at_utc": "2022-01-01T00:00:00Z",
-            "end_at_utc": "2022-01-02T00:00:00Z",
+            "startAtUtc": "2022-01-01T00:00:00Z",
+            "endAtUtc": "2022-01-02T00:00:00Z",
         },
     )
     assert response.status_code == 200

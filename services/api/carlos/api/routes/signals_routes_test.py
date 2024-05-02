@@ -15,7 +15,7 @@ def test_update_device_signal_route(
 
     response = client.put(
         f"/signals/{driver_signals[0].timeseries_id}",
-        json=to_update.dict(),
+        json=to_update.model_dump(),
     )
     assert response.is_success, response.text
     updated = CarlosDeviceSignal.model_validate(response.json())
