@@ -1,8 +1,26 @@
+import {
+  ITimeseries,
+} from '@/components/charts/timeseries.ts';
+
 export function renderNumber(value: number | undefined | null): string {
   if (value !== undefined && value !== null) {
     return value.toFixed(1);
   }
   return '-';
+}
+
+export function renderTimeseries(ts: ITimeseries, suffix: ((num: number) => string) | undefined = undefined, showLabel: boolean = true): string {
+  const value = ts.values[ts.values.length - 1];
+  let rendered = `${renderNumber(value)} ${ts.unitSymbol}`;
+
+  if (suffix !== undefined && value !== null) {
+    rendered += ` ${suffix(value)}`;
+  }
+  if (showLabel) {
+    rendered = `${ts.displayName}: ${rendered}`;
+  }
+
+  return rendered;
 }
 
 export function tempEmojis(temp: number): string {

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   notEmpty,
 } from '@/utils/filters.ts';
@@ -42,4 +43,15 @@ export function toChartJsData(timeseries: ITimeseries): ITimeseriesSample[] {
     }
     ),
   );
+}
+
+export function getLastTimestamp(timeseries: ITimeseries[]) {
+  const lastDataAt = dayjs.max(timeseries
+    .map((ts) => ts.timestamps[ts.timestamps.length - 1])
+    .map((ts) => dayjs(ts)));
+  if (lastDataAt === null) {
+    return undefined;
+  }
+
+  return lastDataAt;
 }

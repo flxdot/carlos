@@ -1,9 +1,35 @@
 <template>
   <div
-    v-for="ts in signalTimeseries"
-    :key="ts.displayName"
+    :style="{
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    }"
   >
-    {{ ts.displayName }}: {{ renderNumber(ts.values[ts.values.length - 1]) }} {{ ts.unitSymbol }}
+    <div
+      :style="{
+        display: 'flex',
+        flexDirection: 'column',
+      }"
+    >
+      <span
+        v-for="ts in signalTimeseries"
+        :key="ts.displayName"
+      >
+        {{ renderTimeseries(ts, selectSuffix(ts)) }}
+      </span>
+    </div>
+    <div>
+      <span
+        v-tooltip.bottom="lastDataAt !== undefined ? lastDataAt.format('lll') : ''"
+      >
+        {{
+          lastDataAt !== undefined
+            ? dayjs.duration(lastDataAt.diff(dayjs())).humanize(true)
+            : ''
+        }}
+      </span>
+    </div>
   </div>
   <chart-temp-humi
     v-if="rawData !== undefined && driver.driverIdentifier.startsWith('temp-humi')"
@@ -26,7 +52,9 @@
 import {
   ref, defineProps, withDefaults, computed,
 } from 'vue';
-import dayjs from 'dayjs';
+import dayjs, {
+  Dayjs,
+} from 'dayjs';
 import {
   Duration,
 } from 'dayjs/plugin/duration';
@@ -39,6 +67,7 @@ import {
   TGetTimeseriesResponse,
 } from '@/api/timeseries.ts';
 import {
+  getLastTimestamp,
   ITimeseries,
 } from '@/components/charts/timeseries.ts';
 import {
@@ -50,7 +79,8 @@ import {
   nextColor,
 } from '@/components/charts/chart-utils.ts';
 import {
-  renderNumber,
+  humidEmojis,
+  renderTimeseries, tempEmojis,
 } from '@/utils/value-render.ts';
 
 const props = withDefaults(defineProps<{
@@ -85,6 +115,8 @@ const signalTimeseries = computed<ITimeseries[]>(() => {
   return timeseries;
 });
 
+const lastDataAt = computed<Dayjs | undefined>(() => getLastTimestamp(signalTimeseries.value));
+
 function updateData() {
   const now = dayjs();
 
@@ -96,6 +128,18 @@ function updateData() {
   getTimeseries(params).then((response) => {
     rawData.value = response.data;
   });
+}
+
+function selectSuffix(signal: ITimeseries) {
+  if (props.driver.driverIdentifier.startsWith('temp-humi')) {
+    if (signal.displayName === 'temperature') {
+      return tempEmojis;
+    }
+    if (signal.displayName === 'humidity') {
+      return humidEmojis;
+    }
+  }
+  return undefined;
 }
 
 updateData();

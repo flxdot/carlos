@@ -57,72 +57,19 @@
         />
       </template>
     </card>
-    <accordion
-      :active-index="0"
-      multiple
+    <div
+      v-for="driver in deviceDriver || []"
+      :key="driver.driverIdentifier"
     >
-      <accordion-tab
-        v-for="driver in deviceDriver"
-        :key="driver.driverIdentifier"
-      >
-        <template #header>
-          {{ driver.displayName }}
-        </template>
-        <driver-timeseries
-          v-if="deviceSignals.get(driver.driverIdentifier) !== undefined"
-          :driver="driver"
-          :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
-        />
-      </accordion-tab>
-      <accordion-tab>
-        <template #header>
-          <div class="card-title">
-            <span>{{ renderTimeseriesAsString(temperatureTs, tempEmojis) }}</span>
-            <span>{{ renderTimeseriesAsString(humidityTs, humidEmojis) }}</span>
-            <span
-              v-tooltip="lastDataAt !== undefined ? lastDataAt.format('lll') : ''"
-              class="card-title__sub"
-            >{{ dataAge }}</span>
-          </div>
-        </template>
-        <message
-          severity="def"
-          :closable="false"
-          style="margin-top: 0"
-        >
-          {{ i18n.global.t('device.warning.dummyData') }}
-        </message>
-        <chart-temp-humi
-          :temperature="temperatureTs"
-          :humidity="humidityTs"
-        />
-        <chart-analog
-          :timeseries="temperatureTs"
-          :color="outdoorTemperatureGradientCelsius"
-          :ticks="tempTicks"
-          :limits="tempLimits"
-          :show-x-ticks="false"
-        />
-        <chart-analog
-          :timeseries="humidityTs"
-          :color="pastelHumidityGradient"
-          :ticks="humidityTicks"
-          :limits="humidityLimits"
-          :show-x-ticks="false"
-        />
-        <chart-digital
-          :timeseries="valveTs"
-          color="#98b274"
-          height="3rem"
-          :show-x-ticks="false"
-        />
-        <chart-digital
-          :timeseries="valveTs"
-          color="#acf9ea"
-          height="4rem"
-        />
-      </accordion-tab>
-    </accordion>
+      <div class="font-bold text-xl mb-4">
+        {{ driver.driverIdentifier }}
+      </div>
+      <driver-timeseries
+        v-if="deviceSignals !== undefined"
+        :driver="driver"
+        :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
+      />
+    </div>
   </div>
 </template>
 
@@ -136,15 +83,9 @@ import {
 import {
   useRoute,
 } from 'vue-router';
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
 import PrmButton from 'primevue/button';
 import Card from 'primevue/card';
-import Message from 'primevue/message';
 import Skeleton from 'primevue/skeleton';
-import dayjs, {
-  Dayjs,
-} from 'dayjs';
 import {
   getDeviceDetail,
   TGetDeviceDetailResponse,
@@ -156,31 +97,14 @@ import {
 } from '@/router/route-name.ts';
 import i18n from '@/plugins/i18n';
 import DeviceStatusBadge from '@/components/device/device-status-badge.vue';
-import ChartTempHumi from '@/components/charts/chart-temp-humi.vue';
 import {
   generateChartTimestamps,
   generateSinWaveFromTimestamps,
 } from '@/components/charts/chart-utils.ts';
-import {
-  tempEmojis,
-  humidEmojis, renderNumber,
-} from '@/utils/value-render.ts';
 import MarkdownText from '@/components/markdown-text/markdown-text.vue';
-import ChartAnalog from '@/components/charts/chart-analog.vue';
-import {
-  humidityLimits,
-  humidityTicks,
-  tempLimits,
-  tempTicks,
-} from '@/components/charts/constants.ts';
 import {
   ITimeseries,
 } from '@/components/charts/timeseries.ts';
-import {
-  outdoorTemperatureGradientCelsius,
-  pastelHumidityGradient,
-} from '@/components/charts/gradients.ts';
-import ChartDigital from '@/components/charts/chart-digital.vue';
 import {
   useDevicesStore,
 } from '@/store/devices.ts';
@@ -216,39 +140,6 @@ const valveTs = ref<ITimeseries>({
   timestamps: [],
   values: [],
 });
-
-const lastDataAt = computed<Dayjs | undefined>(() => {
-  const lastTempAt = temperatureTs.value.timestamps[temperatureTs.value.timestamps.length - 1];
-  const lastHumidAt = humidityTs.value.timestamps[humidityTs.value.timestamps.length - 1];
-
-  if (lastTempAt === undefined && lastHumidAt === undefined) {
-    return undefined;
-  }
-
-  return dayjs.max(dayjs(lastTempAt), dayjs(lastHumidAt))!;
-});
-
-const dataAge = computed<string | undefined>(() => {
-  if (lastDataAt.value === undefined) {
-    return undefined;
-  }
-
-  return dayjs.duration(lastDataAt.value!.diff(dayjs())).humanize(true);
-});
-
-function renderTimeseriesAsString(ts: ITimeseries, suffix: ((num: number) => string) | undefined = undefined, showLabel: boolean = true): string {
-  const value = ts.values[ts.values.length - 1];
-  let rendered = `${renderNumber(value)} ${ts.unitSymbol}`;
-
-  if (suffix !== undefined && value !== null) {
-    rendered += ` ${suffix(value)}`;
-  }
-  if (showLabel) {
-    rendered = `${ts.displayName}: ${rendered}`;
-  }
-
-  return rendered;
-}
 
 function updateDevice() {
   getDeviceDetail(

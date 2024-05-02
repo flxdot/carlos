@@ -82,7 +82,7 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
       // @ts-ignore - unsure why the types do not match
       type: 'time',
       time: {
-        unit: 'hour',
+        unit: 'day',
       },
       ticks: {
         display: props.showXTicks,

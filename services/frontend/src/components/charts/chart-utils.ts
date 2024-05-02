@@ -181,6 +181,15 @@ export function buildAxis(
     axis.min = limits[0];
     axis.max = limits[1];
   }
+
+  axis.ticks = axis.ticks || {};
+  axis.ticks.callback = (value: number) => {
+    if (Math.abs(value) > 1000) {
+      return `${(value / 1000).toFixed(0)}k`;
+    }
+    return value;
+  };
+
   if (ticks !== undefined) {
     axis.afterBuildTicks = setConstantTicks(ticks);
   }
