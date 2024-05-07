@@ -4,7 +4,7 @@
       v-for="duration in props.options"
       :key="duration.humanize()"
       :label="duration.humanize()"
-      :outlined="duration.asMilliseconds() !== model.asMilliseconds()"
+      :outlined="duration.asMilliseconds() !== model?.asMilliseconds()"
       @click="selectDuration(duration)"
     />
   </prm-button-group>
@@ -18,7 +18,6 @@ import {
 } from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 import {
-  ref,
   defineModel,
 } from 'vue';
 
@@ -39,8 +38,6 @@ const props = withDefaults(defineProps<DurationProps>(), {
     ];
   },
 });
-
-const selected = ref<Duration>();
 
 function selectDuration(duration: Duration) {
   model.value = duration;

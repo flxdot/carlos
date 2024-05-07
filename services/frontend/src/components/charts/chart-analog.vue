@@ -4,6 +4,7 @@
     :y-axes="yAxes"
     :height="props.height"
     :show-x-ticks="props.showXTicks"
+    :x-tick-unit="props.xTickUnit"
   />
 </template>
 
@@ -14,6 +15,9 @@ import {
   computed,
   ref,
 } from 'vue';
+import {
+  TimeUnit,
+} from 'chart.js';
 import ChartBaseLine from '@/components/charts/chart-base-line.vue';
 import {
   TAxisLimit,
@@ -47,6 +51,7 @@ interface IChartAnalogProps {
   height?: string;
   tickStepSize?: number;
   showXTicks?: boolean;
+  xTickUnit?: TimeUnit;
 }
 
 const props = withDefaults(defineProps<IChartAnalogProps>(), {
@@ -58,6 +63,7 @@ const props = withDefaults(defineProps<IChartAnalogProps>(), {
   height: '10rem',
   tickStepSize: 5,
   showXTicks: true,
+  xTickUnit: 'day',
 });
 
 const lineGradient = ref<GradientCache>({

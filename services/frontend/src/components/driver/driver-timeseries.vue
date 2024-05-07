@@ -26,6 +26,7 @@
     v-if="rawData !== undefined && driver.driverIdentifier.startsWith('temp-humi')"
     :temperature="signalTimeseries.find((ts) => ts.displayName === 'temperature')!"
     :humidity="signalTimeseries.find((ts) => ts.displayName === 'humidity')!"
+    :x-tick-unit="xTickUnit"
   />
   <div
     v-for="ts in signalTimeseries"
@@ -36,6 +37,7 @@
       v-if="ts.isVisibleOnDashboard"
       :timeseries="ts"
       :color="nextColor()"
+      :x-tick-unit="xTickUnit"
     />
   </div>
 </template>
@@ -115,7 +117,7 @@ const signalTimeseries = computed<LocalTs>(() => {
 
 const lastDataAt = computed<Dayjs | undefined>(() => getLastTimestamp(signalTimeseries.value));
 const xTickUnit = computed<TimeUnit>(() => {
-  if (props.duration >= dayjs.duration(2, 'days')) {
+  if (props.duration > dayjs.duration(2, 'days')) {
     return 'day';
   }
   return 'hour';

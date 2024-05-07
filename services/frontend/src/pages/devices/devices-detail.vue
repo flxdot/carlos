@@ -18,12 +18,6 @@
         </a>
       </router-link>
       <template #actions>
-        <prm-button
-          label="Refresh"
-          type="button"
-          icon="pi pi-replay"
-          text
-        />
         <duration-picker v-model="timeRange" />
       </template>
     </page-action-bar>
@@ -55,23 +49,33 @@
       </template>
     </card>
     <div
-      v-for="driver in deviceDriver || []"
+      v-for="driver in deviceDriver?.filter((d) => d.isVisibleOnDashboard) || []"
       :key="driver.driverIdentifier"
     >
-      <template
-        v-if="driver.isVisibleOnDashboard"
+      <div class="font-bold text-xl mb-4">
+        {{ driver.displayName }}
+      </div>
+      <driver-timeseries
+        v-if="deviceSignals !== undefined && deviceSignals.get(driver.driverIdentifier) !== undefined"
+        :driver="driver"
+        :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
+        :duration="timeRange"
+      />
+    </div>
+    <prm-accordion>
+      <prm-accordion-tab
+        v-for="driver in deviceDriver?.filter((d) => !d.isVisibleOnDashboard) || []"
+        :key="driver.driverIdentifier"
+        :header="driver.displayName"
       >
-        <div class="font-bold text-xl mb-4">
-          {{ driver.driverIdentifier }}
-        </div>
         <driver-timeseries
           v-if="deviceSignals !== undefined && deviceSignals.get(driver.driverIdentifier) !== undefined"
           :driver="driver"
           :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
           :duration="timeRange"
         />
-      </template>
-    </div>
+      </prm-accordion-tab>
+    </prm-accordion>
   </div>
 </template>
 
@@ -85,7 +89,9 @@ import {
 import {
   useRoute,
 } from 'vue-router';
-import PrmButton from 'primevue/button';
+
+import PrmAccordion from 'primevue/accordion';
+import PrmAccordionTab from 'primevue/accordiontab';
 import Card from 'primevue/card';
 import Skeleton from 'primevue/skeleton';
 import {

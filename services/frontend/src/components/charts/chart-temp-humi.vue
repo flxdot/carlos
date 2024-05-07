@@ -3,6 +3,7 @@
     :chart-data="chartData"
     :y-axes="yAxes"
     height="20rem"
+    :x-tick-unit="xTickUnit"
   />
 </template>
 
@@ -12,6 +13,9 @@ import {
   computed,
   ref,
 } from 'vue';
+import {
+  TimeUnit,
+} from 'chart.js';
 import ChartBaseLine from '@/components/charts/chart-base-line.vue';
 import {
   TAxisLimit,
@@ -39,7 +43,13 @@ import {
   ITimeseries, toChartJsData,
 } from '@/components/charts/timeseries.ts';
 
-const props = defineProps<{temperature: ITimeseries, humidity: ITimeseries}>();
+const props = withDefaults(defineProps<{
+  temperature: ITimeseries,
+  humidity: ITimeseries,
+  xTickUnit?: TimeUnit;
+}>(), {
+  xTickUnit: 'day',
+});
 
 const tempGradient = ref<GradientCache>({
   chartWidth: undefined,

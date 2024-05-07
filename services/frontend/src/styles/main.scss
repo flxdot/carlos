@@ -4,20 +4,17 @@
 :root {
   --header-height: 48px;
   --default-font-weight: 400;
-
   --text-color: var(--carlos-primary-color-text);
   --bg-color: var(--carlos-bg-color);
 
   font-family: var(--font-family);
   line-height: 1.5;
   font-weight: var(--default-font-weight);
-
   color-scheme: light dark;
   color: var(--text-color);
   background-color: var(--bg-color);
-
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -35,6 +32,7 @@ a {
   color: var(--primary-color);
   text-decoration: inherit;
 }
+
 a:hover {
   color: var(--primary-color--light);
 }
@@ -67,7 +65,7 @@ button.unstyled {
   border-style: none;
 }
 
-button,[role=button] {
+button,[role="button"] {
     cursor: pointer
 }
 
@@ -84,9 +82,14 @@ button,[role=button] {
   gap: 1rem;
 }
 
-/*@media (prefers-color-scheme: light) {*/
-/*  :root {*/
-/*    --text-color: rgba(0, 0, 0, 0.87);*/
-/*    --bg-color: #e2e2e2;*/
-/*  }*/
-/*}*/
+/* @media (prefers-color-scheme: light) { */
+
+/*  :root { */
+
+/*    --text-color: rgba(0, 0, 0, 0.87); */
+
+/*    --bg-color: #e2e2e2; */
+
+/*  } */
+
+/* } */
