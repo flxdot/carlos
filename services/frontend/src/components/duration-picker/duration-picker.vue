@@ -44,7 +44,3 @@ function selectDuration(duration: Duration) {
 }
 
 </script>
-
-<style scoped lang="scss">
-
-</style>
