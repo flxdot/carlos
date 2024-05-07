@@ -161,3 +161,60 @@
   font-weight: typography.$font-weight-semibold;
   font-style: normal;
 }
+
+.font-thin {
+  font-weight: typography.$font-weight-thin;
+}
+.font-extralight {
+  font-weight: typography.$font-weight-extralight;
+}
+.font-light {
+  font-weight: typography.$font-weight-light;
+}
+.font-regular {
+  font-weight: typography.$font-weight-regular;
+}
+.font-medium {
+  font-weight: typography.$font-weight-medium;
+}
+.font-semibold {
+  font-weight: typography.$font-weight-semibold;
+}
+.font-bold {
+  font-weight: typography.$font-weight-bold;
+}
+.font-extrabold {
+  font-weight: typography.$font-weight-extrabold;
+}
+.font-black {
+  font-weight: typography.$font-weight-black;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+} /* 40px */

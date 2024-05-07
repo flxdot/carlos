@@ -19,7 +19,7 @@ import {
 } from 'vue';
 import {
   ChartOptions,
-  Scale,
+  Scale, TimeUnit,
 } from 'chart.js';
 import {
   deepUnion,
@@ -46,6 +46,7 @@ interface IChartBaseLineProps {
   yAxes: TLineAxisProps;
   height?: string;
   showXTicks?: boolean;
+  xTickUnit?: TimeUnit;
 }
 
 const props = withDefaults(
@@ -53,6 +54,7 @@ const props = withDefaults(
   {
     height: '10rem',
     showXTicks: true,
+    xTickUnit: 'day',
   },
 );
 
@@ -82,7 +84,7 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
       // @ts-ignore - unsure why the types do not match
       type: 'time',
       time: {
-        unit: 'day',
+        unit: 'hour',
       },
       ticks: {
         display: props.showXTicks,

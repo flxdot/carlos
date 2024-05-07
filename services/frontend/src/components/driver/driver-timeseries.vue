@@ -6,29 +6,20 @@
       justifyContent: 'space-between',
     }"
   >
-    <div
-      :style="{
-        display: 'flex',
-        flexDirection: 'column',
-      }"
-    >
-      <span
+    <div>
+      <div
         v-for="ts in signalTimeseries"
         :key="ts.displayName"
       >
         {{ renderTimeseries(ts, selectSuffix(ts)) }}
-      </span>
+      </div>
     </div>
     <div>
-      <span
-        v-tooltip.bottom="lastDataAt !== undefined ? lastDataAt.format('lll') : ''"
-      >
-        {{
-          lastDataAt !== undefined
-            ? dayjs.duration(lastDataAt.diff(dayjs())).humanize(true)
-            : ''
-        }}
-      </span>
+      {{
+        lastDataAt !== undefined
+          ? dayjs.duration(lastDataAt.diff(dayjs())).humanize(true)
+          : ''
+      }}, {{ lastDataAt !== undefined ? lastDataAt.format('lll') : '' }}
     </div>
   </div>
   <chart-temp-humi
@@ -42,6 +33,7 @@
     :key="ts.displayName"
   >
     <chart-analog
+      v-if="ts.isVisibleOnDashboard"
       :timeseries="ts"
       :color="nextColor()"
     />
@@ -50,7 +42,7 @@
 
 <script setup lang="ts">
 import {
-  ref, defineProps, withDefaults, computed,
+  ref, defineProps, withDefaults, computed, watchEffect,
 } from 'vue';
 import dayjs, {
   Dayjs,
@@ -58,6 +50,9 @@ import dayjs, {
 import {
   Duration,
 } from 'dayjs/plugin/duration';
+import {
+  TimeUnit,
+} from 'chart.js';
 import {
   TGetDeviceDriversResponse,
   TGetDeviceDriversSignalsResponse,
@@ -93,8 +88,10 @@ const props = withDefaults(defineProps<{
 
 const rawData = ref<TGetTimeseriesResponse | undefined>();
 
-const signalTimeseries = computed<ITimeseries[]>(() => {
-  const timeseries: ITimeseries[] = [];
+type LocalTs = (ITimeseries & {isVisibleOnDashboard: boolean})[];
+
+const signalTimeseries = computed<LocalTs>(() => {
+  const timeseries: LocalTs = [];
 
   if (rawData.value === undefined) {
     return timeseries;
@@ -103,11 +100,12 @@ const signalTimeseries = computed<ITimeseries[]>(() => {
   for (const signal of props.signalList) {
     const tsData = rawData.value.find((data) => data.timeseriesId === signal.timeseriesId);
 
-    const ts: ITimeseries = {
+    const ts = {
       displayName: signal.displayName,
       unitSymbol: UnitOfMeasurementSymbol[signal.unitOfMeasurement],
       timestamps: tsData?.timestamps || [],
       values: tsData?.values || [],
+      isVisibleOnDashboard: signal.isVisibleOnDashboard,
     };
     timeseries.push(ts);
   }
@@ -116,6 +114,12 @@ const signalTimeseries = computed<ITimeseries[]>(() => {
 });
 
 const lastDataAt = computed<Dayjs | undefined>(() => getLastTimestamp(signalTimeseries.value));
+const xTickUnit = computed<TimeUnit>(() => {
+  if (props.duration >= dayjs.duration(2, 'days')) {
+    return 'day';
+  }
+  return 'hour';
+});
 
 function updateData() {
   const now = dayjs();
@@ -129,6 +133,8 @@ function updateData() {
     rawData.value = response.data;
   });
 }
+
+watchEffect(async () => updateData());
 
 function selectSuffix(signal: ITimeseries) {
   if (props.driver.driverIdentifier.startsWith('temp-humi')) {
