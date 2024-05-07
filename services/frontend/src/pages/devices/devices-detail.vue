@@ -23,7 +23,9 @@
           type="button"
           icon="pi pi-replay"
           severity="primary"
+          outlined
         />
+        <duration-picker />
       </template>
     </page-action-bar>
     <card class="device-card">
@@ -106,6 +108,7 @@ import {
 } from '@/store/devices.ts';
 import DriverTimeseries from '@/components/driver/driver-timeseries.vue';
 import PageActionBar from '@/components/page-action-bar/page-action-bar.vue';
+import DurationPicker from '@/components/duration-picker/duration-picker.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
