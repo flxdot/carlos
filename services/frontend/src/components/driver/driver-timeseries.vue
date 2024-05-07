@@ -15,11 +15,16 @@
       </div>
     </div>
     <div>
-      {{
-        lastDataAt !== undefined
-          ? dayjs.duration(lastDataAt.diff(dayjs())).humanize(true)
-          : ''
-      }}, {{ lastDataAt !== undefined ? lastDataAt.format('lll') : '' }}
+      <div>
+        {{
+          lastDataAt !== undefined
+            ? dayjs.duration(lastDataAt.diff(dayjs())).humanize(true)
+            : ''
+        }}
+      </div>
+      <div>
+        {{ lastDataAt !== undefined ? lastDataAt.format('lll') : '' }}
+      </div>
     </div>
   </div>
   <chart-temp-humi
