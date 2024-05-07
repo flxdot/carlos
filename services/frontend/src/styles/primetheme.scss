@@ -1,12 +1,4 @@
-:root {
-  /* Overwrite some PrimeVue variables */
-  --font-family: geist, system-ui, helvetica, arial, sans-serif;
-  --primary-color: var(--carlos-primary-color);
-  --primary-color--light: var(--carlos-primary-color--light);
-  --primary-color--dark: var(--carlos-primary-color--dark);
-  --primary-color-text: var(--carlos-primary-color-text);
-  --primary-color-text--light: var(--carlos-primary-color-text--light);
-}
+@use './primevue-theme-aura-light-carlos.css';
 
 .carlos-nav {
   a {

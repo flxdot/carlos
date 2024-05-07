@@ -1,12 +1,6 @@
 <template>
   <div class="container-group">
-    <div
-      :style="{
-        display: 'flex',
-        flexDirection:'row',
-        justifyContent: 'space-between',
-      }"
-    >
+    <page-action-bar>
       <router-link
         v-slot="{ href, navigate }"
         :to="{
@@ -23,13 +17,10 @@
           <span>{{ i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`) }}</span>
         </a>
       </router-link>
-      <prm-button
-        v-if="false"
-        label="Refresh"
-        icon="pi pi-replay"
-        severity="primary"
-      />
-    </div>
+      <template #actions>
+        <duration-picker v-model="timeRange" />
+      </template>
+    </page-action-bar>
     <card class="device-card">
       <template #title>
         <skeleton
@@ -58,18 +49,33 @@
       </template>
     </card>
     <div
-      v-for="driver in deviceDriver || []"
+      v-for="driver in deviceDriver?.filter((d) => d.isVisibleOnDashboard) || []"
       :key="driver.driverIdentifier"
     >
       <div class="font-bold text-xl mb-4">
-        {{ driver.driverIdentifier }}
+        {{ driver.displayName }}
       </div>
       <driver-timeseries
         v-if="deviceSignals !== undefined && deviceSignals.get(driver.driverIdentifier) !== undefined"
         :driver="driver"
         :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
+        :duration="timeRange"
       />
     </div>
+    <prm-accordion>
+      <prm-accordion-tab
+        v-for="driver in deviceDriver?.filter((d) => !d.isVisibleOnDashboard) || []"
+        :key="driver.driverIdentifier"
+        :header="driver.displayName"
+      >
+        <driver-timeseries
+          v-if="deviceSignals !== undefined && deviceSignals.get(driver.driverIdentifier) !== undefined"
+          :driver="driver"
+          :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
+          :duration="timeRange"
+        />
+      </prm-accordion-tab>
+    </prm-accordion>
   </div>
 </template>
 
@@ -83,9 +89,15 @@ import {
 import {
   useRoute,
 } from 'vue-router';
-import PrmButton from 'primevue/button';
+
+import PrmAccordion from 'primevue/accordion';
+import PrmAccordionTab from 'primevue/accordiontab';
 import Card from 'primevue/card';
 import Skeleton from 'primevue/skeleton';
+import {
+  Duration,
+} from 'dayjs/plugin/duration';
+import dayjs from 'dayjs';
 import {
   getDeviceDetail,
   TGetDeviceDetailResponse,
@@ -97,18 +109,13 @@ import {
 } from '@/router/route-name.ts';
 import i18n from '@/plugins/i18n';
 import DeviceStatusBadge from '@/components/device/device-status-badge.vue';
-import {
-  generateChartTimestamps,
-  generateSinWaveFromTimestamps,
-} from '@/components/charts/chart-utils.ts';
 import MarkdownText from '@/components/markdown-text/markdown-text.vue';
-import {
-  ITimeseries,
-} from '@/components/charts/timeseries.ts';
 import {
   useDevicesStore,
 } from '@/store/devices.ts';
 import DriverTimeseries from '@/components/driver/driver-timeseries.vue';
+import PageActionBar from '@/components/page-action-bar/page-action-bar.vue';
+import DurationPicker from '@/components/duration-picker/duration-picker.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;
@@ -122,24 +129,7 @@ const deviceDetails = ref<TGetDeviceDetailResponse | undefined>();
 const deviceDriver = ref<TGetDeviceDriversResponse | undefined>();
 const deviceSignals = reactive<Map<string, TGetDeviceDriversSignalsResponse | undefined>>(new Map());
 
-const temperatureTs = ref<ITimeseries>({
-  displayName: 'Temperature',
-  unitSymbol: '°C',
-  timestamps: [],
-  values: [],
-});
-const humidityTs = ref<ITimeseries>({
-  displayName: 'Humidity',
-  unitSymbol: '%',
-  timestamps: [],
-  values: [],
-});
-const valveTs = ref<ITimeseries>({
-  displayName: 'Valve',
-  unitSymbol: '',
-  timestamps: [],
-  values: [],
-});
+const timeRange = ref<Duration>(dayjs.duration(7, 'days'));
 
 function updateDevice() {
   getDeviceDetail(
@@ -164,28 +154,6 @@ function updateDevice() {
 onMounted(() => {
   updateDevice();
   intervalId = setInterval(updateDevice, UPDATE_INTERVAL);
-
-  // Some representative data to showcase the full spectrum of the chart
-  const timestamps = generateChartTimestamps(7, 60);
-  temperatureTs.value.timestamps = timestamps;
-  humidityTs.value.timestamps = timestamps;
-  valveTs.value.timestamps = timestamps;
-
-  const dailyTemp = generateSinWaveFromTimestamps(timestamps, 8, 0, 0);
-  const weeklyTemp = generateSinWaveFromTimestamps(timestamps, 32, 20, 1, 1 / 7);
-  temperatureTs.value.values = dailyTemp.map((daily, index) => daily + weeklyTemp[index]);
-
-  const dailyHumid = generateSinWaveFromTimestamps(timestamps, 7.3, 0, 0);
-  const weeklyHumid = generateSinWaveFromTimestamps(timestamps, 90, 50, 3, 1 / 7);
-  humidityTs.value.values = dailyHumid.map((daily, index) => daily + weeklyHumid[index]);
-
-  const dailyValve = generateSinWaveFromTimestamps(timestamps, 1, 0, 10, 10);
-  const weeklyValve = generateSinWaveFromTimestamps(timestamps, 1, 0, 3, 3);
-  const combinedValve = dailyValve.map((daily, index) => daily * weeklyValve[index]);
-  const maxValve = Math.max(...combinedValve);
-  const minValve = Math.min(...combinedValve);
-  const normalizedValve = combinedValve.map((valve) => Math.round((valve - minValve) / (maxValve - minValve)));
-  valveTs.value.values = normalizedValve;
 });
 
 onBeforeUnmount(() => {

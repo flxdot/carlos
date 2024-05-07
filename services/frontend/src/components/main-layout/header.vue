@@ -45,6 +45,7 @@
           v-else
           type="button"
           size="large"
+          class="unstyled"
           @click="userMenu!.toggle"
         >
           <prm-avatar
@@ -88,7 +89,7 @@
               v-bind="props.action"
               :style="item.style"
               type="button"
-              class="w-full menu-item"
+              class="menu-item unstyled"
             >
               <span :class="item.icon" />
               <span class="ml-2">{{ item.label }}</span>
