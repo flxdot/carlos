@@ -1,12 +1,6 @@
 <template>
   <div class="container-group">
-    <div
-      :style="{
-        display: 'flex',
-        flexDirection:'row',
-        justifyContent: 'space-between',
-      }"
-    >
+    <page-action-bar>
       <router-link
         v-slot="{ href, navigate }"
         :to="{
@@ -23,13 +17,15 @@
           <span>{{ i18n.global.t(`pages.${ERouteName.DEVICES_OVERVIEW}`) }}</span>
         </a>
       </router-link>
-      <prm-button
-        v-if="false"
-        label="Refresh"
-        icon="pi pi-replay"
-        severity="primary"
-      />
-    </div>
+      <template #actions>
+        <prm-button
+          label="Refresh"
+          type="button"
+          icon="pi pi-replay"
+          severity="primary"
+        />
+      </template>
+    </page-action-bar>
     <card class="device-card">
       <template #title>
         <skeleton
@@ -109,6 +105,7 @@ import {
   useDevicesStore,
 } from '@/store/devices.ts';
 import DriverTimeseries from '@/components/driver/driver-timeseries.vue';
+import PageActionBar from '@/components/page-action-bar/page-action-bar.vue';
 
 const UPDATE_INTERVAL = 1000 * 60; // 1 minute
 let intervalId: ReturnType<typeof setInterval>;

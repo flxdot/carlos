@@ -1,3 +1,6 @@
+@use './margins.scss';
+@use './paddings.scss';
+
 :root {
   --header-height: 48px;
   --default-font-weight: 400;
@@ -51,27 +54,19 @@ h1, h2, h3, h4, h5, h6, p {
   margin: 0;
 }
 
-button,input,optgroup,select,textarea {
-    font-family: inherit;
-    font-size: 100%;
-    font-weight: inherit;
-    line-height: inherit;
-    color: inherit;
-    margin: 0;
-    padding: 0
+button.unstyled {
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  background-image: none;
+  border-style: none;
 }
 
-button,input,select,textarea {
-    background-color: transparent;
-    border-style: none
-}
-
-button,[type=button],[type=reset],[type=submit] {
-    -webkit-appearance: button;
-    background-color: transparent;
-    background-image: none;
-    border: none;
-}
 button,[role=button] {
     cursor: pointer
 }
