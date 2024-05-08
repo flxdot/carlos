@@ -28,6 +28,7 @@ def optimize_timeseries(
     timestamps = [timeseries.timestamps[0]]
     values = [timeseries.values[0]]
     prev_ts = timeseries.timestamps[0]
+    last_added_idx = 0
     for idx, (ts, val) in enumerate(
         zip(timeseries.timestamps[1:], timeseries.values[1:])
     ):
@@ -42,8 +43,16 @@ def optimize_timeseries(
             )
             or idx + 1 == ts_len
         ):
+            # if we skipped at least one datapoint, we need to add the right edge
+            # of the
+            if idx - last_added_idx > 1:
+                # we use idx instead of idx - 1, we would need to use (idx - 1 + 1)
+                # due to the loop overset
+                timestamps.append(timeseries.timestamps[idx])
+                values.append(timeseries.values[idx])
             timestamps.append(ts)
             values.append(val)
+            last_added_idx = idx
 
         prev_ts = ts
 

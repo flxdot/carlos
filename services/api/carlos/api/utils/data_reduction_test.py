@@ -87,8 +87,9 @@ def ts(offset: int) -> datetime:
             DEFAULT_SPLIT_THRESHOLD,
             TimeseriesData(
                 timeseries_id=42,
-                timestamps=[ts(0), ts(1), ts(7), ts(9)],
-                values=[1, 2, 3, 4],
+                # we want the first and last value of the steady state
+                timestamps=[ts(0), ts(1), ts(6), ts(7), ts(8), ts(9)],
+                values=[1, 2, 2, 3, 3, 4],
             ),
             id="duplicate in the middle beginning",
         ),
