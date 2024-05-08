@@ -62,14 +62,19 @@
         :duration="timeRange"
       />
     </div>
-    <prm-accordion>
+    <prm-accordion
+      :multiple="true"
+      :active-index="activeHiddenDrivers"
+    >
       <prm-accordion-tab
-        v-for="driver in deviceDriver?.filter((d) => !d.isVisibleOnDashboard) || []"
+        v-for="(driver, index) in deviceDriver?.filter((d) => !d.isVisibleOnDashboard) || []"
         :key="driver.driverIdentifier"
         :header="driver.displayName"
       >
         <driver-timeseries
-          v-if="deviceSignals !== undefined && deviceSignals.get(driver.driverIdentifier) !== undefined"
+          v-if="deviceSignals !== undefined
+            && deviceSignals.get(driver.driverIdentifier) !== undefined
+            && activeHiddenDrivers.includes(index)"
           :driver="driver"
           :signal-list="deviceSignals.get(driver.driverIdentifier) || []"
           :duration="timeRange"
@@ -130,6 +135,7 @@ const deviceDriver = ref<TGetDeviceDriversResponse | undefined>();
 const deviceSignals = reactive<Map<string, TGetDeviceDriversSignalsResponse | undefined>>(new Map());
 
 const timeRange = ref<Duration>(dayjs.duration(7, 'days'));
+const activeHiddenDrivers = ref<number[]>([]);
 
 function updateDevice() {
   getDeviceDetail(
