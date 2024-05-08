@@ -34,6 +34,18 @@
             "description": "One ore more timeseries identifiers to get data for."
           },
           {
+            "name": "reduceSamples",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Activated by default. This function will try to reduce the number of samples returned by removing consecutive samples that change less than 0.5% as they are not visible in the UI any how.",
+              "default": true,
+              "title": "Reducesamples"
+            },
+            "description": "Activated by default. This function will try to reduce the number of samples returned by removing consecutive samples that change less than 0.5% as they are not visible in the UI any how."
+          },
+          {
             "name": "startAtUtc",
             "in": "query",
             "required": true,
