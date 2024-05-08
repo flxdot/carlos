@@ -370,6 +370,8 @@ export interface operations {
       query: {
         /** @description One ore more timeseries identifiers to get data for. */
         timeseriesId: number[];
+        /** @description Activated by default. This function will try to reduce the number of samples returned by removing consecutive samples that change less than 0.5% as they are not visible in the UI any how. */
+        reduceSamples?: boolean;
         /** @description The start of range. Must be timezone aware. */
         startAtUtc: string;
         /** @description The end of the range. Must be timezone aware. */
