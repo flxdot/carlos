@@ -1,7 +1,4 @@
 import dayjs from 'dayjs';
-import {
-  notEmpty,
-} from '@/utils/filters.ts';
 
 /**
  * Determines the type of values of the timeseries.
@@ -32,11 +29,11 @@ export interface ITimeseries {
 
 export interface ITimeseriesSample {
     x: string;
-    y: number | undefined;
+    y: number | null;
 }
 
 export function toChartJsData(timeseries: ITimeseries): ITimeseriesSample[] {
-  return timeseries.values.filter(notEmpty).map(
+  return timeseries.values.map(
     (value, index) => ({
       x: timeseries.timestamps[index],
       y: value,
