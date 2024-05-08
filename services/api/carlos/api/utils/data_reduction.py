@@ -45,9 +45,9 @@ def optimize_timeseries(
         ):
             # if we skipped at least one datapoint, we need to add the right edge
             # of the
-            if idx - last_added_idx > 1:
+            if idx - last_added_idx > 1 and values[-1] is not None:
                 # we use idx instead of idx - 1, we would need to use (idx - 1 + 1)
-                # due to the loop overset
+                # due to the loop offset
                 timestamps.append(timeseries.timestamps[idx])
                 values.append(timeseries.values[idx])
             timestamps.append(ts)
