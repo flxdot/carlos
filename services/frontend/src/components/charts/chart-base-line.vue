@@ -40,7 +40,9 @@ import {
   xTicksGradient,
 } from '@/components/charts/gradients.ts';
 import crosshair from '@/components/charts/crosshair.ts';
-import {IDatetimeRange} from "@/components/charts/timeseries.ts";
+import {
+  IDatetimeRange,
+} from '@/components/charts/timeseries.ts';
 
 interface IChartBaseLineProps {
   chartData: DeepPartial<TLineChartData>;
