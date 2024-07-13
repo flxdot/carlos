@@ -4,6 +4,7 @@
     :y-axes="yAxes"
     :height="props.height"
     :show-x-ticks="props.showXTicks"
+    :x-limits="props.dateRange"
   />
 </template>
 
@@ -34,6 +35,7 @@ import {
   DeepPartial,
 } from '@/utils/types.ts';
 import {
+  IDatetimeRange,
   ITimeseries, toChartJsData,
 } from '@/components/charts/timeseries.ts';
 import i18n from '@/plugins/i18n';
@@ -43,12 +45,14 @@ interface IChartAnalogProps {
   color: string | GradientDefinition | DiscreteGradientDefinition;
   height?: string;
   showXTicks?: boolean;
+  dateRange?: IDatetimeRange;
 }
 
 const props = withDefaults(defineProps<IChartAnalogProps>(), {
   height: '10rem',
   tickStepSize: 5,
   showXTicks: true,
+  dateRange: undefined,
 });
 
 const limits: [number, number] = [
