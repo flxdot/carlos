@@ -3,656 +3,834 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/data/timeseries": {
-    /**
-     * Get timeseries data
-     * @description Returns the timeseries data for the given timeseries identifiers.
-     */
-    get: operations["getTimeseriesRoute"];
-  };
-  "/devices": {
-    /**
-     * Get all devices.
-     * @description List all devices.
-     */
-    get: operations["listDevicesRoute"];
-    /**
-     * Register a new device
-     * @description Register a new device.
-     */
-    post: operations["registerDeviceRoute"];
-  };
-  "/devices/{deviceId}": {
-    /**
-     * Get a device by its ID.
-     * @description Get a device by its ID.
-     */
-    get: operations["getDeviceRoute"];
-    /**
-     * Update a device by its ID.
-     * @description Update a device by its ID.
-     */
-    put: operations["updateDeviceRoute"];
-  };
-  "/devices/{deviceId}/drivers": {
-    /**
-     * Get all drivers for a device.
-     * @description Get all drivers for a device.
-     */
-    get: operations["getDeviceDriversRoute"];
-  };
-  "/devices/{deviceId}/drivers/{driverIdentifier}": {
-    /**
-     * Update a driver for a device.
-     * @description Update a driver for a device.
-     */
-    put: operations["updateDeviceDriverRoute"];
-  };
-  "/devices/{deviceId}/drivers/{driverIdentifier}/signals": {
-    /**
-     * Get all signals for a driver.
-     * @description Get all signals for a driver.
-     */
-    get: operations["getDeviceSignalsRoute"];
-  };
-  "/signals/{timeseriesId}": {
-    /**
-     * Update a signal by its ID.
-     * @description Update a signal by its ID.
-     */
-    put: operations["updateDeviceSignalRoute"];
-  };
-  "/health": {
-    /**
-     * Health
-     * @description Endpoint to determine the health of the API.
-     */
-    get: operations["health"];
-  };
-  "/devices/{deviceId}/ws/token": {
-    /**
-     * Get a token to be used to connect to the websocket.
-     * @description Returns a token that can be used to authenticate the edge device to the API.
-     */
-    get: operations["getDeviceServerWebsocketToken"];
-  };
+    "/data/timeseries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get timeseries data
+         * @description Returns the timeseries data for the given timeseries identifiers.
+         */
+        get: operations["getTimeseriesRoute"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all devices.
+         * @description List all devices.
+         */
+        get: operations["listDevicesRoute"];
+        put?: never;
+        /**
+         * Register a new device
+         * @description Register a new device.
+         */
+        post: operations["registerDeviceRoute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/devices/{deviceId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a device by its ID.
+         * @description Get a device by its ID.
+         */
+        get: operations["getDeviceRoute"];
+        /**
+         * Update a device by its ID.
+         * @description Update a device by its ID.
+         */
+        put: operations["updateDeviceRoute"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/devices/{deviceId}/drivers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all drivers for a device.
+         * @description Get all drivers for a device.
+         */
+        get: operations["getDeviceDriversRoute"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/devices/{deviceId}/drivers/{driverIdentifier}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update a driver for a device.
+         * @description Update a driver for a device.
+         */
+        put: operations["updateDeviceDriverRoute"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/devices/{deviceId}/drivers/{driverIdentifier}/signals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all signals for a driver.
+         * @description Get all signals for a driver.
+         */
+        get: operations["getDeviceSignalsRoute"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/signals/{timeseriesId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update a signal by its ID.
+         * @description Update a signal by its ID.
+         */
+        put: operations["updateDeviceSignalRoute"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Health
+         * @description Endpoint to determine the health of the API.
+         */
+        get: operations["health"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/devices/{deviceId}/ws/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a token to be used to connect to the websocket.
+         * @description Returns a token that can be used to authenticate the edge device to the API.
+         */
+        get: operations["getDeviceServerWebsocketToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: {
-    /**
-     * CarlosDevice
-     * @description Represents an existing device.
-     */
-    CarlosDevice: {
-      /**
-       * Displayname
-       * @description The name of the device that is displayed to the user.
-       */
-      displayName: string;
-      /**
-       * Description
-       * @description A description of the device for the user.
-       */
-      description?: string | null;
-      /**
-       * Deviceid
-       * Format: uuid
-       * @description The unique identifier of the device.
-       */
-      deviceId: string;
-      /**
-       * Registeredat
-       * Format: date-time
-       * @description The date and time when the device was registered.
-       */
-      registeredAt: string;
-      /**
-       * Lastseenat
-       * @description The date and time when the device was last seen.
-       */
-      lastSeenAt: string | null;
-      /**
-       * Isonline
-       * @description Check if the device is online.
-       */
-      isOnline: boolean;
+    schemas: {
+        /**
+         * CarlosDevice
+         * @description Represents an existing device.
+         */
+        CarlosDevice: {
+            /**
+             * Displayname
+             * @description The name of the device that is displayed to the user.
+             */
+            displayName: string;
+            /**
+             * Description
+             * @description A description of the device for the user.
+             */
+            description?: string | null;
+            /**
+             * Deviceid
+             * Format: uuid
+             * @description The unique identifier of the device.
+             */
+            deviceId: string;
+            /**
+             * Registeredat
+             * Format: date-time
+             * @description The date and time when the device was registered.
+             */
+            registeredAt: string;
+            /**
+             * Lastseenat
+             * @description The date and time when the device was last seen.
+             */
+            lastSeenAt: string | null;
+            /**
+             * Isonline
+             * @description Check if the device is online.
+             */
+            readonly isOnline: boolean;
+        };
+        /**
+         * CarlosDeviceCreate
+         * @description Allow you to create a new device.
+         */
+        CarlosDeviceCreate: {
+            /**
+             * Displayname
+             * @description The name of the device that is displayed to the user.
+             */
+            displayName: string;
+            /**
+             * Description
+             * @description A description of the device for the user.
+             */
+            description?: string | null;
+        };
+        /** CarlosDeviceDriver */
+        CarlosDeviceDriver: {
+            /**
+             * Displayname
+             * @description The name of the driver that is displayed in the UI.
+             */
+            displayName: string;
+            /**
+             * Isvisibleondashboard
+             * @description Whether the driver is visible on the dashboard.
+             */
+            isVisibleOnDashboard: boolean;
+            /**
+             * Driveridentifier
+             * @description The unique identifier of the driver in the context of the device.
+             */
+            driverIdentifier: string;
+            /** @description The direction of the IO. */
+            direction: components["schemas"]["DriverDirection"];
+            /**
+             * Drivermodule
+             * @description The module that implements the IO driver.
+             */
+            driverModule: string;
+            /**
+             * Deviceid
+             * Format: uuid
+             * @description The device the driver belongs to.
+             */
+            deviceId: string;
+        };
+        /**
+         * CarlosDeviceDriverUpdate
+         * @description The properties required to update a device.
+         */
+        CarlosDeviceDriverUpdate: {
+            /**
+             * Displayname
+             * @description The name of the driver that is displayed in the UI.
+             */
+            displayName: string;
+            /**
+             * Isvisibleondashboard
+             * @description Whether the driver is visible on the dashboard.
+             */
+            isVisibleOnDashboard: boolean;
+        };
+        /**
+         * CarlosDeviceSignal
+         * @description The properties of a device signal.
+         */
+        CarlosDeviceSignal: {
+            /**
+             * Displayname
+             * @description The name of the signal that is displayed in the UI.
+             */
+            displayName: string;
+            /** @description The unit of measurement of the signal. */
+            unitOfMeasurement: components["schemas"]["UnitOfMeasurement"];
+            /**
+             * Isvisibleondashboard
+             * @description Whether the signal is visible on the dashboard.
+             */
+            isVisibleOnDashboard: boolean;
+            /**
+             * Signalidentifier
+             * @description The unique identifier of the signal in the context of the driver.
+             */
+            signalIdentifier: string;
+            /**
+             * Timeseriesid
+             * @description The unique identifier of the signal.
+             */
+            timeseriesId: number;
+            /**
+             * Deviceid
+             * Format: uuid
+             * @description The device the driver belongs to.
+             */
+            deviceId: string;
+            /**
+             * Driveridentifier
+             * @description The unique identifier of the driver in the context of the device.
+             */
+            driverIdentifier: string;
+            /** @description The matching physical quantity of the unit of measurement. */
+            readonly physicalQuantity: components["schemas"]["PhysicalQuantity"];
+        };
+        /**
+         * CarlosDeviceSignalUpdate
+         * @description The properties required to update a device signal.
+         */
+        CarlosDeviceSignalUpdate: {
+            /**
+             * Displayname
+             * @description The name of the signal that is displayed in the UI.
+             */
+            displayName: string;
+            /** @description The unit of measurement of the signal. */
+            unitOfMeasurement: components["schemas"]["UnitOfMeasurement"];
+            /**
+             * Isvisibleondashboard
+             * @description Whether the signal is visible on the dashboard.
+             */
+            isVisibleOnDashboard: boolean;
+        };
+        /**
+         * CarlosDeviceUpdate
+         * @description Allows you to update the device information.
+         */
+        CarlosDeviceUpdate: {
+            /**
+             * Displayname
+             * @description The name of the device that is displayed to the user.
+             */
+            displayName: string;
+            /**
+             * Description
+             * @description A description of the device for the user.
+             */
+            description?: string | null;
+        };
+        /**
+         * DriverDirection
+         * @description Enum for the direction of the IO.
+         * @enum {string}
+         */
+        DriverDirection: "input" | "output" | "bidirectional";
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * HealthResponse
+         * @description Defines the status of the API.
+         */
+        HealthResponse: {
+            status: components["schemas"]["HealthStatus"];
+            /**
+             * Message
+             * @description A message about the status of the API.
+             */
+            message: string;
+        };
+        /**
+         * HealthStatus
+         * @description The status of the API.
+         * @enum {string}
+         */
+        HealthStatus: "ok" | "no_db_connection" | "error";
+        /**
+         * PhysicalQuantity
+         * @description An enumeration of supported physical quantities
+         *
+         *     - 0 = IDENTITY
+         *     - 1 = TEMPERATURE
+         *     - 2 = HUMIDITY
+         *     - 3 = ILLUMINANCE
+         *     - 4 = RATIO
+         * @enum {integer}
+         */
+        PhysicalQuantity: 0 | 1 | 2 | 3 | 4;
+        /**
+         * TimeseriesData
+         * @description Holds the timeseries data of a signale sensor.
+         */
+        TimeseriesData: {
+            /**
+             * Timeseriesid
+             * @description The unique identifier of the timeseries.
+             */
+            timeseriesId: number;
+            /**
+             * Timestamps
+             * @description The timestamps of the individual samples. Each timestamp needs to be timezone aware.
+             */
+            timestamps: string[];
+            /**
+             * Values
+             * @description THe values of the individual samples.
+             */
+            values: (number | null)[];
+        };
+        /**
+         * UnitOfMeasurement
+         * @description An enumeration of supported units of measurement.
+         *
+         *     The values of this enumeration are based on the PhysicalQuantity enumeration.
+         *
+         *
+         *     - 0 = UNIT_LESS
+         *     - 100 = PERCENTAGE
+         *     - 200 = CELSIUS
+         *     - 201 = FAHRENHEIT
+         *     - 300 = HUMIDITY_PERCENTAGE
+         *     - 400 = LUX
+         * @enum {integer}
+         */
+        UnitOfMeasurement: 0 | 100 | 200 | 201 | 300 | 400;
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
     };
-    /**
-     * CarlosDeviceCreate
-     * @description Allow you to create a new device.
-     */
-    CarlosDeviceCreate: {
-      /**
-       * Displayname
-       * @description The name of the device that is displayed to the user.
-       */
-      displayName: string;
-      /**
-       * Description
-       * @description A description of the device for the user.
-       */
-      description?: string | null;
-    };
-    /** CarlosDeviceDriver */
-    CarlosDeviceDriver: {
-      /**
-       * Displayname
-       * @description The name of the driver that is displayed in the UI.
-       */
-      displayName: string;
-      /**
-       * Isvisibleondashboard
-       * @description Whether the driver is visible on the dashboard.
-       */
-      isVisibleOnDashboard: boolean;
-      /**
-       * Driveridentifier
-       * @description The unique identifier of the driver in the context of the device.
-       */
-      driverIdentifier: string;
-      /** @description The direction of the IO. */
-      direction: components["schemas"]["DriverDirection"];
-      /**
-       * Drivermodule
-       * @description The module that implements the IO driver.
-       */
-      driverModule: string;
-      /**
-       * Deviceid
-       * Format: uuid
-       * @description The device the driver belongs to.
-       */
-      deviceId: string;
-    };
-    /**
-     * CarlosDeviceDriverUpdate
-     * @description The properties required to update a device.
-     */
-    CarlosDeviceDriverUpdate: {
-      /**
-       * Displayname
-       * @description The name of the driver that is displayed in the UI.
-       */
-      displayName: string;
-      /**
-       * Isvisibleondashboard
-       * @description Whether the driver is visible on the dashboard.
-       */
-      isVisibleOnDashboard: boolean;
-    };
-    /**
-     * CarlosDeviceSignal
-     * @description The properties of a device signal.
-     */
-    CarlosDeviceSignal: {
-      /**
-       * Displayname
-       * @description The name of the signal that is displayed in the UI.
-       */
-      displayName: string;
-      /** @description The unit of measurement of the signal. */
-      unitOfMeasurement: components["schemas"]["UnitOfMeasurement"];
-      /**
-       * Isvisibleondashboard
-       * @description Whether the signal is visible on the dashboard.
-       */
-      isVisibleOnDashboard: boolean;
-      /**
-       * Signalidentifier
-       * @description The unique identifier of the signal in the context of the driver.
-       */
-      signalIdentifier: string;
-      /**
-       * Timeseriesid
-       * @description The unique identifier of the signal.
-       */
-      timeseriesId: number;
-      /**
-       * Deviceid
-       * Format: uuid
-       * @description The device the driver belongs to.
-       */
-      deviceId: string;
-      /**
-       * Driveridentifier
-       * @description The unique identifier of the driver in the context of the device.
-       */
-      driverIdentifier: string;
-      /** @description The matching physical quantity of the unit of measurement. */
-      physicalQuantity: components["schemas"]["PhysicalQuantity"];
-    };
-    /**
-     * CarlosDeviceSignalUpdate
-     * @description The properties required to update a device signal.
-     */
-    CarlosDeviceSignalUpdate: {
-      /**
-       * Displayname
-       * @description The name of the signal that is displayed in the UI.
-       */
-      displayName: string;
-      /** @description The unit of measurement of the signal. */
-      unitOfMeasurement: components["schemas"]["UnitOfMeasurement"];
-      /**
-       * Isvisibleondashboard
-       * @description Whether the signal is visible on the dashboard.
-       */
-      isVisibleOnDashboard: boolean;
-    };
-    /**
-     * CarlosDeviceUpdate
-     * @description Allows you to update the device information.
-     */
-    CarlosDeviceUpdate: {
-      /**
-       * Displayname
-       * @description The name of the device that is displayed to the user.
-       */
-      displayName: string;
-      /**
-       * Description
-       * @description A description of the device for the user.
-       */
-      description?: string | null;
-    };
-    /**
-     * DriverDirection
-     * @description Enum for the direction of the IO.
-     * @enum {string}
-     */
-    DriverDirection: "input" | "output" | "bidirectional";
-    /** HTTPValidationError */
-    HTTPValidationError: {
-      /** Detail */
-      detail?: components["schemas"]["ValidationError"][];
-    };
-    /**
-     * HealthResponse
-     * @description Defines the status of the API.
-     */
-    HealthResponse: {
-      status: components["schemas"]["HealthStatus"];
-      /**
-       * Message
-       * @description A message about the status of the API.
-       */
-      message: string;
-    };
-    /**
-     * HealthStatus
-     * @description The status of the API.
-     * @enum {string}
-     */
-    HealthStatus: "ok" | "no_db_connection" | "error";
-    /**
-     * PhysicalQuantity
-     * @description An enumeration of supported physical quantities
-     *
-     * - 0 = IDENTITY
-     * - 1 = TEMPERATURE
-     * - 2 = HUMIDITY
-     * - 3 = ILLUMINANCE
-     * - 4 = RATIO
-     * @enum {integer}
-     */
-    PhysicalQuantity: 0 | 1 | 2 | 3 | 4;
-    /**
-     * TimeseriesData
-     * @description Holds the timeseries data of a signale sensor.
-     */
-    TimeseriesData: {
-      /**
-       * Timeseriesid
-       * @description The unique identifier of the timeseries.
-       */
-      timeseriesId: number;
-      /**
-       * Timestamps
-       * @description The timestamps of the individual samples. Each timestamp needs to be timezone aware.
-       */
-      timestamps: string[];
-      /**
-       * Values
-       * @description THe values of the individual samples.
-       */
-      values: (number | null)[];
-    };
-    /**
-     * UnitOfMeasurement
-     * @description An enumeration of supported units of measurement.
-     *
-     * The values of this enumeration are based on the PhysicalQuantity enumeration.
-     *
-     *
-     * - 0 = UNIT_LESS
-     * - 100 = PERCENTAGE
-     * - 200 = CELSIUS
-     * - 201 = FAHRENHEIT
-     * - 300 = HUMIDITY_PERCENTAGE
-     * - 400 = LUX
-     * @enum {integer}
-     */
-    UnitOfMeasurement: 0 | 100 | 200 | 201 | 300 | 400;
-    /** ValidationError */
-    ValidationError: {
-      /** Location */
-      loc: (string | number)[];
-      /** Message */
-      msg: string;
-      /** Error Type */
-      type: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export interface operations {
-
-  /**
-   * Get timeseries data
-   * @description Returns the timeseries data for the given timeseries identifiers.
-   */
-  getTimeseriesRoute: {
-    parameters: {
-      query: {
-        /** @description One ore more timeseries identifiers to get data for. */
-        timeseriesId: number[];
-        /** @description Activated by default. This function will try to reduce the number of samples returned by removing consecutive samples that change less than 0.5% as they are not visible in the UI any how. */
-        reduceSamples?: boolean;
-        /** @description The start of range. Must be timezone aware. */
-        startAtUtc: string;
-        /** @description The end of the range. Must be timezone aware. */
-        endAtUtc: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TimeseriesData"][];
+    getTimeseriesRoute: {
+        parameters: {
+            query: {
+                /** @description One ore more timeseries identifiers to get data for. */
+                timeseriesId: number[];
+                /** @description Activated by default. This function will try to reduce the number of samples returned by removing consecutive samples that change less than 0.5% as they are not visible in the UI any how. */
+                reduceSamples?: boolean;
+                /** @description The start of range. Must be timezone aware. */
+                startAtUtc: string;
+                /** @description The end of the range. Must be timezone aware. */
+                endAtUtc: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      /** @description Range was invalid or more than 30 days, 0:00:00 */
-      400: {
-        content: never;
-      };
-      /** @description Timeseries not found. */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimeseriesData"][];
+                };
+            };
+            /** @description Range was invalid or more than 30 days, 0:00:00 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Timeseries not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * Get all devices.
-   * @description List all devices.
-   */
-  listDevicesRoute: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CarlosDevice"][];
+    listDevicesRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  /**
-   * Register a new device
-   * @description Register a new device.
-   */
-  registerDeviceRoute: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CarlosDeviceCreate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CarlosDevice"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarlosDevice"][];
+                };
+            };
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+    };
+    registerDeviceRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  /**
-   * Get a device by its ID.
-   * @description Get a device by its ID.
-   */
-  getDeviceRoute: {
-    parameters: {
-      path: {
-        /** @description The unique identifier of the device. */
-        deviceId: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CarlosDevice"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarlosDeviceCreate"];
+            };
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarlosDevice"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * Update a device by its ID.
-   * @description Update a device by its ID.
-   */
-  updateDeviceRoute: {
-    parameters: {
-      path: {
-        /** @description The unique identifier of the device. */
-        deviceId: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CarlosDeviceUpdate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CarlosDevice"];
+    getDeviceRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique identifier of the device. */
+                deviceId: string;
+            };
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarlosDevice"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * Get all drivers for a device.
-   * @description Get all drivers for a device.
-   */
-  getDeviceDriversRoute: {
-    parameters: {
-      path: {
-        /** @description The unique identifier of the device. */
-        deviceId: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CarlosDeviceDriver"][];
+    updateDeviceRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique identifier of the device. */
+                deviceId: string;
+            };
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarlosDeviceUpdate"];
+            };
         };
-      };
-    };
-  };
-  /**
-   * Update a driver for a device.
-   * @description Update a driver for a device.
-   */
-  updateDeviceDriverRoute: {
-    parameters: {
-      path: {
-        /** @description The unique identifier of the device. */
-        deviceId: string;
-        /** @description The unique identifier of the driver. */
-        driverIdentifier: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CarlosDeviceDriverUpdate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CarlosDeviceDriver"];
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarlosDevice"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+    };
+    getDeviceDriversRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique identifier of the device. */
+                deviceId: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  /**
-   * Get all signals for a driver.
-   * @description Get all signals for a driver.
-   */
-  getDeviceSignalsRoute: {
-    parameters: {
-      path: {
-        /** @description The unique identifier of the device. */
-        deviceId: string;
-        /** @description The unique identifier of the driver. */
-        driverIdentifier: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CarlosDeviceSignal"][];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarlosDeviceDriver"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+    };
+    updateDeviceDriverRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique identifier of the device. */
+                deviceId: string;
+                /** @description The unique identifier of the driver. */
+                driverIdentifier: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  /**
-   * Update a signal by its ID.
-   * @description Update a signal by its ID.
-   */
-  updateDeviceSignalRoute: {
-    parameters: {
-      path: {
-        /** @description The unique identifier of the signal. */
-        timeseriesId: number;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CarlosDeviceSignalUpdate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CarlosDeviceSignal"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarlosDeviceDriverUpdate"];
+            };
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarlosDeviceDriver"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * Health
-   * @description Endpoint to determine the health of the API.
-   */
-  health: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["HealthResponse"];
+    getDeviceSignalsRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique identifier of the device. */
+                deviceId: string;
+                /** @description The unique identifier of the driver. */
+                driverIdentifier: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  /**
-   * Get a token to be used to connect to the websocket.
-   * @description Returns a token that can be used to authenticate the edge device to the API.
-   */
-  getDeviceServerWebsocketToken: {
-    parameters: {
-      path: {
-        /** @description The unique identifier of the device. */
-        deviceId: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "text/plain": string;
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarlosDeviceSignal"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
-  };
+    updateDeviceSignalRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique identifier of the signal. */
+                timeseriesId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarlosDeviceSignalUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarlosDeviceSignal"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    health: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    getDeviceServerWebsocketToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique identifier of the device. */
+                deviceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
 }
