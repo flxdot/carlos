@@ -40,6 +40,9 @@ import {
   xTicksGradient,
 } from '@/components/charts/gradients.ts';
 import crosshair from '@/components/charts/crosshair.ts';
+import {
+  IDatetimeRange,
+} from '@/components/charts/timeseries.ts';
 
 interface IChartBaseLineProps {
   chartData: DeepPartial<TLineChartData>;
@@ -47,6 +50,7 @@ interface IChartBaseLineProps {
   height?: string;
   showXTicks?: boolean;
   xTickUnit?: TimeUnit;
+  xLimits?: IDatetimeRange;
 }
 
 const props = withDefaults(
@@ -55,6 +59,7 @@ const props = withDefaults(
     height: '10rem',
     showXTicks: true,
     xTickUnit: 'day',
+    xLimits: undefined,
   },
 );
 
@@ -101,6 +106,8 @@ const chartOptions = computed<DeepPartial<ChartOptions>>(() => {
         color: tickColor,
         tickColor,
       },
+      min: props.xLimits?.startAt.toISOString(),
+      max: props.xLimits?.endAt.toISOString(),
     },
   };
   // explicitly set the color of the ticks and grid lines if not set in the props

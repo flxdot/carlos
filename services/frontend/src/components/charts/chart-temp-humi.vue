@@ -4,6 +4,7 @@
     :y-axes="yAxes"
     height="20rem"
     :x-tick-unit="xTickUnit"
+    :x-limits="props.dateRange"
   />
 </template>
 
@@ -40,6 +41,7 @@ import {
   DeepPartial,
 } from '@/utils/types.ts';
 import {
+  IDatetimeRange,
   ITimeseries, toChartJsData,
 } from '@/components/charts/timeseries.ts';
 
@@ -47,8 +49,10 @@ const props = withDefaults(defineProps<{
   temperature: ITimeseries,
   humidity: ITimeseries,
   xTickUnit?: TimeUnit;
+  dateRange?: IDatetimeRange;
 }>(), {
   xTickUnit: 'day',
+  dateRange: undefined,
 });
 
 const tempGradient = ref<GradientCache>({
