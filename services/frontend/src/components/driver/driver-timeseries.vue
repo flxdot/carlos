@@ -32,6 +32,7 @@
     :temperature="signalTimeseries.find((ts) => ts.displayName === 'temperature')!"
     :humidity="signalTimeseries.find((ts) => ts.displayName === 'humidity')!"
     :x-tick-unit="xTickUnit"
+    :date-range="dataRange"
   />
   <div
     v-for="ts in signalTimeseries"
@@ -43,6 +44,7 @@
       :timeseries="ts"
       :color="nextColor()"
       :x-tick-unit="xTickUnit"
+      :date-range="dataRange"
     />
   </div>
 </template>
@@ -69,7 +71,7 @@ import {
   TGetTimeseriesResponse,
 } from '@/api/timeseries.ts';
 import {
-  getLastTimestamp,
+  getLastTimestamp, IDatetimeRange,
   ITimeseries,
 } from '@/components/charts/timeseries.ts';
 import {
@@ -94,6 +96,14 @@ const props = withDefaults(defineProps<{
 });
 
 const rawData = ref<TGetTimeseriesResponse | undefined>();
+const dataRange = computed<IDatetimeRange>(() => {
+  const now = dayjs();
+
+  return {
+    startAt: now.subtract(props.duration),
+    endAt: now,
+  };
+});
 
 type LocalTs = (ITimeseries & {isVisibleOnDashboard: boolean})[];
 
@@ -129,12 +139,10 @@ const xTickUnit = computed<TimeUnit>(() => {
 });
 
 function updateData() {
-  const now = dayjs();
-
   const params: TGetTimeseriesQueryParams = {
     timeseriesId: props.signalList.map((signal) => signal.timeseriesId),
-    endAtUtc: now.toISOString(),
-    startAtUtc: now.subtract(props.duration).toISOString(),
+    startAtUtc: dataRange.value.startAt.toISOString(),
+    endAtUtc: dataRange.value.endAt.toISOString(),
   };
   getTimeseries(params).then((response) => {
     rawData.value = response.data;

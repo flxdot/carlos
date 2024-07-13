@@ -1,4 +1,6 @@
-import dayjs from 'dayjs';
+import dayjs, {
+  Dayjs,
+} from 'dayjs';
 
 /**
  * Determines the type of values of the timeseries.
@@ -11,6 +13,17 @@ export enum ETimeseriesValueType {
     ANALOG = 'analog',
     DISCRETE = 'discrete',
     BOOLEAN = 'boolean',
+}
+
+/**
+ * Defines a timerange
+ *
+ * @property startAt - The first timestamp to be included in the range
+ * @property endAt - The last timestamp to be included in the range
+ */
+export interface IDatetimeRange {
+    startAt: Dayjs,
+    endAt: Dayjs,
 }
 
 /**
